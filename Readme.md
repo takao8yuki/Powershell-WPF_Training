@@ -7,7 +7,7 @@ This went from a simple GUI in Notepad++ from [FoxDeploy](https://www.foxdeploy.
 
 Many who are in the IT field, or have C# in their toolbelts, would have written their GUI project in another langauge. I've seen many attempts at stackoverflow, with comments that say *move onto C#*, *use a proper tool for it*, *it's easier in C#*. I'm not qualified to judge, but I'd assume they're correct.
 
-However, I, am currently not in the IT field and *don't know any better*. This was written because I wanted to learn. I have no formal training in C#. I am self taught in Powershell. Fortunately the syntax between Powershell and C# closely resemble each other. C# was brought up numerous times while researching how to put this together. As many have said, Powershell is a gateway drug to C#.
+However, I, am currently not in the IT field and *don't know any better*. This was written because I wanted to learn. I have no formal training in C#. I am self taught in Powershell. Fortunately the syntax between Powershell and C# closely resemble each other. As many have said, Powershell is a gateway drug to C#.
 
 # How To Open
 Run with Powershell "Open GUI.ps1"
