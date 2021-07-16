@@ -330,7 +330,7 @@
             Layout could use some work."/>
 
             <GroupBox Grid.Row="1" Grid.RowSpan="3" Grid.Column="1" Grid.ColumnSpan="2" Header="Two Way Text Box">
-                <TextBox TextWrapping="Wrap" Text="{Binding TwoWayTextBox}" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+                <TextBox TextWrapping="Wrap" Text="{Binding TwoWayTextBox}" ScrollViewer.VerticalScrollBarVisibility="Auto" AcceptsReturn="True"/>
             </GroupBox>
 
             <StackPanel Grid.Row="2" Grid.RowSpan="1" Grid.Column="0" Grid.ColumnSpan="1" Margin="10,0,0,0">
@@ -357,9 +357,9 @@
                     </ListView.View>
                     <ListView.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="_Copy" CommandParameter="{Binding PlacementTarget.SelectedItems, RelativeSource={RelativeSource FindAncestor,AncestorType=ContextMenu}}" Command="{Binding listCopy}"/>
                             <!-- https://stackoverflow.com/questions/9880589/bind-to-selecteditems-from-datagrid-or-listbox-in-mvvm
-                                Context Menu's are not part of the visual tree, use PlacementTarget.property, RelativeSource to find the datacontext -->
+                                 Context Menu's are not part of the visual tree, use PlacementTarget.property, RelativeSource to find the datacontext -->
+                            <MenuItem Header="_Copy" CommandParameter="{Binding PlacementTarget.SelectedItems, RelativeSource={RelativeSource FindAncestor,AncestorType=ContextMenu}}" Command="{Binding listCopy}"/>
                             <MenuItem Header="_Remove" CommandParameter="{Binding PlacementTarget.SelectedItems, RelativeSource={RelativeSource FindAncestor,AncestorType=ContextMenu}}" Command="{Binding listRemove}"/>
                         </ContextMenu>
                     </ListView.ContextMenu>
