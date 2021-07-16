@@ -1,29 +1,31 @@
 # Powershell 5.1 and WPF
-This is my attempt at learning WPF with Powershell, along with VSCode and github.
+An attempt at learning WPF with Powershell, along with VSCode, Git and, Github.
 
-This went from a simple GUI from [FoxDeploy](https://www.foxdeploy.com/blog/part-v-powershell-guis-responsive-apps-with-progress-bars.html) to an attempt at something resembling MVVM.
+This went from a simple GUI in Notepad++ from [FoxDeploy](https://www.foxdeploy.com/blog/part-v-powershell-guis-responsive-apps-with-progress-bars.html) to, hopefully, something resembling MVVM.
 
 ### **Why?**
 
-Many who are in the IT field, or have C# in their toolbelts, would have written their GUI project in C#. I've seen many attempts at stackoverflow, with comments that say *move onto C#*, *use a proper tool for it*, *it's easier in C#*. I'm not qualified to judge, but I'd assume they're correct.
+Many who are in the IT field, or have C# in their toolbelts, would have written their GUI project in another langauge. I've seen many attempts at stackoverflow, with comments that say *move onto C#*, *use a proper tool for it*, *it's easier in C#*. I'm not qualified to judge, but I'd assume they're correct.
 
-However, I, am currently not in the IT field and *probably don't know any better*. This was written because I wanted to learn. I have no formal training in C#. I am self taught in Powershell. Fortunately the syntax between Powershell and C# closely resemble each other. C# was brought up numerous times while researching how to put this together. As many have said, Powershell is a gateway drug to C#.
+However, I, am currently not in the IT field and *don't know any better*. This was written because I wanted to learn. I have no formal training in C#. I am self taught in Powershell. Fortunately the syntax between Powershell and C# closely resemble each other. C# was brought up numerous times while researching how to put this together. As many have said, Powershell is a gateway drug to C#.
 
-# Requirements
+# How To Open
+Run with Powershell "Open GUI.ps1"
+
+# Module Explanations
 ### **Modules in $env:PSModulePath**
 1. Modules\RunspacePool\RunspacePool.psm1
+    - For simulated background tasks and I didn't want to depend on PoshRSJobs.
 2. Modules\ViewModel\ViewModel.psm1
+    - Requires assemblies **PresentationFramework** and **PresentationCore** to be loaded first.
 3. Modules\ViewModel\ViewModel.psd1
+    - includes **ViewModelHelper.psm1** as a nested module. Nested modules in .psd1 files are loaded before the root .psm1 file.
 4. Modules\ViewModel\ViewModelHelper.psm1
-
-- **RunspacePool.psm1** for simulated background tasks.
-- **ViewModel.psm1** requires assemblies **PresentationFramework** and **PresentationCore** to be loaded first.
-- Since classes in Powershell are parsed before assemblies are loaded, we need a helper module, **ViewModelHelper.psm1**, to load the required assemblies.
-- **ViewModel.psd1** includes **ViewModelHelper.psm1** as a nested module. Nested modules in .psd1 files are loaded before the root .psm1 file.
+    - Since classes in Powershell are parsed before assemblies are loaded, we need a helper module to load the required assemblies.
 
 # Notes
 #### **Buttons**
-- Buttons that only act on the view should stay on the view code behind, not the view model. So custom close, maximize, restore, minimize in the code behind are fine.
+- Buttons that only act on the view should stay on the view code behind, not the view model. Custom close, maximize, restore, minimize in the code behind are considered fine.
 
 https://stackoverflow.com/questions/4671368/binding-the-windowstate-property-of-a-window-in-wpf-using-mvvm
 
