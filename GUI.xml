@@ -325,9 +325,11 @@
                 </StackPanel>
             </Grid>
 
-            <TextBlock Grid.Row="1" Grid.RowSpan="1" Grid.Column="0" Grid.ColumnSpan="1" Margin="10,0,0,0" TextWrapping="Wrap" Text="{Binding WelcomeTextBlock}" UseLayoutRounding="True" VerticalAlignment="Center" Foreground="Red" FontSize="14"/>
+            <TextBlock Grid.Row="1" Grid.RowSpan="1" Grid.Column="0" Grid.ColumnSpan="1" Margin="10,0,0,0" TextWrapping="Wrap" UseLayoutRounding="True" VerticalAlignment="Center" Foreground="Red" FontSize="14"
+            Text="Mouse CommandParameters work!
+            Layout could use some work."/>
 
-            <GroupBox Grid.Row="1" Grid.RowSpan="3" Grid.Column="1" Grid.ColumnSpan="2" Header="TwoWay TextBox">
+            <GroupBox Grid.Row="1" Grid.RowSpan="3" Grid.Column="1" Grid.ColumnSpan="2" Header="Two Way Text Box">
                 <TextBox TextWrapping="Wrap" Text="{Binding TwoWayTextBox}" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
             </GroupBox>
 
@@ -338,7 +340,7 @@
                 <Button Grid.Row="2" Grid.RowSpan="1" Grid.Column="0" Grid.ColumnSpan="1" Content="Unused" HorizontalAlignment="Left"/>
             </StackPanel>
 
-            <GroupBox Grid.Row="3" Grid.RowSpan="1" Grid.Column="0" Grid.ColumnSpan="1" Header="ReadOnly TextBox">
+            <GroupBox Grid.Row="3" Grid.RowSpan="1" Grid.Column="0" Grid.ColumnSpan="1" Header="Read Only Text Box">
                 <TextBox TextWrapping="Wrap" Text="{Binding PastDataTextBox}" ScrollViewer.VerticalScrollBarVisibility="Auto" IsReadOnly="True"/>
             </GroupBox>
 
