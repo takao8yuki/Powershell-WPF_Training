@@ -108,7 +108,7 @@ Class ViewModel : System.ComponentModel.INotifyPropertyChanged {
 
     #####
     [System.Windows.Threading.Dispatcher]$Dispatcher = [System.Windows.Threading.Dispatcher]::CurrentDispatcher
-    #[System.Windows.Threading.Dispatcher]$Dispatcher
+
 <# If we need to return a background task. Todo: add concurrentqueue/bag
     $JobCleanUpScriptBlock = {}
     Hidden [System.Windows.Threading.DispatcherTimer] $_timer
@@ -119,13 +119,14 @@ Class ViewModel : System.ComponentModel.INotifyPropertyChanged {
         $this._timer.Start()
     }
  #>
+    #####
+
     [Int]$Progress
     [String]$ProgressText
     [String]$PastDataTextBox
     [String]$TwoWayTextBox
-    [String]$WelcomeTextBlock = "Mouse CommandParameters work!`nLayout could use some work."
 
-    [Boolean]$CanExecuteStart = $true
+    [Boolean]$CanExecuteTaskUsingProgressBar = $true
 
     [Object]$ActionList = [System.Collections.ObjectModel.ObservableCollection[PSCustomObject]]::new()
     #[Object]$SelectedAction #Could bind to selecteditem and call to set this.selectedaction = $null to deselect
@@ -153,8 +154,8 @@ Class ViewModel : System.ComponentModel.INotifyPropertyChanged {
     }
 
     [Void]AddStar() {
-        $this.DataText += '*'
-        $this.NotifyPropertyChanged('DataText')
+        $this.PastDataTextBox += '*'
+        $this.NotifyPropertyChanged('PastDataTextBox')
     }
 
     [Void]AddActionToList([String]$logTime, [String]$logDescription) {
@@ -164,13 +165,14 @@ Class ViewModel : System.ComponentModel.INotifyPropertyChanged {
         })
     }
 
-    [System.Windows.Input.ICommand] NewCommand (
+    [System.Windows.Input.ICommand]NewCommand(
         [String]$commandName,
         [ScriptBlock]$execute,
         [ScriptBlock]$canExecute
     ) {
         # Create new RelayCommand only if it doesn't exist, not a new one each time a button is clicked.
-        if ($null -eq (Get-Variable -Name $commandName -ValueOnly)) {
+        #if ($null -eq (Get-Variable -Name $commandName -ValueOnly -ErrorAction SilentlyContinue)) {
+        if (-not (Test-Path variable:\$commandName)) {
             Set-Variable -Name $commandName -Value ([RelayCommand]::new($this, $execute, $canExecute))
         }
         return Get-Variable -Name $commandName -ValueOnly
@@ -225,6 +227,7 @@ Class ViewModel : System.ComponentModel.INotifyPropertyChanged {
     }
 
     # Example - does not need endinvoke because it doesnt return anything. Also don't put comments in the script block
+    # Need to add param because it's a scriptblock in a scriptblock. Or however $Using:this works.
     Hidden $doProgressRunspace = {
         $psCmd = [powershell]::Create().AddScript({
             param($that)
@@ -232,13 +235,13 @@ Class ViewModel : System.ComponentModel.INotifyPropertyChanged {
                 $that.Dispatch($that.doProgress)
                 Start-Sleep -Milliseconds 500
             }
-            $that.CanExecuteStart = $true
+            $that.CanExecuteTaskUsingProgressBar = $true
             $that.Dispatch($that.doResetProgress)
             $that.Dispatch($that.doAddActionToList)
         }).AddParameter('that', $this)
         $psCmd.RunspacePool = $RSPool
         $psCmd.BeginInvoke()
-        $this.CanExecuteStart = $false
+        $this.CanExecuteTaskUsingProgressBar = $false
         $this.AddActionToList("$(Get-Date)", "Start doProgressRunspace")
     }
 
@@ -246,16 +249,16 @@ Class ViewModel : System.ComponentModel.INotifyPropertyChanged {
     [System.Windows.Input.ICommand]$StartButton = $this.NewCommand(
         'StartButton',
         $this.doProgressRunspace,
-        {$this.CanExecuteStart}
+        {$this.CanExecuteTaskUsingProgressBar}
     )
 
-<#
+<# ViewModel should start it's own dispatcher
     ViewModel(
         [System.Windows.Threading.Dispatcher]$currentDispatcher
     ) {
         $this.Dispatcher = $currentDispatcher
     }
- #>
+#>
 
 
 }
