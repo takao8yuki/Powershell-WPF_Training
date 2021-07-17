@@ -175,15 +175,24 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <ContentPresenter ContentTemplate="{TemplateBinding HeaderTemplate}" Content="{TemplateBinding Header}" Grid.Column="1" ContentStringFormat="{TemplateBinding HeaderStringFormat}" ContentSource="Header" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                    <Popup x:Name="PART_Popup"  AllowsTransparency="True" Focusable="False" IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}" PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}" Placement="Bottom">
-                        <Border x:Name="SubMenuBorder" BorderBrush="{StaticResource LightMenuItemDropDownBrush}" BorderThickness="1" Background="{StaticResource LightMenuItemDropDownBrush}" Padding="2"> <!-- Sub Menu Border and Background Color --> <!-- Padding is the space between button and border -->
-                            <ScrollViewer x:Name="SubMenuScrollViewer" Style="{DynamicResource {ComponentResourceKey ResourceId=MenuScrollViewer, TypeInTargetAssembly={x:Type FrameworkElement}}}">
+                    <ContentPresenter ContentTemplate="{TemplateBinding HeaderTemplate}" Content="{TemplateBinding Header}"
+                        Grid.Column="1" ContentStringFormat="{TemplateBinding HeaderStringFormat}" ContentSource="Header"
+                        Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                        VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    <Popup x:Name="PART_Popup"  AllowsTransparency="True" Focusable="False"
+                        IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}"
+                        PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}" Placement="Bottom">
+                        <Border x:Name="SubMenuBorder" BorderBrush="{StaticResource LightMenuItemDropDownBrush}"
+                            BorderThickness="1" Background="{StaticResource LightMenuItemDropDownBrush}" Padding="2"> <!-- Sub Menu Border and Background Color --> <!-- Padding is the space between button and border -->
+                            <ScrollViewer x:Name="SubMenuScrollViewer"
+                                Style="{DynamicResource {ComponentResourceKey ResourceId=MenuScrollViewer, TypeInTargetAssembly={x:Type FrameworkElement}}}">
                                 <Grid RenderOptions.ClearTypeHint="Enabled">
                                     <Canvas HorizontalAlignment="Left" Height="0" VerticalAlignment="Top" Width="0"> <!-- Size of SubMenu when dropdown -->
-                                        <Rectangle x:Name="OpaqueRect" Fill="{Binding Background, ElementName=SubMenuBorder}" Height="{Binding ActualHeight, ElementName=SubMenuBorder}" Width="{Binding ActualWidth, ElementName=SubMenuBorder}"/>
+                                        <Rectangle x:Name="OpaqueRect" Fill="{Binding Background, ElementName=SubMenuBorder}"
+                                            Height="{Binding ActualHeight, ElementName=SubMenuBorder}" Width="{Binding ActualWidth, ElementName=SubMenuBorder}"/>
                                     </Canvas>
-                                    <ItemsPresenter x:Name="ItemsPresenter" KeyboardNavigation.DirectionalNavigation="Cycle" Grid.IsSharedSizeScope="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" KeyboardNavigation.TabNavigation="Cycle"/>
+                                    <ItemsPresenter x:Name="ItemsPresenter" KeyboardNavigation.DirectionalNavigation="Cycle"
+                                        Grid.IsSharedSizeScope="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" KeyboardNavigation.TabNavigation="Cycle"/>
                                 </Grid>
                             </ScrollViewer>
                         </Border>
@@ -215,7 +224,8 @@
         </ControlTemplate>
 
         <ControlTemplate x:Key="MenuItemSubMenuControlTemplate" TargetType="{x:Type MenuItem}">
-            <Border x:Name="templateRoot" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+            <Border x:Name="templateRoot" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
                 <Grid Margin="-20,0,0,0"> <!-- Remove Icon Space-->
                     <Grid.ColumnDefinitions> <!-- I think these are for submenus that open right -->
                         <ColumnDefinition MinWidth="22" SharedSizeGroup="MenuItemIconColumnGroup" Width="Auto"/>
@@ -225,12 +235,20 @@
                         <ColumnDefinition SharedSizeGroup="MenuItemIGTColumnGroup" Width="Auto"/>
                         <ColumnDefinition Width="20"/>
                     </Grid.ColumnDefinitions>
-                    <ContentPresenter x:Name="Icon" Content="{TemplateBinding Icon}" ContentSource="Icon" HorizontalAlignment="Center" Height="16" Margin="3" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Center" Width="16"/>
-                    <Border x:Name="GlyphPanel" BorderBrush="{StaticResource LightMenuItemBorderBrush}" BorderThickness="1" Background="{StaticResource LightMenuItemBorderBrush}" ClipToBounds="False" HorizontalAlignment="Center" Height="22" Margin="-1,0,0,0" Visibility="Hidden" VerticalAlignment="Center" Width="22">
-                        <Path x:Name="Glyph" Data="F1M10,1.2L4.7,9.1 4.5,9.1 0,5.2 1.3,3.5 4.3,6.1 8.3,0 10,1.2z" Fill="{StaticResource LightMenuItemBorderBrush}" FlowDirection="LeftToRight" Height="11" Width="10"/>
+                    <ContentPresenter x:Name="Icon" Content="{TemplateBinding Icon}" ContentSource="Icon" HorizontalAlignment="Center"
+                        Height="16" Margin="3" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Center" Width="16"/>
+                    <Border x:Name="GlyphPanel" BorderBrush="{StaticResource LightMenuItemBorderBrush}" BorderThickness="1"
+                        Background="{StaticResource LightMenuItemBorderBrush}" ClipToBounds="False" HorizontalAlignment="Center"
+                        Height="22" Margin="-1,0,0,0" Visibility="Hidden" VerticalAlignment="Center" Width="22">
+                        <Path x:Name="Glyph" Data="F1M10,1.2L4.7,9.1 4.5,9.1 0,5.2 1.3,3.5 4.3,6.1 8.3,0 10,1.2z"
+                            Fill="{StaticResource LightMenuItemBorderBrush}" FlowDirection="LeftToRight" Height="11" Width="10"/>
                     </Border>
-                    <ContentPresenter x:Name="menuHeaderContainer" ContentTemplate="{TemplateBinding HeaderTemplate}" Content="{TemplateBinding Header}" Grid.Column="2" ContentStringFormat="{TemplateBinding HeaderStringFormat}" ContentSource="Header" HorizontalAlignment="Left" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Center"/>
-                    <TextBlock x:Name="menuGestureText" Grid.Column="4" Margin="{TemplateBinding Padding}" Opacity="0.7" Text="{TemplateBinding InputGestureText}" VerticalAlignment="Center"/>
+                    <ContentPresenter x:Name="menuHeaderContainer" ContentTemplate="{TemplateBinding HeaderTemplate}"
+                        Content="{TemplateBinding Header}" Grid.Column="2" ContentStringFormat="{TemplateBinding HeaderStringFormat}"
+                        ContentSource="Header" HorizontalAlignment="Left" Margin="{TemplateBinding Padding}"
+                        RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="menuGestureText" Grid.Column="4" Margin="{TemplateBinding Padding}" Opacity="0.7"
+                        Text="{TemplateBinding InputGestureText}" VerticalAlignment="Center"/>
                 </Grid>
             </Border>
             <ControlTemplate.Triggers>
@@ -325,9 +343,8 @@
                 </StackPanel>
             </Grid>
 
-            <TextBlock Grid.Row="1" Grid.RowSpan="1" Grid.Column="0" Grid.ColumnSpan="1" Margin="10,0,0,0" TextWrapping="Wrap" UseLayoutRounding="True" VerticalAlignment="Center" Foreground="Red" FontSize="14"
-            Text="Mouse CommandParameters work!
-            Layout could use some work."/>
+            <TextBlock Grid.Row="1" Grid.RowSpan="1" Grid.Column="0" Grid.ColumnSpan="1" Margin="10,0,0,0"
+                TextWrapping="Wrap" UseLayoutRounding="True" VerticalAlignment="Center" Foreground="Red" FontSize="14" Text="{Binding WelcomeText}"/>
 
             <GroupBox Grid.Row="1" Grid.RowSpan="3" Grid.Column="1" Grid.ColumnSpan="2" Header="Two Way Text Box">
                 <TextBox TextWrapping="Wrap" Text="{Binding TwoWayTextBox}" ScrollViewer.VerticalScrollBarVisibility="Auto" AcceptsReturn="True"/>
@@ -345,7 +362,8 @@
             </GroupBox>
 
             <ProgressBar Grid.Row="5" Grid.RowSpan="1" Grid.Column="0" Grid.ColumnSpan="3" Minimum="0" Maximum="100" Value="{Binding Progress}"/>
-            <TextBlock Grid.Row="5" Grid.RowSpan="1" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding Progress, StringFormat={}{0:0}%}"/>
+            <TextBlock Grid.Row="5" Grid.RowSpan="1" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center"
+                Text="{Binding Progress, StringFormat={}{0:0}%}"/>
 
             <GroupBox Grid.Row="6" Grid.RowSpan="1" Grid.Column="0" Grid.ColumnSpan="3" Header="Log">
                 <ListView x:Name="listViewLog" SelectionMode="Extended" ItemsSource="{Binding ActionList}">
@@ -359,8 +377,12 @@
                         <ContextMenu>
                             <!-- https://stackoverflow.com/questions/9880589/bind-to-selecteditems-from-datagrid-or-listbox-in-mvvm
                                  Context Menu's are not part of the visual tree, use PlacementTarget.property, RelativeSource to find the datacontext -->
-                            <MenuItem Header="_Copy" CommandParameter="{Binding PlacementTarget.SelectedItems, RelativeSource={RelativeSource FindAncestor,AncestorType=ContextMenu}}" Command="{Binding listCopy}"/>
-                            <MenuItem Header="_Remove" CommandParameter="{Binding PlacementTarget.SelectedItems, RelativeSource={RelativeSource FindAncestor,AncestorType=ContextMenu}}" Command="{Binding listRemove}"/>
+                            <MenuItem Header="_Copy"
+                                CommandParameter="{Binding PlacementTarget.SelectedItems, RelativeSource={RelativeSource FindAncestor,AncestorType=ContextMenu}}"
+                                Command="{Binding listCopy}"/>
+                            <MenuItem Header="_Remove"
+                                CommandParameter="{Binding PlacementTarget.SelectedItems, RelativeSource={RelativeSource FindAncestor,AncestorType=ContextMenu}}"
+                                Command="{Binding listRemove}"/>
                         </ContextMenu>
                     </ListView.ContextMenu>
                 </ListView>
