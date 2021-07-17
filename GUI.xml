@@ -344,7 +344,7 @@
             </Grid>
 
             <TextBlock Grid.Row="1" Grid.RowSpan="1" Grid.Column="0" Grid.ColumnSpan="1" Margin="10,0,0,0"
-                TextWrapping="Wrap" UseLayoutRounding="True" VerticalAlignment="Center" Foreground="Red" FontSize="14" Text="{Binding WelcomeText}"/>
+                TextWrapping="Wrap" UseLayoutRounding="True" VerticalAlignment="Center" Foreground="Red" FontSize="14" Text="{Binding WelcomeMessage}"/>
 
             <GroupBox Grid.Row="1" Grid.RowSpan="3" Grid.Column="1" Grid.ColumnSpan="2" Header="Two Way Text Box">
                 <TextBox TextWrapping="Wrap" Text="{Binding TwoWayTextBox}" ScrollViewer.VerticalScrollBarVisibility="Auto" AcceptsReturn="True"/>
