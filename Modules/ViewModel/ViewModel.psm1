@@ -3,8 +3,8 @@
 #Using Assembly PresentationFramework
 
 # Create own runspace pool with custom functions in module folder
-$RSsession = New-InitialSessionState
-$RSPool = New-RunspacePool -InitialSessionState $RSsession
+$Script:RSsession = New-InitialSessionState
+$Script:RSPool = New-RunspacePool -InitialSessionState $RSsession
 
 
 class RelayCommand : Windows.Input.ICommand {
@@ -123,8 +123,12 @@ Class ViewModel : System.ComponentModel.INotifyPropertyChanged {
 
     [Int]$Progress
     [String]$ProgressText
-    [String]$PastDataTextBox
+    [String]$HistoryTextBox
     [String]$TwoWayTextBox
+    [String]$WelcomeMessage = "
+Hello $env:USERNAME!
+The layout could use some work.
+"
 
     [Boolean]$CanExecuteTaskUsingProgressBar = $true
 
@@ -153,9 +157,9 @@ Class ViewModel : System.ComponentModel.INotifyPropertyChanged {
         [System.Windows.Input.CommandManager]::InvalidateRequerySuggested()
     }
 
-    [Void]AddStar() {
-        $this.PastDataTextBox += '*'
-        $this.NotifyPropertyChanged('PastDataTextBox')
+    [Void]AddHistory($value) {
+        $this.HistoryTextBox += "$value"
+        $this.NotifyPropertyChanged('HistoryTextBox')
     }
 
     [Void]AddActionToList([String]$logTime, [String]$logDescription) {
@@ -181,7 +185,7 @@ Class ViewModel : System.ComponentModel.INotifyPropertyChanged {
 
     [System.Windows.Input.ICommand]$GoButton = $this.NewCommand(
         'GoButton',
-        {$this.AddStar()},
+        {$this.AddHistory('*')},
         {}
     )
 
@@ -189,11 +193,13 @@ Class ViewModel : System.ComponentModel.INotifyPropertyChanged {
     [System.Windows.Input.ICommand]$listCopy = $this.NewCommand(
         'listCopy',
         {
-            Set-Clipboard -Value (
-                $parameter | ForEach-Object{
-                    "$($_.LogTime)`t$($_.LogDescription)"
-                }
-            )
+            $tmpCopy = [System.Collections.Generic.List[String]]::new()
+            $tmpCopy.Add("LogTime`tLogDescription")
+            $parameter | ForEach-Object{
+                $tmpCopy.Add("$($_.LogTime)`t$($_.LogDescription)")
+            }
+            Set-Clipboard -Value $tmpCopy
+            $tmpCopy = $null
         },
         {}
     )
@@ -251,6 +257,41 @@ Class ViewModel : System.ComponentModel.INotifyPropertyChanged {
         $this.doProgressRunspace,
         {$this.CanExecuteTaskUsingProgressBar}
     )
+
+
+    $doSendToHistory = {
+        if ($this.TwoWayTextBox) {
+            $this.AddHistory($this.TwoWayTextBox)
+            $this.AddHistory("`n")
+            $this.TwoWayTextBox = $null
+            $this.AddActionToList("$(Get-Date)", "Sent to history")
+            $this.NotifyPropertyChanged('HistoryTextBox')
+            $this.NotifyPropertyChanged('TwoWayTextBox')
+        }
+    }
+
+
+    [System.Windows.Input.ICommand]$SendButton = $this.NewCommand(
+        'SendButton',
+        $this.doSendToHistory,
+        {}
+    )
+
+
+    $doClear = {
+        if ($this.TwoWayTextBox) {$this.TwoWayTextBox = $null; $this.NotifyPropertyChanged('TwoWayTextBox')}
+        if ($this.HistoryTextBox) {$this.HistoryTextBox = $null; $this.NotifyPropertyChanged('HistoryTextBox')}
+        if ($this.ActionList) {$this.ActionList = [System.Collections.ObjectModel.ObservableCollection[PSCustomObject]]::new(); $this.NotifyPropertyChanged('ActionList')}
+    }
+
+
+    [System.Windows.Input.ICommand]$ClearButton = $this.NewCommand(
+        'ClearButton',
+        $this.doClear,
+        {}
+    )
+
+
 
 <# ViewModel should start it's own dispatcher
     ViewModel(
