@@ -40,10 +40,6 @@ function windowStateTrigger{
 $concurrentDict.buttonRestore.Add_Click({ windowStateTrigger })
 $concurrentDict.buttonMaximize.Add_Click({ windowStateTrigger })
 
-$concurrentDict.buttonClear.Add_Click({
-    $concurrentDict.listViewLog.UnselectAll()
-})
-
 # If the terminal crashes after closing, you dun goofed somewhere.
 $concurrentDict.GUI.ShowDialog()
 #$concurrentDict.GUI.Dispatcher.InvokeAsync{$concurrentDict.GUI.ShowDialog()}.Wait()
