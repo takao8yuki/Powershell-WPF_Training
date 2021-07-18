@@ -12,6 +12,10 @@ However, I, am currently not in the IT field and *don't know any better*. This w
 # How To Open
 Run with Powershell "Open GUI.ps1"
 
+To hide the Powershell window, create a shortcut to powershell with parameter:
+```
+powershell.exe -Windowstyle Hidden -File ".\Open Gui.ps1"
+```
 # Module Explanations
 ### **Modules in $env:PSModulePath**
 1. Modules\RunspacePool\RunspacePool.psm1
