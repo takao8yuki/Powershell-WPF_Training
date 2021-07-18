@@ -169,7 +169,7 @@
                     BorderThickness="0"
                     Background="{TemplateBinding Background}"
                     SnapsToDevicePixels="True"> <!-- BorderBrush is Menu Border -->
-                <Grid VerticalAlignment="Center" Height="30">
+                <Grid VerticalAlignment="Center" Height="30" Background="Transparent">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
@@ -226,7 +226,7 @@
         <ControlTemplate x:Key="MenuItemSubMenuControlTemplate" TargetType="{x:Type MenuItem}">
             <Border x:Name="templateRoot" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
                 Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
-                <Grid Margin="-20,0,0,0"> <!-- Remove Icon Space-->
+                <Grid Margin="-20,0,0,0" Background="Transparent"> <!-- Remove Icon Space-->
                     <Grid.ColumnDefinitions> <!-- I think these are for submenus that open right -->
                         <ColumnDefinition MinWidth="22" SharedSizeGroup="MenuItemIconColumnGroup" Width="Auto"/>
                         <ColumnDefinition Width="13"/>
