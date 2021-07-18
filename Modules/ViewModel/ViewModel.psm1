@@ -122,7 +122,6 @@ Class ViewModel : System.ComponentModel.INotifyPropertyChanged {
     #####
 
     [Int]$Progress
-    [String]$ProgressText
     [String]$HistoryTextBox
     [String]$TwoWayTextBox
     [String]$WelcomeMessage = "
