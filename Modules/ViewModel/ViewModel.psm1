@@ -8,8 +8,10 @@ $Script:RSPool = New-RunspacePool -InitialSessionState $RSsession
 
 
 class RelayCommand : Windows.Input.ICommand {
-    #canExecute runs automatically on click. Doesn't run on background task.
-    #requery with [System.Windows.Input.CommandManager]::InvalidateRequerySuggested() on ui thread dispatcher
+    # canExecute runs automatically on click. Doesn't run when background task is finished.
+    # requery with [System.Windows.Input.CommandManager]::InvalidateRequerySuggested() on ui thread dispatcher
+
+    # on open, these add a requery event to each button and on close, remove the event
     add_CanExecuteChanged([EventHandler] $value) {
         [System.Windows.Input.CommandManager]::add_RequerySuggested($value)
     }
@@ -142,11 +144,7 @@ The layout could use some work.
     }
 
     [Void]SetProgress([Int]$progress) {
-        if (($this.Progress + $progress) -gt 100) {
-            $this.Progress = 100
-        } else {
-            $this.Progress += $progress
-        }
+        $this.Progress = $progress
         $this.NotifyPropertyChanged('Progress')
     }
 
@@ -220,7 +218,11 @@ The layout could use some work.
     )
 
     Hidden $doProgress = {
-        $this.SetProgress($(Get-Random -Minimum 10 -Maximum 50))
+        $progress = $this.Progress + $(Get-Random -Minimum 1 -Maximum 50)
+        if ($progress -gt 100) {
+            $progress = 100
+        }
+        $this.SetProgress($progress)
     }
 
     Hidden $doResetProgress = {
@@ -251,8 +253,8 @@ The layout could use some work.
     }
 
 
-    [System.Windows.Input.ICommand]$StartButton = $this.NewCommand(
-        'StartButton',
+    [System.Windows.Input.ICommand]$SimulateButton = $this.NewCommand(
+        'SimulateButton',
         $this.doProgressRunspace,
         {$this.CanExecuteTaskUsingProgressBar}
     )
