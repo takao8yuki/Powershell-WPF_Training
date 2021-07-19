@@ -121,8 +121,7 @@ Class ViewModel : System.ComponentModel.INotifyPropertyChanged {
         $this._timer.Start()
     }
  #>
-    #####
-
+    # GUI Display Bindings
     [Int]$Progress
     [String]$HistoryTextBox
     [String]$TwoWayTextBox
@@ -135,7 +134,7 @@ The layout could use some work.
 
     [Object]$ActionList = [System.Collections.ObjectModel.ObservableCollection[PSCustomObject]]::new()
     #[Object]$SelectedAction #Could bind to selecteditem and call to set this.selectedaction = $null to deselect
-    #####
+    # End GUI Display Bindings
 
     [Void]Dispatch([ScriptBlock]$sb) {
         $this.Dispatcher.Invoke(
@@ -172,7 +171,6 @@ The layout could use some work.
         [ScriptBlock]$canExecute
     ) {
         # Create new RelayCommand only if it doesn't exist, not a new one each time a button is clicked.
-        #if ($null -eq (Get-Variable -Name $commandName -ValueOnly -ErrorAction SilentlyContinue)) {
         if (-not (Test-Path variable:\$commandName)) {
             Set-Variable -Name $commandName -Value ([RelayCommand]::new($this, $execute, $canExecute))
         }
@@ -182,7 +180,10 @@ The layout could use some work.
 
     [System.Windows.Input.ICommand]$GoButton = $this.NewCommand(
         'GoButton',
-        {$this.AddHistory('*')},
+        {
+            $this.AddHistory('*')
+            $this.AddActionToList("$(Get-Date)", "Added Star")
+        },
         {}
     )
 
