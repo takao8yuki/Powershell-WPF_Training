@@ -281,9 +281,9 @@ The layout could use some work.
 
 
     $doClear = {
-        if ($this.TwoWayTextBox) {$this.TwoWayTextBox = $null; $this.NotifyPropertyChanged('TwoWayTextBox')}
-        if ($this.HistoryTextBox) {$this.HistoryTextBox = $null; $this.NotifyPropertyChanged('HistoryTextBox')}
-        if ($this.ActionList) {$this.ActionList = [System.Collections.ObjectModel.ObservableCollection[PSCustomObject]]::new(); $this.NotifyPropertyChanged('ActionList')}
+        if ($this.TwoWayTextBox) { $this.TwoWayTextBox = $null; $this.NotifyPropertyChanged('TwoWayTextBox') }
+        if ($this.HistoryTextBox) { $this.HistoryTextBox = $null; $this.NotifyPropertyChanged('HistoryTextBox') }
+        if ($this.ActionList) { $this.ActionList.Clear() }
     }
 
 
