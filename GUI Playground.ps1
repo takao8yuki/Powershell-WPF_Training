@@ -1,6 +1,7 @@
 Using Module ViewModel
 
-# Initialize concurrentDict over synchronized hashtable. Concurrent Dictionary.AddOrUpdate handles multiple threads better than syncHash
+# Initialize concurrentDict over synchronized hashtable. Concurrent Dictionary.AddOrUpdate handles multiple threads better than syncHash and is newer.
+# Not much use since now since the progress bar value is bound and stored in ViewModel and not in the hash...
 #$syncHash = [HashTable]::Synchronized(@{})
 $concurrentDict = [System.Collections.Concurrent.ConcurrentDictionary[String,Object]]::new()
 
@@ -14,20 +15,16 @@ $concurrentDict.GUI = [Windows.Markup.XamlReader]::Load($reader)
 
 # MVVM
 $concurrentDict.GUI.DataContext = [ViewModel]::new()
-#$concurrentDict.GUI.DataContext.Dispatcher = [System.Windows.Threading.Dispatcher]::CurrentDispatcher
-#$concurrentDict.GUI.DataContext = [ViewModel]::new([System.Windows.Threading.Dispatcher]::CurrentDispatcher)
 
 #===================================================
-# Retrieve a list of all GUI elements
+# Retrieve a list of all GUI elements to add button clicks.
+# Default actions for custom window in code behind.
+# Buttons that only interact with the view stay in the code behind.
 #===================================================
 foreach ($UIElement in $xaml.SelectNodes("//*[@*[contains(translate(name(.),'n','N'),'Name')]]")) {
     [void]$concurrentDict.TryAdd($UIElement.Name, $concurrentDict.GUI.FindName($UIElement.Name))
 }
 
-#===================================================
-# Default actions for custom window in code behind.
-# Buttons that only interact with the view stay in the code behind.
-#===================================================
 $concurrentDict.subMenuFileExit.Add_Click({ $concurrentDict.GUI.Dispatcher.InvokeShutdown() })
 $concurrentDict.buttonClose.Add_Click({ $concurrentDict.GUI.Dispatcher.InvokeShutdown() })
 $concurrentDict.buttonMinimize.Add_Click({ $concurrentDict.GUI.WindowState = 'Minimized' })
