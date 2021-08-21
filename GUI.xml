@@ -3,7 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Title="Powershell GUI"
     Height="Auto" Width="Auto"
-    MinHeight="30" MinWidth="650"
+    MinHeight="30" MinWidth="750"
     WindowStartupLocation="CenterScreen"
     WindowStyle="None"
     MaxHeight="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}}"
@@ -342,12 +342,24 @@
 
     </Window.Resources>
 
+    <Window.InputBindings>
+        <KeyBinding Command="{Binding Path=GuessButton}"
+                    Key="Return"/>
+    </Window.InputBindings>
+<!--
+    <Window.InputBindings>
+        <KeyBinding Command="{Binding Path=GuessButton}"
+                    Key="O"
+                    Modifiers="Control"/>
+    </Window.InputBindings>
+-->
     <Border>
 
 
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="300"/>
+                <ColumnDefinition Width="100"/>
                 <ColumnDefinition Width="100"/>
                 <ColumnDefinition Width="100"/>
                 <ColumnDefinition Width="100"/>
@@ -363,7 +375,7 @@
                 <RowDefinition Height="100"/> <!--6 ListBox-->
             </Grid.RowDefinitions>
 
-            <Grid x:Name="RootWindow" Grid.Row="0" Grid.ColumnSpan="5" Background="{StaticResource LightHeaderBrush}">
+            <Grid x:Name="RootWindow" Grid.Row="0" Grid.ColumnSpan="6" Background="{StaticResource LightHeaderBrush}">
                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Powershell GUI" FontSize="12" Margin="5,0,0,0"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button x:Name="buttonMinimize" Style="{StaticResource WindowChromeButton}">
@@ -404,20 +416,24 @@
             <TextBlock Grid.Row="1" Grid.RowSpan="4" Grid.Column="0" Grid.ColumnSpan="1" Margin="10,0,0,0"
                 TextWrapping="Wrap" UseLayoutRounding="True" VerticalAlignment="Top" Foreground="Black" FontSize="14" Text="{Binding WelcomeMessage}"/>
 
-            <GroupBox Grid.Row="1" Grid.RowSpan="1" Grid.Column="1" Grid.ColumnSpan="4" Header="History">
+            <GroupBox Grid.Row="1" Grid.RowSpan="1" Grid.Column="1" Grid.ColumnSpan="5" Header="History">
                 <TextBox TextWrapping="Wrap" Text="{Binding HistoryTextBox}" ScrollViewer.VerticalScrollBarVisibility="Auto" IsReadOnly="True" Background="{StaticResource LightBackgroundBrush}"/>
             </GroupBox>
 
-            <GroupBox Grid.Row="2" Grid.RowSpan="1" Grid.Column="1" Grid.ColumnSpan="4" Header="Two Way Text Box">
-                <TextBox TextWrapping="Wrap" Text="{Binding TwoWayTextBox}" ScrollViewer.VerticalScrollBarVisibility="Disabled"/>
+            <GroupBox Grid.Row="2" Grid.RowSpan="1" Grid.Column="1" Grid.ColumnSpan="5" Header="Two Way Text Box">
+                <TextBox TextWrapping="Wrap" Text="{Binding TwoWayTextBox, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ScrollViewer.VerticalScrollBarVisibility="Disabled" MaxLength="3" MaxLines="1"/>
             </GroupBox>
 
-            <StackPanel Grid.Row="3" Grid.RowSpan="1" Grid.Column="1" Grid.ColumnSpan="5" Margin="0,0,0,0" Orientation="Horizontal" HorizontalAlignment="Center">
+            <!--<StackPanel Grid.Row="3" Grid.RowSpan="1" Grid.Column="1" Grid.ColumnSpan="5" Margin="0,0,0,0" Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button Content="Guess(Rigged)" HorizontalAlignment="Left" Command="{Binding GuessRiggedButton}" Margin="10,0,0,0"/>
                 <Button Content="Guess" HorizontalAlignment="Left" Command="{Binding GuessButton}" Margin="10,0,0,0"/>
                 <Button Content="GuessRandom" HorizontalAlignment="Left" Command="{Binding GuessRandomButton}" Margin="10,0,0,0"/>
                 <Button Content="Reset" HorizontalAlignment="Left" Command="{Binding ResetButton}" Margin="10,0,0,0"/>
-            </StackPanel>
+            </StackPanel>-->
+            <Button Content="Guess(Rigged)" HorizontalAlignment="Center" Command="{Binding GuessRiggedButton}" Grid.Row="3" Grid.RowSpan="1" Grid.Column="1" Grid.ColumnSpan="1"/>
+            <Button Content="Guess" HorizontalAlignment="Center" Command="{Binding GuessButton}" Grid.Row="3" Grid.RowSpan="1" Grid.Column="2" Grid.ColumnSpan="1"/>
+            <Button Content="GuessRandom" HorizontalAlignment="Center" Command="{Binding GuessRandomButton}" Grid.Row="3" Grid.RowSpan="1" Grid.Column="3" Grid.ColumnSpan="1"/>
+            <Button Content="Reset" HorizontalAlignment="Center" Command="{Binding ResetButton}" Grid.Row="3" Grid.RowSpan="1" Grid.Column="4" Grid.ColumnSpan="1"/>
 
             <ProgressBar Grid.Row="5" Grid.RowSpan="1" Grid.Column="0" Grid.ColumnSpan="5" Minimum="0" Maximum="100" Value="{Binding Progress}"/>
             <TextBlock Grid.Row="5" Grid.RowSpan="1" Grid.Column="0" Grid.ColumnSpan="5" VerticalAlignment="Center" HorizontalAlignment="Center"
