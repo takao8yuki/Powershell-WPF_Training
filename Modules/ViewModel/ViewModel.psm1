@@ -127,16 +127,23 @@ Class ViewModel : System.ComponentModel.INotifyPropertyChanged {
     [String]$TwoWayTextBox
     [String]$WelcomeMessage = "
 Hello $env:USERNAME!
-The layout could use some work.
+The playground has now been given the purpose of a number guessing game.
+Enter a number under Two Way Text Box and press:
+1. Guess - to guess the number
+2. Guess(Rigged) - to guess with increasing odds in your favor
+3. GuessRandom - to guess a random number for you
+4. Reset - resets the UI
 "
+
+    [Int]$NumberToGuess
+    [Int]$UserGuess
 
     [Boolean]$CanExecuteTaskUsingProgressBar = $true
 
-    [Object]$ActionList = [System.Collections.ObjectModel.ObservableCollection[PSCustomObject]]::new()
-    #[Object]$SelectedAction #Could bind to selecteditem and call to set this.selectedaction = $null to deselect
+    [System.Collections.ObjectModel.ObservableCollection[PSCustomObject]]$ActionList = [System.Collections.ObjectModel.ObservableCollection[PSCustomObject]]::new()
     # End GUI Display Bindings
 
-    [Void]Dispatch([ScriptBlock]$sb) {
+    Hidden [Void]Dispatch([ScriptBlock]$sb) {
         $this.Dispatcher.Invoke(
             [Action]$sb
         )
@@ -165,6 +172,23 @@ The layout could use some work.
         })
     }
 
+    [Void]doClearTwoWayTextBox() {
+        $this.TwoWayTextBox = $null
+        $this.NotifyPropertyChanged('TwoWayTextBox')
+    }
+
+    [String]CorrectGuessMessage(){
+        return "It was $($this.NumberToGuess)"
+    }
+
+    [String]IncorrectGuessMessage(){
+        return "It is not $($this.UserGuess)"
+    }
+
+    [String]RiggedCorrectGuessMessage(){
+        return "Wow... it was actually $($this.NumberToGuess). Who would've known?!"
+    }
+
     [System.Windows.Input.ICommand]NewCommand(
         [String]$commandName,
         [ScriptBlock]$execute,
@@ -176,16 +200,6 @@ The layout could use some work.
         }
         return Get-Variable -Name $commandName -ValueOnly
     }
-
-
-    [System.Windows.Input.ICommand]$GoButton = $this.NewCommand(
-        'GoButton',
-        {
-            $this.AddHistory('*')
-            $this.AddActionToList("$(Get-Date)", "Added Star")
-        },
-        {}
-    )
 
 
     [System.Windows.Input.ICommand]$listCopy = $this.NewCommand(
@@ -231,7 +245,7 @@ The layout could use some work.
     }
 
     Hidden $doAddActionToList = {
-        $this.AddActionToList("$(Get-Date)", "End doProgressRunspace")
+        $this.AddActionToList("$(Get-Date)", "Rigged in your favor")
     }
 
     # Example - does not need endinvoke because it doesnt return anything. Also don't put comments in the script block
@@ -250,58 +264,70 @@ The layout could use some work.
         $psCmd.RunspacePool = $RSPool
         $psCmd.BeginInvoke()
         $this.CanExecuteTaskUsingProgressBar = $false
-        $this.AddActionToList("$(Get-Date)", "Start doProgressRunspace")
+        $this.AddActionToList("$(Get-Date)", "Rigging in your favor")
     }
 
 
-    [System.Windows.Input.ICommand]$SimulateButton = $this.NewCommand(
-        'SimulateButton',
+    [System.Windows.Input.ICommand]$GuessRiggedButton = $this.NewCommand(
+        'GuessRiggedButton',
         $this.doProgressRunspace,
         {$this.CanExecuteTaskUsingProgressBar}
     )
 
 
-    $doSendToHistory = {
+    [System.Windows.Input.ICommand]$GuessButton = $this.NewCommand(
+        'GuessButton',
+        {
+            $this.UserGuess = $this.TwoWayTextBox.Trim()
+
+            if ($this.UserGuess -eq $this.NumberToGuess) {
+                $this.AddHistory($this.CorrectGuessMessage())
+            } else {
+                $this.AddHistory($this.IncorrectGuessMessage())
+            }
+            $this.AddHistory("`n")
+            $this.doClearTwoWayTextBox()
+        },
+        {}
+    )
+
+    hidden $doSendToHistory = {
         if ($this.TwoWayTextBox) {
             $this.AddHistory($this.TwoWayTextBox)
             $this.AddHistory("`n")
             $this.TwoWayTextBox = $null
-            $this.AddActionToList("$(Get-Date)", "Sent to history")
             $this.NotifyPropertyChanged('HistoryTextBox')
             $this.NotifyPropertyChanged('TwoWayTextBox')
         }
     }
 
 
-    [System.Windows.Input.ICommand]$SendButton = $this.NewCommand(
-        'SendButton',
+    [System.Windows.Input.ICommand]$GuessRandomButton = $this.NewCommand(
+        'GuessRandomButton',
         $this.doSendToHistory,
         {}
     )
 
 
-    $doClear = {
+    hidden $doClear = {
         if ($this.TwoWayTextBox) { $this.TwoWayTextBox = $null; $this.NotifyPropertyChanged('TwoWayTextBox') }
         if ($this.HistoryTextBox) { $this.HistoryTextBox = $null; $this.NotifyPropertyChanged('HistoryTextBox') }
         if ($this.ActionList) { $this.ActionList.Clear() }
     }
 
 
-    [System.Windows.Input.ICommand]$ClearButton = $this.NewCommand(
-        'ClearButton',
+    [System.Windows.Input.ICommand]$ResetButton = $this.NewCommand(
+        'ResetButton',
         $this.doClear,
         {}
     )
 
 
 
-<# ViewModel should start it's own dispatcher
-    ViewModel(
-        [System.Windows.Threading.Dispatcher]$currentDispatcher
-    ) {
-        $this.Dispatcher = $currentDispatcher
+    ViewModel() {
+        $this.NumberToGuess = (Get-Random -Minimum 0 -Maximum 100)
     }
-#>
+
 
 
 }
