@@ -3,7 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Title="Powershell GUI"
     Height="Auto" Width="Auto"
-    MinHeight="30" MinWidth="620"
+    MinHeight="30" MinWidth="700"
     WindowStartupLocation="CenterScreen"
     WindowStyle="None"
     MaxHeight="{Binding Source={x:Static SystemParameters.MaximizedPrimaryScreenHeight}}"
@@ -357,11 +357,10 @@
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="300"/>
-                <ColumnDefinition Width=".25*" MinWidth="80"/>
-                <ColumnDefinition Width=".25*" MinWidth="80"/>
-                <ColumnDefinition Width=".25*" MinWidth="80"/>
-                <ColumnDefinition Width=".25*" MinWidth="80"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*" MinWidth="100"/>
+                <ColumnDefinition Width="*" MinWidth="100"/>
+                <ColumnDefinition Width="*" MinWidth="100"/>
+                <ColumnDefinition Width="*" MinWidth="100"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"/>  <!--0 Caption Bar-->
