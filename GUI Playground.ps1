@@ -39,7 +39,8 @@ $concurrentDict.buttonMaximize.Add_Click({ windowStateTrigger })
 
 # NOT MVVM. Requires dependencies if MVVM.
 # No expression blend because it doesn't come natively with Windows 10
-$concurrentDict.GUI.DataContext.TEMPWorkaroundTextBoxScroll = $concurrentDict.ScrollToEndTextBox
+$concurrentDict.GUI.DataContext.TEMPScrollToEndTextBox = $concurrentDict.ScrollToEndTextBox
+$concurrentDict.GUI.DataContext.TEMPFocusedTextBox = $concurrentDict.FocusedTextBox
 $concurrentDict.FocusedTextBox.add_TextChanged({
     if ($concurrentDict.FocusedTextBox.Text -match '\D') {
         #Disallow anything that is not a letter and prevents pasting letters
