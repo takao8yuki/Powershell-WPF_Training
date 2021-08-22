@@ -37,7 +37,7 @@ function windowStateTrigger{
 $concurrentDict.buttonRestore.Add_Click({ windowStateTrigger })
 $concurrentDict.buttonMaximize.Add_Click({ windowStateTrigger })
 
-# NOT MVVM. Requires dependencies if MVVM.
+# NOT MVVM - but this is the easiest way I could think of to scroll the textbox.
 # No expression blend because it doesn't come natively with Windows 10
 $concurrentDict.GUI.DataContext.TEMPScrollToEndTextBox = $concurrentDict.ScrollToEndTextBox
 $concurrentDict.GUI.DataContext.TEMPFocusedTextBox = $concurrentDict.FocusedTextBox
