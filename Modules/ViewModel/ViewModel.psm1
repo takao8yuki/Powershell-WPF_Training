@@ -145,6 +145,7 @@ Enter a number under Two Way Text Box and press:
 
     # TEMP WORKAROUND NOT MVVM
     [System.Windows.Controls.Primitives.TextBoxBase]$TEMPWorkaroundTextBoxScroll
+    # END TEMP WORKAROUND NOT MVVM
 
     Hidden [Void]Dispatch([ScriptBlock]$sb) {
         $this.Dispatcher.Invoke(
@@ -189,7 +190,7 @@ Enter a number under Two Way Text Box and press:
     }
 
     [String]RiggedCorrectGuessMessage(){
-        return "Wow... it was actually $($this.NumberToGuess). Who would've known?!"
+        return "Wow... it was actually $($this.UserGuess). Who would've known?!"
     }
 
     [Int]GetScrubbedTwoWayTextBox(){
@@ -260,25 +261,48 @@ Enter a number under Two Way Text Box and press:
         $this.AddActionToList("$(Get-Date)", "Rigged in your favor")
     }
 
+    #Maybe Todo add temp hash/dictionary for previous guesses to look up previous numbers
+    [Int]$currentNumberOfGuesses = 0
+    [Int]$NumberOfGuessesToReturnRigged = 5
+
+    Hidden $doRiggedGuess = {
+        if ($this.currentNumberOfGuesses -eq $this.NumberOfGuessesToReturnRigged) {
+            $this.AddHistory($this.RiggedCorrectGuessMessage())
+            $this.currentNumberOfGuesses = 0
+        } elseif ($this.UserGuess -eq $this.NumberToGuess) {
+            $this.AddHistory($this.CorrectGuessMessage())
+        } else {
+            $this.AddHistory($this.IncorrectGuessMessage())
+        }
+        $this.AddHistory("`n")
+
+        $this.TEMPWorkaroundTextBoxScroll.ScrollToEnd()
+    }
+
     # Example - does not need endinvoke because it doesnt return anything. Also don't put comments in the script block
     # Need to add param because it's a scriptblock in a scriptblock. Or however $Using:this works.
     Hidden $doProgressRunspace = {
+        $this.CanExecuteTaskUsingProgressBar = $false
+        $this.AddActionToList("$(Get-Date)", "Rigging in your favor")
+        $this.currentNumberOfGuesses++
+        $this.UserGuess = $this.GetScrubbedTwoWayTextBox()
+        $this.doClearTwoWayTextBox()
+
         $psCmd = [powershell]::Create().AddScript({
             param($that)
             while ($that.Progress -lt 100) {
                 $that.Dispatch($that.doProgress)
                 Start-Sleep -Milliseconds 500
             }
+            $that.Dispatch($that.doRiggedGuess)
+
             $that.CanExecuteTaskUsingProgressBar = $true
             $that.Dispatch($that.doResetProgress)
             $that.Dispatch($that.doAddActionToList)
         }).AddParameter('that', $this)
         $psCmd.RunspacePool = $RSPool
         $psCmd.BeginInvoke()
-        $this.CanExecuteTaskUsingProgressBar = $false
-        $this.AddActionToList("$(Get-Date)", "Rigging in your favor")
     }
-
 
     [System.Windows.Input.ICommand]$GuessRiggedButton = $this.NewCommand(
         'GuessRiggedButton',
@@ -304,6 +328,7 @@ Enter a number under Two Way Text Box and press:
         {}
     )
 
+<#
     hidden $doSendToHistory = {
         if ($this.TwoWayTextBox) {
             $this.AddHistory($this.TwoWayTextBox)
@@ -313,11 +338,21 @@ Enter a number under Two Way Text Box and press:
             $this.NotifyPropertyChanged('TwoWayTextBox')
         }
     }
-
+#>
 
     [System.Windows.Input.ICommand]$GuessRandomButton = $this.NewCommand(
         'GuessRandomButton',
-        $this.doSendToHistory,
+        {
+            $this.UserGuess = (Get-Random -Minimum 0 -Maximum 100)
+            if ($this.UserGuess -eq $this.NumberToGuess) {
+                $this.AddHistory($this.CorrectGuessMessage())
+            } else {
+                $this.AddHistory($this.IncorrectGuessMessage())
+            }
+            $this.AddHistory("`n")
+            $this.doClearTwoWayTextBox()
+            $this.TEMPWorkaroundTextBoxScroll.ScrollToEnd()
+        },
         {}
     )
 
