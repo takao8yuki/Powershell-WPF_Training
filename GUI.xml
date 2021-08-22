@@ -342,27 +342,25 @@
 
     </Window.Resources>
 
+
     <Window.InputBindings>
-        <KeyBinding Command="{Binding Path=GuessButton}"
-                    Key="Return"/>
+        <KeyBinding Command="{Binding Path=GuessRiggedButton}" Key="Q"/>
+        <KeyBinding Command="{Binding Path=GuessButton}" Key="W"/>
+        <KeyBinding Command="{Binding Path=GuessRandomButton}" Key="E"/>
+        <KeyBinding Command="{Binding Path=ResetButton}" Key="R" Modifiers="Control"/>
     </Window.InputBindings>
-<!--
-    <Window.InputBindings>
-        <KeyBinding Command="{Binding Path=GuessButton}"
-                    Key="O"
-                    Modifiers="Control"/>
-    </Window.InputBindings>
--->
+
+
     <Border>
 
 
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="300"/>
-                <ColumnDefinition Width="100"/>
-                <ColumnDefinition Width="100"/>
-                <ColumnDefinition Width="100"/>
-                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width=".2*" MinWidth="80"/>
+                <ColumnDefinition Width=".2*" MinWidth="80"/>
+                <ColumnDefinition Width=".2*" MinWidth="80"/>
+                <ColumnDefinition Width=".2*" MinWidth="80"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
@@ -417,11 +415,11 @@
                 TextWrapping="Wrap" UseLayoutRounding="True" VerticalAlignment="Top" Foreground="Black" FontSize="14" Text="{Binding WelcomeMessage}"/>
 
             <GroupBox Grid.Row="1" Grid.RowSpan="1" Grid.Column="1" Grid.ColumnSpan="5" Header="History">
-                <TextBox TextWrapping="Wrap" Text="{Binding HistoryTextBox}" ScrollViewer.VerticalScrollBarVisibility="Auto" IsReadOnly="True" Background="{StaticResource LightBackgroundBrush}"/>
+                <TextBox x:Name="ScrollToEndTextBox" TextWrapping="Wrap" Text="{Binding HistoryTextBox}" ScrollViewer.VerticalScrollBarVisibility="Auto" IsReadOnly="True" Background="{StaticResource LightBackgroundBrush}"/>
             </GroupBox>
 
-            <GroupBox Grid.Row="2" Grid.RowSpan="1" Grid.Column="1" Grid.ColumnSpan="5" Header="Two Way Text Box">
-                <TextBox TextWrapping="Wrap" Text="{Binding TwoWayTextBox, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ScrollViewer.VerticalScrollBarVisibility="Disabled" MaxLength="3" MaxLines="1"/>
+            <GroupBox Grid.Row="2" Grid.RowSpan="1" Grid.Column="1" Grid.ColumnSpan="5" Header="Two Way Text Box"  FocusManager.FocusedElement="{Binding ElementName=FocusedTextBox}">
+                <TextBox x:Name="FocusedTextBox" TextWrapping="Wrap" Text="{Binding TwoWayTextBox, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ScrollViewer.VerticalScrollBarVisibility="Disabled" MaxLength="3" MaxLines="1"/>
             </GroupBox>
 
             <!--<StackPanel Grid.Row="3" Grid.RowSpan="1" Grid.Column="1" Grid.ColumnSpan="5" Margin="0,0,0,0" Orientation="Horizontal" HorizontalAlignment="Center">
@@ -430,16 +428,17 @@
                 <Button Content="GuessRandom" HorizontalAlignment="Left" Command="{Binding GuessRandomButton}" Margin="10,0,0,0"/>
                 <Button Content="Reset" HorizontalAlignment="Left" Command="{Binding ResetButton}" Margin="10,0,0,0"/>
             </StackPanel>-->
-            <Button Content="Guess(Rigged)" HorizontalAlignment="Center" Command="{Binding GuessRiggedButton}" Grid.Row="3" Grid.RowSpan="1" Grid.Column="1" Grid.ColumnSpan="1"/>
-            <Button Content="Guess" HorizontalAlignment="Center" Command="{Binding GuessButton}" Grid.Row="3" Grid.RowSpan="1" Grid.Column="2" Grid.ColumnSpan="1"/>
-            <Button Content="GuessRandom" HorizontalAlignment="Center" Command="{Binding GuessRandomButton}" Grid.Row="3" Grid.RowSpan="1" Grid.Column="3" Grid.ColumnSpan="1"/>
-            <Button Content="Reset" HorizontalAlignment="Center" Command="{Binding ResetButton}" Grid.Row="3" Grid.RowSpan="1" Grid.Column="4" Grid.ColumnSpan="1"/>
+            <Button Content="Guess Rigged" HorizontalAlignment="Stretch" Command="{Binding GuessRiggedButton}" Grid.Row="3" Grid.RowSpan="1" Grid.Column="1" Grid.ColumnSpan="1" Width="Auto"/>
+            <Button Content="Guess" HorizontalAlignment="Stretch" Command="{Binding GuessButton}" Grid.Row="3" Grid.RowSpan="1" Grid.Column="2" Grid.ColumnSpan="1" Width="Auto"/>
+            <Button Content="GuessRandom" HorizontalAlignment="Stretch" Command="{Binding GuessRandomButton}" Grid.Row="3" Grid.RowSpan="1" Grid.Column="3" Grid.ColumnSpan="1" Width="Auto"/>
+            <Button Content="Reset" HorizontalAlignment="Stretch" Command="{Binding ResetButton}" Grid.Row="3" Grid.RowSpan="1" Grid.Column="4" Grid.ColumnSpan="1" Width="Auto"/>
 
-            <ProgressBar Grid.Row="5" Grid.RowSpan="1" Grid.Column="0" Grid.ColumnSpan="5" Minimum="0" Maximum="100" Value="{Binding Progress}"/>
-            <TextBlock Grid.Row="5" Grid.RowSpan="1" Grid.Column="0" Grid.ColumnSpan="5" VerticalAlignment="Center" HorizontalAlignment="Center"
-                Text="{Binding Progress, StringFormat={}{0:0}%}"/>
+            <Grid Grid.Row="5" Grid.RowSpan="1" Grid.Column="0" Grid.ColumnSpan="6" >
+                <ProgressBar Minimum="0" Maximum="100" Value="{Binding Progress}"/>
+                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding Progress, StringFormat={}{0:0}%}"/>
+            </Grid>
 
-            <GroupBox Grid.Row="6" Grid.RowSpan="1" Grid.Column="0" Grid.ColumnSpan="5" Header="Log">
+            <GroupBox Grid.Row="6" Grid.RowSpan="1" Grid.Column="0" Grid.ColumnSpan="6" Header="Log">
                 <ListView x:Name="listViewLog" SelectionMode="Extended" ItemsSource="{Binding ActionList}">
                     <ListView.View>
                         <GridView AllowsColumnReorder="False">
@@ -459,6 +458,9 @@
                                 Command="{Binding listRemove}"/>
                         </ContextMenu>
                     </ListView.ContextMenu>
+                    <ListView.InputBindings>
+                        <KeyBinding Command="{Binding Path=listCopy}" Key="C" Modifiers="Control" CommandParameter="{Binding SelectedItems, ElementName=listViewLog}"/>
+                    </ListView.InputBindings>
                 </ListView>
             </GroupBox>
         </Grid>
