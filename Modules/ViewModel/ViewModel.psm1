@@ -144,7 +144,8 @@ Enter a number under Two Way Text Box and press:
     # End GUI Display Bindings
 
     # TEMP WORKAROUND NOT MVVM
-    [System.Windows.Controls.Primitives.TextBoxBase]$TEMPWorkaroundTextBoxScroll
+    [System.Windows.Controls.Primitives.TextBoxBase]$TEMPScrollToEndTextBox
+    [System.Windows.Controls.Primitives.TextBoxBase]$TEMPFocusedTextBox
     # END TEMP WORKAROUND NOT MVVM
 
     Hidden [Void]Dispatch([ScriptBlock]$sb) {
@@ -182,7 +183,7 @@ Enter a number under Two Way Text Box and press:
     }
 
     [String]CorrectGuessMessage(){
-        return "It was $($this.NumberToGuess)"
+        return "Congratulations! It was $($this.NumberToGuess)"
     }
 
     [String]IncorrectGuessMessage(){
@@ -275,8 +276,8 @@ Enter a number under Two Way Text Box and press:
             $this.AddHistory($this.IncorrectGuessMessage())
         }
         $this.AddHistory("`n")
-
-        $this.TEMPWorkaroundTextBoxScroll.ScrollToEnd()
+        $this.TEMPFocusedTextBox.Focus()
+        $this.TEMPScrollToEndTextBox.ScrollToEnd()
     }
 
     # Example - does not need endinvoke because it doesnt return anything. Also don't put comments in the script block
@@ -323,7 +324,8 @@ Enter a number under Two Way Text Box and press:
             }
             $this.AddHistory("`n")
             $this.doClearTwoWayTextBox()
-            $this.TEMPWorkaroundTextBoxScroll.ScrollToEnd()
+            $this.TEMPFocusedTextBox.Focus()
+            $this.TEMPScrollToEndTextBox.ScrollToEnd()
         },
         {}
     )
@@ -351,7 +353,8 @@ Enter a number under Two Way Text Box and press:
             }
             $this.AddHistory("`n")
             $this.doClearTwoWayTextBox()
-            $this.TEMPWorkaroundTextBoxScroll.ScrollToEnd()
+            $this.TEMPFocusedTextBox.Focus()
+            $this.TEMPScrollToEndTextBox.ScrollToEnd()
         },
         {}
     )
