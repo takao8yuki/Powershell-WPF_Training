@@ -143,6 +143,9 @@ Enter a number under Two Way Text Box and press:
     [System.Collections.ObjectModel.ObservableCollection[PSCustomObject]]$ActionList = [System.Collections.ObjectModel.ObservableCollection[PSCustomObject]]::new()
     # End GUI Display Bindings
 
+    # TEMP WORKAROUND NOT MVVM
+    [System.Windows.Controls.Primitives.TextBoxBase]$TEMPWorkaroundTextBoxScroll
+
     Hidden [Void]Dispatch([ScriptBlock]$sb) {
         $this.Dispatcher.Invoke(
             [Action]$sb
@@ -172,7 +175,7 @@ Enter a number under Two Way Text Box and press:
         })
     }
 
-    [Void]doClearTwoWayTextBox() {
+    [Void]DoClearTwoWayTextBox() {
         $this.TwoWayTextBox = $null
         $this.NotifyPropertyChanged('TwoWayTextBox')
     }
@@ -187,6 +190,15 @@ Enter a number under Two Way Text Box and press:
 
     [String]RiggedCorrectGuessMessage(){
         return "Wow... it was actually $($this.NumberToGuess). Who would've known?!"
+    }
+
+    [Int]GetScrubbedTwoWayTextBox(){
+        if ($this.TwoWayTextBox -match "^\d+$" ) {
+            $scrubbed = $this.TwoWayTextBox
+        } else {
+            $scrubbed = 0
+        }
+        return $scrubbed
     }
 
     [System.Windows.Input.ICommand]NewCommand(
@@ -278,7 +290,7 @@ Enter a number under Two Way Text Box and press:
     [System.Windows.Input.ICommand]$GuessButton = $this.NewCommand(
         'GuessButton',
         {
-            $this.UserGuess = $this.TwoWayTextBox.Trim()
+            $this.UserGuess = $this.GetScrubbedTwoWayTextBox()
 
             if ($this.UserGuess -eq $this.NumberToGuess) {
                 $this.AddHistory($this.CorrectGuessMessage())
@@ -287,6 +299,7 @@ Enter a number under Two Way Text Box and press:
             }
             $this.AddHistory("`n")
             $this.doClearTwoWayTextBox()
+            $this.TEMPWorkaroundTextBoxScroll.ScrollToEnd()
         },
         {}
     )
