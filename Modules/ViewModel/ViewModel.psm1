@@ -129,8 +129,8 @@ Class ViewModel : System.ComponentModel.INotifyPropertyChanged {
 Hello $env:USERNAME!
 The playground has now been given the purpose of a number guessing game.
 Enter a number under Two Way Text Box and press:
-1. Guess - to guess the number
-2. Guess(Rigged) - to guess with increasing odds in your favor
+1. Guess Rigged - to guess the number and be right after 5 guesses
+2. Guess - to guess the number
 3. GuessRandom - to guess a random number for you
 4. Reset - resets the UI
 "
@@ -143,9 +143,9 @@ Enter a number under Two Way Text Box and press:
     [System.Collections.ObjectModel.ObservableCollection[PSCustomObject]]$ActionList = [System.Collections.ObjectModel.ObservableCollection[PSCustomObject]]::new()
     # End GUI Display Bindings
 
-    # TEMP WORKAROUND NOT MVVM
-    [System.Windows.Controls.Primitives.TextBoxBase]$TEMPScrollToEndTextBox
-    [System.Windows.Controls.Primitives.TextBoxBase]$TEMPFocusedTextBox
+    # TEMP WORKAROUND NOT MVVM - but this is the easiest way I could think of to scroll the textbox.
+    hidden [System.Windows.Controls.Primitives.TextBoxBase]$TEMPScrollToEndTextBox
+    hidden [System.Windows.Controls.Primitives.TextBoxBase]$TEMPFocusedTextBox
     # END TEMP WORKAROUND NOT MVVM
 
     Hidden [Void]Dispatch([ScriptBlock]$sb) {
@@ -182,25 +182,44 @@ Enter a number under Two Way Text Box and press:
         $this.NotifyPropertyChanged('TwoWayTextBox')
     }
 
-    [String]CorrectGuessMessage(){
+    [String]CorrectGuessMessage() {
         return "Congratulations! It was $($this.NumberToGuess)"
     }
 
-    [String]IncorrectGuessMessage(){
+    [String]IncorrectGuessMessage() {
         return "It is not $($this.UserGuess)"
     }
 
-    [String]RiggedCorrectGuessMessage(){
+    [String]RiggedCorrectGuessMessage() {
         return "Wow... it was actually $($this.UserGuess). Who would've known?!"
     }
 
-    [Int]GetScrubbedTwoWayTextBox(){
+    [Int]GetScrubbedTwoWayTextBox() {
         if ($this.TwoWayTextBox -match "^\d+$" ) {
             $scrubbed = $this.TwoWayTextBox
         } else {
             $scrubbed = 0
         }
         return $scrubbed
+    }
+
+    [Void]NewRandomNumber() {
+        $this.NumberToGuess = (Get-Random -Minimum 0 -Maximum 999)
+    }
+
+    [Void]GuessNumber() {
+
+        if ($this.UserGuess -eq $this.NumberToGuess) {
+            $this.AddHistory($this.CorrectGuessMessage())
+            $this.NewRandomNumber()
+        } else {
+            $this.AddHistory($this.IncorrectGuessMessage())
+        }
+
+        $this.AddHistory("`n")
+        $this.doClearTwoWayTextBox()
+        $this.TEMPFocusedTextBox.Focus()
+        $this.TEMPScrollToEndTextBox.ScrollToEnd()
     }
 
     [System.Windows.Input.ICommand]NewCommand(
@@ -230,6 +249,13 @@ Enter a number under Two Way Text Box and press:
         {}
     )
 
+    [System.Windows.Input.ICommand]$historyCopy = $this.NewCommand(
+        'historyCopy',
+        {
+            $this.HistoryTextBox | Set-Clipboard
+        },
+        {}
+    )
 
     [System.Windows.Input.ICommand]$listRemove = $this.NewCommand(
         'listRemove',
@@ -266,10 +292,12 @@ Enter a number under Two Way Text Box and press:
     [Int]$currentNumberOfGuesses = 0
     [Int]$NumberOfGuessesToReturnRigged = 5
 
+
     Hidden $doRiggedGuess = {
         if ($this.currentNumberOfGuesses -eq $this.NumberOfGuessesToReturnRigged) {
             $this.AddHistory($this.RiggedCorrectGuessMessage())
             $this.currentNumberOfGuesses = 0
+            $this.NewRandomNumber()
         } elseif ($this.UserGuess -eq $this.NumberToGuess) {
             $this.AddHistory($this.CorrectGuessMessage())
         } else {
@@ -316,16 +344,7 @@ Enter a number under Two Way Text Box and press:
         'GuessButton',
         {
             $this.UserGuess = $this.GetScrubbedTwoWayTextBox()
-
-            if ($this.UserGuess -eq $this.NumberToGuess) {
-                $this.AddHistory($this.CorrectGuessMessage())
-            } else {
-                $this.AddHistory($this.IncorrectGuessMessage())
-            }
-            $this.AddHistory("`n")
-            $this.doClearTwoWayTextBox()
-            $this.TEMPFocusedTextBox.Focus()
-            $this.TEMPScrollToEndTextBox.ScrollToEnd()
+            $this.GuessNumber()
         },
         {}
     )
@@ -345,16 +364,8 @@ Enter a number under Two Way Text Box and press:
     [System.Windows.Input.ICommand]$GuessRandomButton = $this.NewCommand(
         'GuessRandomButton',
         {
-            $this.UserGuess = (Get-Random -Minimum 0 -Maximum 100)
-            if ($this.UserGuess -eq $this.NumberToGuess) {
-                $this.AddHistory($this.CorrectGuessMessage())
-            } else {
-                $this.AddHistory($this.IncorrectGuessMessage())
-            }
-            $this.AddHistory("`n")
-            $this.doClearTwoWayTextBox()
-            $this.TEMPFocusedTextBox.Focus()
-            $this.TEMPScrollToEndTextBox.ScrollToEnd()
+            $this.UserGuess = (Get-Random -Minimum 0 -Maximum 999)
+            $this.GuessNumber()
         },
         {}
     )
@@ -376,7 +387,7 @@ Enter a number under Two Way Text Box and press:
 
 
     ViewModel() {
-        $this.NumberToGuess = (Get-Random -Minimum 0 -Maximum 100)
+        $this.NumberToGuess = (Get-Random -Minimum 0 -Maximum 999)
     }
 
 
