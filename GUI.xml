@@ -404,8 +404,7 @@
                             <MenuItem x:Name="subMenuFileExit" Header="E_xit" Template="{DynamicResource MenuItemSubMenuControlTemplate}"/>
                         </MenuItem>
                         <MenuItem Header="_Edit" Height="30" Width="Auto" Template="{DynamicResource MenuItemHeaderControlTemplate}">
-                            <MenuItem Header="_Copy" Template="{DynamicResource MenuItemSubMenuControlTemplate}"/>
-                            <MenuItem Header="_Paste" Template="{DynamicResource MenuItemSubMenuControlTemplate}"/>
+                            <MenuItem Header="_Copy" Template="{DynamicResource MenuItemSubMenuControlTemplate}" Command="{Binding historyCopy}"/>
                         </MenuItem>
                     </Menu>
                 </StackPanel>
