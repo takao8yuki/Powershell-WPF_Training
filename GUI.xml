@@ -112,7 +112,7 @@
             </Style.Triggers>
         </Style>
 
-        <Style TargetType="Border">
+        <Style TargetType="Border" x:Key="WindowBorderMaximize">
             <Setter Property="BorderThickness" Value="0"/>
             <Style.Triggers>
                 <!-- Add to avoid border disappearing when window is maximised -->
@@ -137,7 +137,8 @@
                 </GradientStopCollection>
             </GradientBrush.GradientStops>
         </LinearGradientBrush>-->
-        <SolidColorBrush x:Key="LightHeaderBrush" Color="#559CE4" /> <!--Blue-->
+        <SolidColorBrush x:Key="PrimaryColorBrush1" Color="#559CE4" /> <!--Blue-->
+        <SolidColorBrush x:Key="PrimaryColorBrush2" Color="#559CE4" Opacity=".75" /> <!--Blue-->
         <SolidColorBrush x:Key="LightMenuItemDropDownBrush" Color="#83B8EC" /> <!--Blue-->
         <SolidColorBrush x:Key="LightMenuItemHighlightBrush" Color="#BEE6FD" /> <!--Light Blue-->
         <SolidColorBrush x:Key="LightMenuItemBorderBrush" Color="#696D7D" /> <!--Black-->
@@ -165,7 +166,7 @@
 
         <ControlTemplate x:Key="MenuItemHeaderControlTemplate" TargetType="{x:Type MenuItem}">
             <Border x:Name="templateRoot"
-                    BorderBrush="{StaticResource LightHeaderBrush}"
+                    BorderBrush="{StaticResource PrimaryColorBrush1}"
                     CornerRadius="0"
                     BorderThickness="0"
                     Background="{TemplateBinding Background}"
@@ -351,7 +352,7 @@
     </Window.InputBindings>
 
 
-    <Border>
+    <Border Style="{StaticResource WindowBorderMaximize}">
 
 
         <Grid>
@@ -372,7 +373,7 @@
                 <RowDefinition Height="100"/> <!--6 ListBox-->
             </Grid.RowDefinitions>
 
-            <Grid x:Name="RootWindow" Grid.Row="0" Grid.ColumnSpan="6" Background="{StaticResource LightHeaderBrush}">
+            <Grid x:Name="RootWindow" Grid.Row="0" Grid.ColumnSpan="6" Background="{StaticResource PrimaryColorBrush1}">
                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Powershell GUI" FontSize="12" Margin="5,0,0,0"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button x:Name="buttonMinimize" Style="{StaticResource WindowChromeButton}">
@@ -414,10 +415,9 @@
                 TextWrapping="Wrap" UseLayoutRounding="True" VerticalAlignment="Top" Foreground="Black" FontSize="14" Text="{Binding WelcomeMessage}"/>
 
             <GroupBox Grid.Row="1" Grid.RowSpan="1" Grid.Column="1" Grid.ColumnSpan="5" Header="History">
-                <TextBox x:Name="ScrollToEndTextBox" TextWrapping="Wrap" Text="{Binding HistoryTextBox}" ScrollViewer.VerticalScrollBarVisibility="Auto" IsReadOnly="True" Background="{StaticResource LightBackgroundBrush}"
-                FocusManager.FocusedElement="{Binding ElementName=FocusedTextBox}"/>
-                <!--Workaround - Force focus to something else to prevent non scrolling to bottom when focused
-                to avoid messing with control templates of scrollviewer and textbox AdornerDecorator-->
+                <TextBox x:Name="ScrollToEndTextBox" TextWrapping="Wrap" Text="{Binding HistoryTextBox}" ScrollViewer.VerticalScrollBarVisibility="Auto" IsReadOnly="True"
+                Background="{StaticResource LightBackgroundBrush}" Foreground="Gray"/>
+                <!--FocusManager.FocusedElement="{Binding ElementName=FocusedTextBox}" avoid messing with textbox AdornerDecorator-->
             </GroupBox>
 
             <GroupBox Grid.Row="2" Grid.RowSpan="1" Grid.Column="1" Grid.ColumnSpan="5" Header="Two Way Text Box" FocusManager.FocusedElement="{Binding ElementName=FocusedTextBox}">
@@ -430,10 +430,10 @@
                 <Button Content="GuessRandom" HorizontalAlignment="Left" Command="{Binding GuessRandomButton}" Margin="10,0,0,0"/>
                 <Button Content="Reset" HorizontalAlignment="Left" Command="{Binding ResetButton}" Margin="10,0,0,0"/>
             </StackPanel>-->
-            <Button Content="(Q) Guess Rigged" HorizontalAlignment="Stretch" Command="{Binding GuessRiggedButton}" Grid.Row="3" Grid.RowSpan="1" Grid.Column="1" Grid.ColumnSpan="1" Width="Auto"/>
-            <Button Content="(W) Guess" HorizontalAlignment="Stretch" Command="{Binding GuessButton}" Grid.Row="3" Grid.RowSpan="1" Grid.Column="2" Grid.ColumnSpan="1" Width="Auto"/>
-            <Button Content="(E) GuessRandom" HorizontalAlignment="Stretch" Command="{Binding GuessRandomButton}" Grid.Row="3" Grid.RowSpan="1" Grid.Column="3" Grid.ColumnSpan="1" Width="Auto"/>
-            <Button Content="(Ctrl + R) Reset" HorizontalAlignment="Stretch" Command="{Binding ResetButton}" Grid.Row="3" Grid.RowSpan="1" Grid.Column="4" Grid.ColumnSpan="1" Width="Auto"/>
+            <Button Content="(Q) Guess Rigged" HorizontalAlignment="Stretch" Command="{Binding GuessRiggedButton}" Grid.Row="3" Grid.RowSpan="1" Grid.Column="1" Grid.ColumnSpan="1" Width="Auto" Background="{StaticResource PrimaryColorBrush2}" BorderBrush="Black"/>
+            <Button Content="(W) Guess" HorizontalAlignment="Stretch" Command="{Binding GuessButton}" Grid.Row="3" Grid.RowSpan="1" Grid.Column="2" Grid.ColumnSpan="1" Width="Auto" Background="{StaticResource PrimaryColorBrush2}" BorderBrush="Black"/>
+            <Button Content="(E) GuessRandom" HorizontalAlignment="Stretch" Command="{Binding GuessRandomButton}" Grid.Row="3" Grid.RowSpan="1" Grid.Column="3" Grid.ColumnSpan="1" Width="Auto" Background="{StaticResource PrimaryColorBrush2}" BorderBrush="Black"/>
+            <Button Content="(Ctrl + R) Reset" HorizontalAlignment="Stretch" Command="{Binding ResetButton}" Grid.Row="3" Grid.RowSpan="1" Grid.Column="4" Grid.ColumnSpan="1" Width="Auto" Background="{StaticResource PrimaryColorBrush2}" BorderBrush="Black"/>
 
             <Grid Grid.Row="5" Grid.RowSpan="1" Grid.Column="0" Grid.ColumnSpan="6" >
                 <ProgressBar Minimum="0" Maximum="100" Value="{Binding Progress}"/>
