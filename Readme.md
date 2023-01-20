@@ -1,5 +1,8 @@
+Revisted 2023 - WIP
+
 # Powershell 5.1 and WPF
 An attempt at learning WPF with PowerShell, along with VSCode, Git and, Github.
+
 
 Challenge:
 1. To write a GUI in pure PowerShell and .Net.
@@ -13,12 +16,6 @@ Challenge:
 
 <br>
 
-
-#### **Context Menu**
-
-Context Menu's are not part of the visual tree, use PlacementTarget.property, RelativeSource to find the datacontext.
-
-https://stackoverflow.com/questions/9880589/bind-to-selecteditems-from-datagrid-or-listbox-in-mvvm
 
 # Helpful References
 
@@ -37,8 +34,3 @@ https://gist.github.com/nikonthethird/2ab6bfad9a81d5fe127fd0d1c2844b7c
 Minesweeper
 
 https://gist.github.com/nikonthethird/4e410ac3c04ea6633043a5cb7be1d717
-
-Xaml MenuItem ControlTemplate
-
-https://stackoverflow.com/questions/24698755/how-to-change-the-background-of-the-menuitem-on-mouseover-in-wpf
-
