@@ -9,9 +9,16 @@ $concurrentDict = [System.Collections.Concurrent.ConcurrentDictionary[String,Obj
 [Xml]$xaml = Get-Content -Path "$PSScriptRoot\GUI.xml"
 # can -replace unique source for dictionary resource source path to a relative path
 # $xaml -replace "unique id", "$PSScriptRoot\relative\resource\dictionary\path.xml"
+    
+try {
+	$reader = [System.Xml.XmlNodeReader]::new($xaml)
+	$concurrentDict.GUI = [Windows.Markup.XamlReader]::Load($reader)
+} catch {
+	throw
+	$error[0]
+}
 
-$reader = [System.Xml.XmlNodeReader]::new($xaml)
-$concurrentDict.GUI = [Windows.Markup.XamlReader]::Load($reader)
+Hide-Console
 
 # MVVM
 $concurrentDict.GUI.DataContext = [ViewModel]::new()
