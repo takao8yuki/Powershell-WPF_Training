@@ -49,14 +49,17 @@ class Relay : System.Windows.Input.ICommand {
         [System.Windows.Input.CommandManager]::add_RequerySuggested($value)
         Write-Debug $value
     }
+
     remove_CanExecuteChanged([EventHandler] $value) {
         [System.Windows.Input.CommandManager]::remove_RequerySuggested($value)
         Write-Debug $value
     }
+
     [bool]CanExecute([object]$arg) {
         if ($null -eq $this.canRunCommand) { return $true }
         return $this.canRunCommand.Invoke($this.vm, $arg)
     }
+
     [void]Execute([object]$commandParameter) {
         try {
             $this.command.Invoke($this.vm, $commandParameter)
@@ -64,9 +67,11 @@ class Relay : System.Windows.Input.ICommand {
             Write-Error "Error handling Execute: $_"
         }
     }
+
     hidden [object]$vm
     hidden [scriptblock]$command
     hidden [scriptblock]$canRunCommand
+
     Relay($ViewModel, $Execute, $CanExecute) {
         $this.vm = $ViewModel
         $this.command = [scriptblock]::Create("param(`$this, `$commandParameter)`n&{$Execute}")
@@ -82,17 +87,20 @@ class Relay : System.Windows.Input.ICommand {
 
 class MainWindowVM : ComponentModel.INotifyPropertyChanged {
     hidden [ComponentModel.PropertyChangedEventHandler] $_propertyChanged = {}
+
     [void] add_PropertyChanged([ComponentModel.PropertyChangedEventHandler] $value) {
-        $p = $this._propertyChanged
-        $this._propertyChanged = [Delegate]::Combine($p, $value)
+        $this._propertyChanged = [Delegate]::Combine($this._propertyChanged, $value)
     }
+
     [void] remove_PropertyChanged([ComponentModel.PropertyChangedEventHandler] $value) {
         $this._propertyChanged = [Delegate]::Remove($this._propertyChanged, $value)
     }
+
     [void] OnPropertyChanged([string] $propertyName) {
         Write-Host "Notified change of property '$propertyName'."
         $this._propertyChanged.Invoke($this, $propertyName)
     }
+
     [void]Init([string] $propertyName) {
         $setter = [ScriptBlock]::Create("
             param(`$value)
@@ -105,7 +113,9 @@ class MainWindowVM : ComponentModel.INotifyPropertyChanged {
         $this | Add-Member -MemberType ScriptMethod -Name "Set$propertyName" -Value $setter
         $this | Add-Member -MemberType ScriptMethod -Name "Get$PropertyName" -Value $getter
     }
+
     hidden [System.Windows.Threading.DispatcherTimer] $_timer
+
     [string]$Title = "test"
     [string]$UserPath = 'E:\Testing Folder'
     [string]$buttonContent = "Click!"
@@ -123,6 +133,7 @@ class MainWindowVM : ComponentModel.INotifyPropertyChanged {
     [System.Windows.Input.ICommand]$CheckGenerateCommand
     [System.Windows.Input.ICommand]$ResetGridCommand
     [bool]$IsGenerateChecked
+
     MainWindowVM() {
         $this.Init('Title')
         $this.Init('Item')
@@ -220,17 +231,20 @@ function Show-MessageBox {
 
 class UserFileChoiceModel : ComponentModel.INotifyPropertyChanged {
     hidden [ComponentModel.PropertyChangedEventHandler] $_propertyChanged = {}
+
     [void] add_PropertyChanged([ComponentModel.PropertyChangedEventHandler] $value) {
-        $p = $this._propertyChanged
-        $this._propertyChanged = [Delegate]::Combine($p, $value)
+        $this._propertyChanged = [Delegate]::Combine($this._propertyChanged, $value)
     }
+
     [void] remove_PropertyChanged([ComponentModel.PropertyChangedEventHandler] $value) {
         $this._propertyChanged = [Delegate]::Remove($this._propertyChanged, $value)
     }
+
     [void]OnPropertyChanged([string] $propertyName) {
         Write-Host "Notified change of property '$propertyName'."
         $this._propertyChanged.Invoke($this, $propertyName)
     }
+
     [void] Init([string] $propertyName) {
         $setter = [ScriptBlock]::Create("
             param(`$value)
@@ -243,10 +257,12 @@ class UserFileChoiceModel : ComponentModel.INotifyPropertyChanged {
         $this | Add-Member -MemberType ScriptMethod -Name "Set$propertyName" -Value $setter
         $this | Add-Member -MemberType ScriptMethod -Name "Get$PropertyName" -Value $getter
     }
+
     [string]$Name
     [string]$LName
     [bool]$Generate
     [string]$FullName
+
     UserFileChoiceModel ($Name, $LName, $Generate, $FullName) {
         $this.Init('Name')
         $this.Init('LName')
