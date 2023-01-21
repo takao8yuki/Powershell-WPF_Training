@@ -1,7 +1,7 @@
 #Remember to dot source since powershell parses classes before add-types
 Add-Type -AssemblyName presentationframework, presentationcore
 
-function New-WPFObject {
+function New-WPFWindow {
     [CmdletBinding(DefaultParameterSetName = 'HereString')]
     param (
         [Parameter(Mandatory, ParameterSetName = 'HereString' )]
@@ -16,6 +16,10 @@ function New-WPFObject {
         $Xaml = Get-Content -Path $Path
     }
 
+    #Use the dedicated wpf xaml reader rather than the xmlreader. This allows skipping Get-CleanXML.
+    $window = [System.Windows.Markup.XamlReader]::Parse($Xaml)
+    $window
+<#
     [xml]$Xaml = Get-CleanXML -RawInput $Xaml
     $NamedNodes = Get-XamlNamedNodes -Xml $Xaml
     $reader = ([System.Xml.XmlNodeReader]::new($Xaml))
@@ -24,15 +28,17 @@ function New-WPFObject {
     $wpf = @{}
     $NamedNodes | ForEach-Object { $wpf.Add($_.Name, $form.FindName($_.Name)) }
     $wpf
+#>
+
 }
 
-
+#Not needed
 function Get-CleanXML {
     Param([string]$RawInput)
     $RawInput -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace 'x:Class=".*?"', '' -replace 'd:DesignHeight="\d*?"', '' -replace 'd:DesignWidth="\d*?"', ''
 }
 
-
+#Only used if you need to use the code behind. For example adding a click handler to a named button, $button1.add_click({})
 function Get-XamlNamedNodes {
     Param([xml]$Xml)
     $Xml.SelectNodes("//*[@*[contains(translate(name(.),'n','N'),'Name')]]")
