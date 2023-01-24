@@ -78,6 +78,9 @@ class Relay : System.Windows.Input.ICommand {
     # Parameter in viewmodel must use the variable name '$commandParameter' in order to take bound command parameters
     # Are command parameters needed?
     # Button methods should already have access to the viewmodel properties. For example, bound SelectedItems and its model properties.
+    # Parameter in viewmodel must use the variable name '$commandParameter' in order to take bound command parameters
+    # Are command parameters needed?
+    # Button methods should already have access to the viewmodel properties. For example, bound SelectedItems and its model properties.
     Relay($ViewModel, $Execute, $CanExecute) {
         $this.vm = $ViewModel
         $this.command = [scriptblock]::Create("param(`$this, `$commandParameter)`n&{$Execute}")
@@ -184,7 +187,7 @@ function Show-MessageBox {
     [System.Windows.MessageBox]::Show("$Message", $Title, $Button, $Icon)
 }
 
-
+#Powershell does not have namespace - maybe pstypenames.insert(0,namespace)?
 $Xaml = '<Window x:Class="System.Windows.Window"
 x:Name="MainWindow"
 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -194,6 +197,10 @@ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 xmlns:local="clr-namespace:;assembly="
 mc:Ignorable="d"
 Title="Minimal Example" Width="300" Height="150">
+    <Window.DataContext>
+        <local:MainWindowViewModel />
+    </Window.DataContext>
+
     <Window.DataContext>
         <local:MainWindowViewModel />
     </Window.DataContext>
