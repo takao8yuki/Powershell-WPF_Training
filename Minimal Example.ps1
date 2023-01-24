@@ -201,10 +201,6 @@ Title="Minimal Example" Width="300" Height="150">
         <local:MainWindowViewModel />
     </Window.DataContext>
 
-    <Window.DataContext>
-        <local:MainWindowViewModel />
-    </Window.DataContext>
-
     <Grid>
         <StackPanel Margin="5">
             <TextBox x:Name="TextBox1" Text="{Binding TextBoxText}" MinHeight="30" />
