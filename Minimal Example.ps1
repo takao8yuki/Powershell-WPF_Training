@@ -187,7 +187,7 @@ function Show-MessageBox {
     [System.Windows.MessageBox]::Show("$Message", $Title, $Button, $Icon)
 }
 
-#Powershell does not have namespace - maybe pstypenames.insert(0,namespace)?
+
 $Xaml = '<Window x:Class="System.Windows.Window"
 x:Name="MainWindow"
 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
