@@ -107,7 +107,9 @@ class ViewModelBase : ComponentModel.INotifyPropertyChanged {
 
     [void] OnPropertyChanged([string] $propertyName) {
         Write-Debug "Notified change of property '$propertyName'."
-        $this._propertyChanged.Invoke($this, $propertyName)
+        #$this._propertyChanged.Invoke($this, $propertyName) # Why does this accepting a string also work?
+        #$this._PropertyChanged.Invoke($this, (New-Object PropertyChangedEventArgs $propertyName))
+        $this._PropertyChanged.Invoke($this, [System.ComponentModel.PropertyChangedEventArgs]::new($propertyName))
     }
 
     [void]Init([string] $propertyName) {
@@ -126,36 +128,6 @@ class ViewModelBase : ComponentModel.INotifyPropertyChanged {
 
 
 class MainWindowViewModel : ViewModelBase {
-    hidden [ComponentModel.PropertyChangedEventHandler] $_propertyChanged = {}
-
-    [void] add_PropertyChanged([ComponentModel.PropertyChangedEventHandler] $value) {
-        $this._propertyChanged = [Delegate]::Combine($this._propertyChanged, $value)
-    }
-
-    [void] remove_PropertyChanged([ComponentModel.PropertyChangedEventHandler] $value) {
-        $this._propertyChanged = [Delegate]::Remove($this._propertyChanged, $value)
-    }
-
-    [void] OnPropertyChanged([string] $propertyName) {
-        Write-Debug "Notified change of property '$propertyName'."
-        #$this._propertyChanged.Invoke($this, $propertyName) # Why does this accepting a string also work?
-        #$this._PropertyChanged.Invoke($this, (New-Object PropertyChangedEventArgs $propertyName))
-        $this._PropertyChanged.Invoke($this, [System.ComponentModel.PropertyChangedEventArgs]::new($propertyName))
-    }
-
-    [void]Init([string] $propertyName) {
-        $setter = [ScriptBlock]::Create("
-            param(`$value)
-            `$this.'$propertyName' = `$value
-            `$this.OnPropertyChanged('$propertyName')
-        ")
-
-        $getter = [ScriptBlock]::Create("`$this.'$propertyName'")
-
-        $this | Add-Member -MemberType ScriptMethod -Name "Set$propertyName" -Value $setter
-        $this | Add-Member -MemberType ScriptMethod -Name "Get$PropertyName" -Value $getter
-    }
-
     [string]$TextBoxText
     [string]$TextBlockText
     [string]$Button1Content = 'test button'
