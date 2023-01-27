@@ -75,15 +75,12 @@ class Relay : System.Windows.Input.ICommand {
     hidden [scriptblock]$command
     hidden [scriptblock]$canRunCommand
 
-    # Parameter in viewmodel must use the variable name '$commandParameter' in order to take bound command parameters
-    # Are command parameters needed?
-    # Button methods should already have access to the viewmodel properties. For example, bound SelectedItems and its model properties.
-    # Parameter in viewmodel must use the variable name '$commandParameter' in order to take bound command parameters
-    # Are command parameters needed?
-    # Button methods should already have access to the viewmodel properties. For example, bound SelectedItems and its model properties.
     Relay($ViewModel, $Execute, $CanExecute) {
         $this.vm = $ViewModel
-        $this.command = [scriptblock]::Create("param(`$this, `$commandParameter)`n&{$Execute}")
+        #$this.command = [scriptblock]::Create("param(`$this, `$commandParameter)`n&{$Execute}")
+        $this.command = $Execute
+        Write-Debug -Message $this.command.ToString()
+
         if ([string]::IsNullOrWhiteSpace(($CanExecute.ToString().Trim()))) {
             $this.canRunCommand = $null
         } else {
@@ -135,17 +132,32 @@ class MainWindowViewModel : ViewModelBase {
 
     MainWindowViewModel() {
         $this.Init('TextBlockText')
+
         $this.TestCommand = [Relay]::new(
             $this,
             {
-                $result = Show-MessageBox -Message "Command Parameter is '$commandParameter'`nTextBoxText is '$($this.TextBoxText)'`nOk to set TextBoxText with TextBox data`nNo for command parameter data."
-                if ($result -eq 'OK') { $this.SetTextBlockText($this.TextBoxText) } else { $this.SetTextBlockText($commandParameter) }
+                param($ViewModel, $CommandParameter)
+
+                $result = Show-MessageBox -Message "TextBoxText is '$($ViewModel.TextBoxText)'`nCommand Parameter is '$commandParameter'`nOk to set TextBoxText with TextBox data`nNo for command parameter data."
+
+                if ($result -eq 'OK') {
+                    $value = $ViewModel.TextBoxText
+                } else {
+                    $value = $CommandParameter
+                }
+                $ViewModel.TestMethod($value)
+                $ViewModel.SetTextBlockText($value)
             },
             {}
         )
     }
-}
 
+    [int]$i
+    [void] TestMethod([int]$i){
+        $this.i += $i
+        Write-Debug $this.i
+    }
+}
 
 function Show-MessageBox {
     [CmdletBinding()]
@@ -169,10 +181,11 @@ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 xmlns:local="clr-namespace:;assembly="
 mc:Ignorable="d"
 Title="Minimal Example" Width="300" Height="150">
+<!--
     <Window.DataContext>
         <local:MainWindowViewModel />
     </Window.DataContext>
-
+-->
     <Grid>
         <StackPanel Margin="5">
             <TextBox x:Name="TextBox1" Text="{Binding TextBoxText}" MinHeight="30" />
@@ -180,17 +193,17 @@ Title="Minimal Example" Width="300" Height="150">
             <Button
                 x:Name="Button1"
                 Content="{Binding Button1Content}"
-                CommandParameter="Test Param"
+                CommandParameter="3"
                 Command="{Binding TestCommand}" />
         </StackPanel>
     </Grid>
 </Window>
-' -creplace 'clr-namespace:;assembly=', "`$0$([MainWindowViewModel].Assembly.FullName)" # BLACK MAGIC. Hard coding the FullName in the xaml does not work.
-
+' #-creplace 'clr-namespace:;assembly=', "`$0$([MainWindowViewModel].Assembly.FullName)"    # BLACK MAGIC. Hard coding the FullName in the xaml does not work.
+                                                                                            # If any edits, the console must be reset because the assembly stays loaded with the old viewmodel?
 $window = New-WPFWindow -Xaml $Xaml
 # DataContext can be loaded in Xaml
 # https://gist.github.com/nikonthethird/4e410ac3c04ea6633043a5cb7be1d717
-#$window.DataContext = [MainWindowViewModel]::new()
+$window.DataContext = [MainWindowViewModel]::new()
 
 $async = $window.Dispatcher.InvokeAsync({
         $window.ShowDialog() | Out-Null
