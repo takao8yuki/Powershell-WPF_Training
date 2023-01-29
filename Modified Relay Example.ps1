@@ -71,13 +71,12 @@ class RelayCommand : System.Windows.Input.ICommand {
         $methodParameterCount = $this.vm.GetType().GetMethod($this.methodName).GetParameters().Count
 
         if ($methodParameterCount -eq 1) {
-            $this.action = {$this.vm.($this.methodName)($commandParameter)}
+            $this.action = { $this.vm.($this.methodName)($commandParameter) }
         } elseif ($methodParameterCount -gt 1) {
             throw "$($this.methodName) has too many parameters. Refer to the viewmodel's internal properties instead."
-        }
-        else {
+        } else {
             #this looks stupid but it works. It allows passing the method by name similar to C# relay command examples
-            $this.action = {$this.vm.($this.methodName)()}
+            $this.action = { $this.vm.($this.methodName)() }
         }
 
         if ([string]::IsNullOrWhiteSpace(($CanExecute.ToString().Trim()))) {
@@ -142,15 +141,8 @@ class MainWindowViewModel : ViewModelBase {
     MainWindowViewModel() {
         $this.Init('TextBlockText')
 
-        $this.TestCommand = $this.NewCommand(
-            'TestMethod',
-            {}
-        )
-
-        $this.TestCommand2 = $this.NewCommand(
-            'TestTwo',
-            {}
-        )
+        $this.TestCommand = $this.NewCommand('TestMethod', {})
+        $this.TestCommand2 = $this.NewCommand('TestTwo', {})
     }
 
     [int]$i
@@ -233,6 +225,6 @@ $window = New-WPFWindow -Xaml $Xaml
 $window.DataContext = [MainWindowViewModel]::new()
 
 $async = $window.Dispatcher.InvokeAsync({
-    $null = $window.ShowDialog()
-})
+        $null = $window.ShowDialog()
+    })
 $null = $async.Wait()
