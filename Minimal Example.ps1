@@ -47,7 +47,7 @@ function Get-XamlNamedNodes {
 }
 
 # Powershell does not like classes with whitespace or comments in place of whitespace if copied and pasted in the console.
-class Relay : System.Windows.Input.ICommand {
+class RelayCommand : System.Windows.Input.ICommand {
     add_CanExecuteChanged([EventHandler] $value) {
         [System.Windows.Input.CommandManager]::add_RequerySuggested($value)
         Write-Debug $value
@@ -58,34 +58,33 @@ class Relay : System.Windows.Input.ICommand {
         Write-Debug $value
     }
 
-    [bool]CanExecute([object]$arg) {
-        if ($null -eq $this.canRunCommand) { return $true }
-        return $this.canRunCommand.Invoke($this.vm, $arg)
+    [bool]CanExecute([object]$commandParameter) {
+        if ($null -eq $this.canExecute) { return $true }
+        return $this.canExecute.Invoke($this.vm, $commandParameter)
     }
 
     [void]Execute([object]$commandParameter) {
         try {
-            $this.command.Invoke($this.vm, $commandParameter)
+            $this.execute.Invoke($this.vm, $commandParameter)
         } catch {
             Write-Error "Error handling Execute: $_"
         }
     }
 
     hidden [object]$vm
-    hidden [scriptblock]$command
-    hidden [scriptblock]$canRunCommand
+    hidden [scriptblock]$execute
+    hidden [scriptblock]$canExecute
 
-    Relay($ViewModel, $Execute, $CanExecute) {
+    RelayCommand($ViewModel, $Execute, $CanExecute) {
         $this.vm = $ViewModel
-        #$this.command = [scriptblock]::Create("param(`$this, `$commandParameter)`n&{$Execute}")
-        $this.command = $Execute
-        Write-Debug -Message $this.command.ToString()
+        $this.execute = [scriptblock]::Create("param(`$this, `$commandParameter)`n&{$Execute} `$this `$commandParameter")
+        Write-Debug -Message $this.execute.ToString()
 
         if ([string]::IsNullOrWhiteSpace(($CanExecute.ToString().Trim()))) {
-            $this.canRunCommand = $null
+            $this.canExecute = $null
         } else {
-            $this.canRunCommand = [scriptblock]::Create("param(`$this, `$arg)`n&{$CanExecute}")
-            Write-Debug -Message $this.canRunCommand.ToString()
+            $this.canExecute = [scriptblock]::Create("param(`$this, `$commandParameter)`n&{$CanExecute} `$this `$commandParameter")
+            Write-Debug -Message $this.canExecute.ToString()
         }
     }
 }
@@ -121,6 +120,13 @@ class ViewModelBase : ComponentModel.INotifyPropertyChanged {
         $this | Add-Member -MemberType ScriptMethod -Name "Set$propertyName" -Value $setter
         $this | Add-Member -MemberType ScriptMethod -Name "Get$PropertyName" -Value $getter
     }
+
+    [Windows.Input.ICommand] NewCommand (
+        [ScriptBlock]$Execute,
+        [ScriptBlock]$CanExecute
+    ) {
+        return [RelayCommand]::new($this, $Execute, $CanExecute)
+    }
 }
 
 
@@ -133,20 +139,17 @@ class MainWindowViewModel : ViewModelBase {
     MainWindowViewModel() {
         $this.Init('TextBlockText')
 
-        $this.TestCommand = [Relay]::new(
-            $this,
+        $this.TestCommand = $this.NewCommand(
             {
-                param($ViewModel, $CommandParameter)
-
-                $result = Show-MessageBox -Message "TextBoxText is '$($ViewModel.TextBoxText)'`nCommand Parameter is '$commandParameter'`nOk to set TextBoxText with TextBox data`nNo for command parameter data."
+                $result = Show-MessageBox -Message "TextBoxText is '$($this.TextBoxText)'`nCommand Parameter is '$commandParameter'`nOk to set TextBoxText with TextBox data`nNo for command parameter data."
 
                 if ($result -eq 'OK') {
-                    $value = $ViewModel.TextBoxText
+                    $value = $this.TextBoxText
                 } else {
                     $value = $CommandParameter
                 }
-                $ViewModel.TestMethod($value)
-                $ViewModel.SetTextBlockText($value)
+                $this.TestMethod($value)
+                $this.SetTextBlockText($value)
             },
             {}
         )
