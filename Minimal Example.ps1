@@ -65,19 +65,19 @@ class RelayCommand : System.Windows.Input.ICommand {
 
     [void]Execute([object]$commandParameter) {
         try {
-            $this.execute.Invoke($this.vm, $commandParameter)
+            $this.execute.Invoke($commandParameter)
         } catch {
             Write-Error "Error handling Execute: $_"
         }
     }
 
     hidden [object]$vm
-    hidden [scriptblock]$execute
+    hidden [System.Management.Automation.PSMethod]$execute
     hidden [scriptblock]$canExecute
 
     RelayCommand($ViewModel, $Execute, $CanExecute) {
         $this.vm = $ViewModel
-        $this.execute = [scriptblock]::Create("param(`$this, `$commandParameter)`n&{$Execute} `$this `$commandParameter")
+        $this.execute = $Execute
         Write-Debug -Message $this.execute.ToString()
 
         if ([string]::IsNullOrWhiteSpace(($CanExecute.ToString().Trim()))) {
@@ -122,7 +122,7 @@ class ViewModelBase : ComponentModel.INotifyPropertyChanged {
     }
 
     [Windows.Input.ICommand] NewCommand (
-        [ScriptBlock]$Execute,
+        [System.Management.Automation.PSMethod]$Execute,
         [ScriptBlock]$CanExecute
     ) {
         return [RelayCommand]::new($this, $Execute, $CanExecute)
@@ -140,25 +140,27 @@ class MainWindowViewModel : ViewModelBase {
         $this.Init('TextBlockText')
 
         $this.TestCommand = $this.NewCommand(
-            {
-                $result = Show-MessageBox -Message "TextBoxText is '$($this.TextBoxText)'`nCommand Parameter is '$commandParameter'`nOk to set TextBoxText with TextBox data`nNo for command parameter data."
-
-                if ($result -eq 'OK') {
-                    $value = $this.TextBoxText
-                } else {
-                    $value = $CommandParameter
-                }
-                $this.TestMethod($value)
-                $this.SetTextBlockText($value)
-            },
+            $this.TestMethodCommand,
             {}
         )
     }
 
     [int]$i
-    [void] TestMethod([int]$i){
+    [void] ExtractedMethod([int]$i){
         $this.i += $i
-        Write-Debug $this.i
+        $this.SetTextBlockText($this.i)
+        Write-Debug $i
+    }
+
+    [void] TestMethodCommand([int]$RelayCommandParameter){
+        $result = Show-MessageBox -Message "TextBoxText is $($this.TextBoxText)`nCommand Parameter is $RelayCommandParameter`nOK To add TextBoxText`nNo to add RelayCommandParameter"
+        if ($result -eq 'OK') {
+            $value = $this.TextBoxText
+        } else {
+            $value = $RelayCommandParameter
+        }
+
+        $this.ExtractedMethod($value)
     }
 }
 
