@@ -50,12 +50,12 @@ function Get-XamlNamedNodes {
 class RelayCommand : System.Windows.Input.ICommand {
     add_CanExecuteChanged([EventHandler] $value) {
         [System.Windows.Input.CommandManager]::add_RequerySuggested($value)
-        Write-Debug $value
+        Write-Debug "$value added"
     }
 
     remove_CanExecuteChanged([EventHandler] $value) {
         [System.Windows.Input.CommandManager]::remove_RequerySuggested($value)
-        Write-Debug $value
+        Write-Debug "$value removed"
     }
 
     [bool]CanExecute([object]$commandParameter) {
@@ -75,14 +75,21 @@ class RelayCommand : System.Windows.Input.ICommand {
     hidden [System.Management.Automation.PSMethod]$canExecute
 
     RelayCommand($Execute, $CanExecute) {
+        if ($null -eq $Execute) {throw 'RelayCommand.Execute is null. Supply a valid method.'}
+        $this.ValidateMethod($Execute)
         $this.execute = $Execute
         Write-Debug -Message $this.execute.ToString()
 
         $this.canExecute = $CanExecute
         if ($null -ne $this.canExecute) {
+            $this.ValidateMethod($CanExecute)
             Write-Debug -Message $this.canExecute.ToString()
         }
+    }
 
+    hidden [void]ValidateMethod([System.Management.Automation.PSMethod]$Method){
+        $paramCount = $Method.OverloadDefinitions[0].Split("(")[1].Split(",").count
+        if ($paramCount -ne 1) {throw "RelayCommand expected parameter count 1. Found PSMethod with count $paramCount"}
     }
 }
 
@@ -90,15 +97,15 @@ class RelayCommand : System.Windows.Input.ICommand {
 class ViewModelBase : ComponentModel.INotifyPropertyChanged {
     hidden [ComponentModel.PropertyChangedEventHandler] $_propertyChanged
 
-    [void] add_PropertyChanged([ComponentModel.PropertyChangedEventHandler] $value) {
+    [void]add_PropertyChanged([ComponentModel.PropertyChangedEventHandler] $value) {
         $this._propertyChanged = [Delegate]::Combine($this._propertyChanged, $value)
     }
 
-    [void] remove_PropertyChanged([ComponentModel.PropertyChangedEventHandler] $value) {
+    [void]remove_PropertyChanged([ComponentModel.PropertyChangedEventHandler] $value) {
         $this._propertyChanged = [Delegate]::Remove($this._propertyChanged, $value)
     }
 
-    [void] OnPropertyChanged([string] $propertyName) {
+    [void]OnPropertyChanged([string] $propertyName) {
         Write-Debug "Notified change of property '$propertyName'."
         #$this._propertyChanged.Invoke($this, $propertyName) # Why does this accepting a string also work?
         #$this._PropertyChanged.Invoke($this, (New-Object PropertyChangedEventArgs $propertyName))
@@ -118,7 +125,7 @@ class ViewModelBase : ComponentModel.INotifyPropertyChanged {
         $this | Add-Member -MemberType ScriptMethod -Name "Get$PropertyName" -Value $getter
     }
 
-    [Windows.Input.ICommand] NewCommand (
+    [Windows.Input.ICommand]NewCommand (
         [System.Management.Automation.PSMethod]$Execute,
         [System.Management.Automation.PSMethod]$CanExecute
     ) {
@@ -143,14 +150,16 @@ class MainWindowViewModel : ViewModelBase {
     }
 
     [int]$i
-    [void] ExtractedMethod([int]$i){
+    [void]ExtractedMethod([int]$i) {
         $this.i += $i
         $this.SetTextBlockText($this.i)
         Write-Debug $i
     }
 
-    [void] UpdateTextBlock([object]$RelayCommandParameter){
-        $result = Show-MessageBox -Message "TextBoxText is $($this.TextBoxText)`nCommand Parameter is $RelayCommandParameter`nOK To add TextBoxText`nNo to add RelayCommandParameter"
+    [void]UpdateTextBlock([object]$RelayCommandParameter) {
+        $message = "TextBoxText is $($this.TextBoxText)`nCommand Parameter is $RelayCommandParameter`nOK To add TextBoxText`nNo to add RelayCommandParameter"
+        $result = Show-MessageBox -Message $message
+
         if ($result -eq 'OK') {
             $value = $this.TextBoxText
         } else {
@@ -160,7 +169,7 @@ class MainWindowViewModel : ViewModelBase {
         $this.ExtractedMethod($value)
     }
 
-    [bool] CanUpdateTextBlock([object]$RelayCommandParameter){
+    [bool]CanUpdateTextBlock([object]$RelayCommandParameter) {
         return $true
     }
 }
@@ -205,7 +214,7 @@ Title="Minimal Example" Width="300" Height="150">
     </Grid>
 </Window>
 ' #-creplace 'clr-namespace:;assembly=', "`$0$([MainWindowViewModel].Assembly.FullName)"    # BLACK MAGIC. Hard coding the FullName in the xaml does not work.
-                                                                                            # If any edits, the console must be reset because the assembly stays loaded with the old viewmodel?
+# If any edits, the console must be reset because the assembly stays loaded with the old viewmodel?
 $window = New-WPFWindow -Xaml $Xaml
 # DataContext can be loaded in Xaml
 # https://gist.github.com/nikonthethird/4e410ac3c04ea6633043a5cb7be1d717
