@@ -71,12 +71,10 @@ class RelayCommand : System.Windows.Input.ICommand {
         }
     }
 
-    hidden [object]$vm
     hidden [System.Management.Automation.PSMethod]$execute
     hidden [System.Management.Automation.PSMethod]$canExecute
 
-    RelayCommand($ViewModel, $Execute, $CanExecute) {
-        $this.vm = $ViewModel
+    RelayCommand($Execute, $CanExecute) {
         $this.execute = $Execute
         Write-Debug -Message $this.execute.ToString()
 
@@ -124,7 +122,7 @@ class ViewModelBase : ComponentModel.INotifyPropertyChanged {
         [System.Management.Automation.PSMethod]$Execute,
         [System.Management.Automation.PSMethod]$CanExecute
     ) {
-        return [RelayCommand]::new($this, $Execute, $CanExecute)
+        return [RelayCommand]::new($Execute, $CanExecute)
     }
 }
 
@@ -162,8 +160,8 @@ class MainWindowViewModel : ViewModelBase {
         $this.ExtractedMethod($value)
     }
 
-    [void] CanUpdateTextBlock([object]$RelayCommandParameter){
-        $true
+    [bool] CanUpdateTextBlock([object]$RelayCommandParameter){
+        return $true
     }
 }
 
