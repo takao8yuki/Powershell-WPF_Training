@@ -75,7 +75,7 @@ class RelayCommand : System.Windows.Input.ICommand {
     hidden [System.Management.Automation.PSMethod]$canExecute
 
     RelayCommand($Execute, $CanExecute) {
-        if ($null -eq $Execute) {throw 'RelayCommand.Execute is null. Supply a valid method.'}
+        if ($null -eq $Execute) { throw 'RelayCommand.Execute is null. Supply a valid method.' }
         $this.ValidateMethod($Execute)
         $this.execute = $Execute
         Write-Debug -Message $this.execute.ToString()
@@ -87,9 +87,9 @@ class RelayCommand : System.Windows.Input.ICommand {
         }
     }
 
-    hidden [void]ValidateMethod([System.Management.Automation.PSMethod]$Method){
-        $paramCount = $Method.OverloadDefinitions[0].Split("(")[1].Split(",").count
-        if ($paramCount -ne 1) {throw "RelayCommand expected parameter count 1. Found PSMethod with count $paramCount"}
+    hidden [void]ValidateMethod([System.Management.Automation.PSMethod]$Method) {
+        $paramCount = $Method.OverloadDefinitions[0].Split("(")[1].Split(",").Count
+        if ($paramCount -ne 1) { throw "RelayCommand expected parameter count 1. Found PSMethod with count $paramCount" }
     }
 }
 
@@ -125,7 +125,7 @@ class ViewModelBase : ComponentModel.INotifyPropertyChanged {
         $this | Add-Member -MemberType ScriptMethod -Name "Get$PropertyName" -Value $getter
     }
 
-    [Windows.Input.ICommand]NewCommand (
+    [Windows.Input.ICommand]NewCommand(
         [System.Management.Automation.PSMethod]$Execute,
         [System.Management.Automation.PSMethod]$CanExecute
     ) {
@@ -220,7 +220,7 @@ $window = New-WPFWindow -Xaml $Xaml
 # https://gist.github.com/nikonthethird/4e410ac3c04ea6633043a5cb7be1d717
 $window.DataContext = [MainWindowViewModel]::new()
 
-$async = $window.Dispatcher.InvokeAsync({
-        $window.ShowDialog() | Out-Null
-    })
-$async.Wait() | Out-Null
+$async = $window.Dispatcher.InvokeAsync(
+    {$null = $window.ShowDialog() }
+)
+$null = $async.Wait()
