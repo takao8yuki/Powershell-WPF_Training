@@ -60,7 +60,7 @@ class RelayCommand : System.Windows.Input.ICommand {
 
     [bool]CanExecute([object]$commandParameter) {
         if ($null -eq $this.canExecute) { return $true }
-        return $this.canExecute.Invoke($this.vm, $commandParameter)
+        return $this.canExecute.Invoke($commandParameter)
     }
 
     [void]Execute([object]$commandParameter) {
@@ -73,19 +73,18 @@ class RelayCommand : System.Windows.Input.ICommand {
 
     hidden [object]$vm
     hidden [System.Management.Automation.PSMethod]$execute
-    hidden [scriptblock]$canExecute
+    hidden [System.Management.Automation.PSMethod]$canExecute
 
     RelayCommand($ViewModel, $Execute, $CanExecute) {
         $this.vm = $ViewModel
         $this.execute = $Execute
         Write-Debug -Message $this.execute.ToString()
 
-        if ([string]::IsNullOrWhiteSpace(($CanExecute.ToString().Trim()))) {
-            $this.canExecute = $null
-        } else {
-            $this.canExecute = [scriptblock]::Create("param(`$this, `$commandParameter)`n&{$CanExecute} `$this `$commandParameter")
+        $this.canExecute = $CanExecute
+        if ($null -ne $this.canExecute) {
             Write-Debug -Message $this.canExecute.ToString()
         }
+
     }
 }
 
@@ -123,7 +122,7 @@ class ViewModelBase : ComponentModel.INotifyPropertyChanged {
 
     [Windows.Input.ICommand] NewCommand (
         [System.Management.Automation.PSMethod]$Execute,
-        [ScriptBlock]$CanExecute
+        [System.Management.Automation.PSMethod]$CanExecute
     ) {
         return [RelayCommand]::new($this, $Execute, $CanExecute)
     }
@@ -140,8 +139,8 @@ class MainWindowViewModel : ViewModelBase {
         $this.Init('TextBlockText')
 
         $this.TestCommand = $this.NewCommand(
-            $this.TestMethodCommand,
-            {}
+            $this.UpdateTextBlock,
+            $this.CanUpdateTextBlock
         )
     }
 
@@ -152,7 +151,7 @@ class MainWindowViewModel : ViewModelBase {
         Write-Debug $i
     }
 
-    [void] TestMethodCommand([int]$RelayCommandParameter){
+    [void] UpdateTextBlock([object]$RelayCommandParameter){
         $result = Show-MessageBox -Message "TextBoxText is $($this.TextBoxText)`nCommand Parameter is $RelayCommandParameter`nOK To add TextBoxText`nNo to add RelayCommandParameter"
         if ($result -eq 'OK') {
             $value = $this.TextBoxText
@@ -161,6 +160,10 @@ class MainWindowViewModel : ViewModelBase {
         }
 
         $this.ExtractedMethod($value)
+    }
+
+    [void] CanUpdateTextBlock([object]$RelayCommandParameter){
+        $true
     }
 }
 
