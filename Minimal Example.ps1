@@ -80,6 +80,14 @@ class RelayCommand : System.Windows.Input.ICommand {
     hidden [int]$_canExecuteCount
 
     RelayCommand($Execute, $CanExecute) {
+        $this.Init($Execute, $CanExecute)
+    }
+
+    RelayCommand($Execute) {
+        $this.Init($Execute, $null)
+    }
+
+    hidden Init($Execute, $CanExecute){
         if ($null -eq $Execute) { throw 'RelayCommand.Execute is null. Supply a valid method.' }
         $this._executeCount = $this.GetParameterCount($Execute)
         $this._execute = $Execute
@@ -142,6 +150,12 @@ class ViewModelBase : ComponentModel.INotifyPropertyChanged {
         [System.Management.Automation.PSMethod]$CanExecute
     ) {
         return [RelayCommand]::new($Execute, $CanExecute)
+    }
+
+    [Windows.Input.ICommand]NewCommand(
+        [System.Management.Automation.PSMethod]$Execute
+    ) {
+        return [RelayCommand]::new($Execute)
     }
 }
 
