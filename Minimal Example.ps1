@@ -59,37 +59,49 @@ class RelayCommand : System.Windows.Input.ICommand {
     }
 
     [bool]CanExecute([object]$commandParameter) {
-        if ($null -eq $this.canExecute) { return $true }
-        return $this.canExecute.Invoke($commandParameter)
+        if ($null -eq $this._canExecute) { return $true }
+
+        if ($this._canExecuteCount -eq 1) { return $this._canExecute.Invoke($commandParameter) }
+        else { return $this._canExecute.Invoke() }
     }
 
     [void]Execute([object]$commandParameter) {
         try {
-            $this.execute.Invoke($commandParameter)
+            if ($this._executeCount -eq 1) { $this._execute.Invoke($commandParameter) }
+            else { $this._execute.Invoke() }
         } catch {
             Write-Error "Error handling Execute: $_"
         }
     }
 
-    hidden [System.Management.Automation.PSMethod]$execute
-    hidden [System.Management.Automation.PSMethod]$canExecute
+    hidden [System.Management.Automation.PSMethod]$_execute
+    hidden [int]$_executeCount
+    hidden [System.Management.Automation.PSMethod]$_canExecute
+    hidden [int]$_canExecuteCount
 
     RelayCommand($Execute, $CanExecute) {
         if ($null -eq $Execute) { throw 'RelayCommand.Execute is null. Supply a valid method.' }
-        $this.ValidateMethod($Execute)
-        $this.execute = $Execute
-        Write-Debug -Message $this.execute.ToString()
+        $this._executeCount = $this.GetParameterCount($Execute)
+        $this._execute = $Execute
+        Write-Debug -Message $this._execute.ToString()
 
-        $this.canExecute = $CanExecute
-        if ($null -ne $this.canExecute) {
-            $this.ValidateMethod($CanExecute)
-            Write-Debug -Message $this.canExecute.ToString()
+        $this._canExecute = $CanExecute
+        if ($null -ne $this._canExecute) {
+            $this._canExecuteCount = $this.GetParameterCount($CanExecute)
+            Write-Debug -Message $this._canExecute.ToString()
         }
     }
 
-    hidden [void]ValidateMethod([System.Management.Automation.PSMethod]$Method) {
-        $paramCount = $Method.OverloadDefinitions[0].Split("(")[1].Split(",").Count
-        if ($paramCount -ne 1) { throw "RelayCommand expected parameter count 1. Found PSMethod with count $paramCount" }
+    hidden [int]GetParameterCount([System.Management.Automation.PSMethod]$Method) {
+        # Alternatively pass the viewmodel into RelayCommand
+        # $ViewModel.GetType().GetMethod($PSMethod.Name).GetParameters().Count
+        $param = $Method.OverloadDefinitions[0].Split("(").Split(")")[1]
+        if ([string]::IsNullOrWhiteSpace($param)){return 0}
+
+        $paramCount = $param.Split(",").Count
+        Write-Debug "$($Method.OverloadDefinitions[0].Split("(").Split(")")[1].Split(","))"
+        if ($paramCount -gt 1) { throw "RelayCommand expected parameter count 0 or 1. Found PSMethod with count $paramCount" }
+        return $paramCount
     }
 }
 
@@ -169,7 +181,7 @@ class MainWindowViewModel : ViewModelBase {
         $this.ExtractedMethod($value)
     }
 
-    [bool]CanUpdateTextBlock([object]$RelayCommandParameter) {
+    [bool]CanUpdateTextBlock() {
         return $true
     }
 }
@@ -213,14 +225,16 @@ Title="Minimal Example" Width="300" Height="150">
         </StackPanel>
     </Grid>
 </Window>
-' #-creplace 'clr-namespace:;assembly=', "`$0$([MainWindowViewModel].Assembly.FullName)"    # BLACK MAGIC. Hard coding the FullName in the xaml does not work.
+' #-creplace 'clr-namespace:;assembly=', "`$0$([MainWindowViewModel].Assembly.FullName)"
+# BLACK MAGIC. Hard coding the FullName in the xaml does not work.
 # If any edits, the console must be reset because the assembly stays loaded with the old viewmodel?
-$window = New-WPFWindow -Xaml $Xaml
 # DataContext can be loaded in Xaml
 # https://gist.github.com/nikonthethird/4e410ac3c04ea6633043a5cb7be1d717
+
+$window = New-WPFWindow -Xaml $Xaml
 $window.DataContext = [MainWindowViewModel]::new()
 
 $async = $window.Dispatcher.InvokeAsync(
-    {$null = $window.ShowDialog() }
+    { $null = $window.ShowDialog() }
 )
 $null = $async.Wait()
