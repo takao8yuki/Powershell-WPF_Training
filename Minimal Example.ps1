@@ -87,7 +87,7 @@ class RelayCommand : System.Windows.Input.ICommand {
         $this.Init($Execute, $null)
     }
 
-    hidden Init($Execute, $CanExecute){
+    hidden Init($Execute, $CanExecute) {
         if ($null -eq $Execute) { throw 'RelayCommand.Execute is null. Supply a valid method.' }
         $this._executeCount = $this.GetParameterCount($Execute)
         $this._execute = $Execute
@@ -104,7 +104,7 @@ class RelayCommand : System.Windows.Input.ICommand {
         # Alternatively pass the viewmodel into RelayCommand
         # $ViewModel.GetType().GetMethod($PSMethod.Name).GetParameters().Count
         $param = $Method.OverloadDefinitions[0].Split("(").Split(")")[1]
-        if ([string]::IsNullOrWhiteSpace($param)){return 0}
+        if ([string]::IsNullOrWhiteSpace($param)) { return 0 }
 
         $paramCount = $param.Split(",").Count
         Write-Debug "$($Method.OverloadDefinitions[0].Split("(").Split(")")[1].Split(","))"
@@ -183,7 +183,7 @@ class MainWindowViewModel : ViewModelBase {
     }
 
     [void]UpdateTextBlock([object]$RelayCommandParameter) {
-        $message = "TextBoxText is $($this.TextBoxText)`nCommand Parameter is $RelayCommandParameter`nOK To add TextBoxText`nNo to add RelayCommandParameter"
+        $message = "TextBoxText is $($this.TextBoxText)`nCommand Parameter is $RelayCommandParameter`nOK To add TextBoxText`nCancel to add RelayCommandParameter"
         $result = Show-MessageBox -Message $message
 
         if ($result -eq 'OK') {
