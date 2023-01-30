@@ -198,6 +198,26 @@ class MainWindowViewModel : ViewModelBase {
     [bool]CanUpdateTextBlock() {
         return $true
     }
+
+    [void]BackgroundThreadCommand(){
+        [System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke({
+            $ps =[powershell]::Create()
+            $newRunspace = [RunspaceFactory]::CreateRunspace()
+            $newRunspace.Open()
+            $syncHash = [hashtable]::Synchronized(@{
+                This = $this
+            })
+            $newRunspace.SessionStateProxy.SetVariable('syncHash', $syncHash)
+            $ps.Runspace = $newRunspace
+            $sb = {
+                param($hash)
+                Start-Sleep -Seconds 5
+                $hash.This.SetTextBlockText(5)
+            }
+            $ps.AddScript($sb).AddParameter('hash', $syncHash)
+            $ps.BeginInvoke()
+        })
+    }
 }
 
 function Show-MessageBox {
