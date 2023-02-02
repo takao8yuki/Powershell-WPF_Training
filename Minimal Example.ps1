@@ -34,20 +34,21 @@ function New-WPFWindow {
 
 }
 
-#Not needed
+# Not used. Not needed since XamlReader is the dedicated reader vs XmlNodeReader.
 function Get-CleanXML {
     Param([string]$RawInput)
     $RawInput -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace 'x:Class=".*?"', '' -replace 'd:DesignHeight="\d*?"', '' -replace 'd:DesignWidth="\d*?"', ''
 }
 
-#Only used if you need to use the code behind. For example, adding Button1.add_MouseLeftButtonDown()
+# Not used. Used only to find named nodes in the Xaml.
 function Get-XamlNamedNodes {
     Param([xml]$Xml)
     $Xml.SelectNodes("//*[@*[contains(translate(name(.),'n','N'),'Name')]]")
 }
 
 # Powershell does not like classes with whitespace or comments in place of whitespace if copied and pasted in the console.
-class RelayCommand : System.Windows.Input.ICommand {
+# Since the interface System.Windows.Input.ICommand methods Execute and CanExecute require parameters, we will keep it that way.
+class RelayCommandBase : System.Windows.Input.ICommand {
     add_CanExecuteChanged([EventHandler] $value) {
         [System.Windows.Input.CommandManager]::add_RequerySuggested($value)
         Write-Debug "$value added"
@@ -58,9 +59,56 @@ class RelayCommand : System.Windows.Input.ICommand {
         Write-Debug "$value removed"
     }
 
+    # Invoke does not take a $null parameter so we wrap $null in an array for all cases
+    # Providing the original method with $null will work, invoking with $null will not because invoke() provides arguments not parameters.
+    # Arguments cannot be explicitly $null since they're optional
+    # Maybe create delegate instead
+    [bool]CanExecute([object]$commandParameter) {
+        Write-Debug "RelayCommandBase.CanExecute ran"
+        if ($null -eq $this._canExecute) { return $true }
+        return $this._canExecute.Invoke(@($commandParameter))
+    }
+
+    [void]Execute([object]$commandParameter) {
+        try {
+            $this._execute.Invoke(@($commandParameter))
+        } catch {
+            Write-Error "Error handling RelayCommandBase.Execute: $_"
+        }
+    }
+
+    hidden [System.Management.Automation.PSMethod]$_execute
+    hidden [System.Management.Automation.PSMethod]$_canExecute
+
+    RelayCommandBase($Execute, $CanExecute) {
+        $this.Init($Execute, $CanExecute)
+    }
+
+    RelayCommandBase($Execute) {
+        $this.Init($Execute, $null)
+    }
+
+    RelayCommandBase() {}
+
+    hidden Init($Execute, $CanExecute) {
+        if ($null -eq $Execute) { throw 'RelayCommandBase.Execute is null. Supply a valid method.' }
+        $this._execute = $Execute
+        Write-Debug -Message $this._execute.ToString()
+
+        $this._canExecute = $CanExecute
+        if ($null -ne $this._canExecute) {
+            Write-Debug -Message $this._canExecute.ToString()
+        }
+    }
+}
+
+
+#Support for parameterless PSMethods
+class RelayCommand : RelayCommandBase {
     [bool]CanExecute([object]$commandParameter) {
         if ($null -eq $this._canExecute) { return $true }
-
+        # CanExecute is inefficient. Probably bind IsEnabled to ViewModel.
+        Write-Debug "RelayCommand.CanExecute ran"
         if ($this._canExecuteCount -eq 1) { return $this._canExecute.Invoke($commandParameter) }
         else { return $this._canExecute.Invoke() }
     }
@@ -70,15 +118,14 @@ class RelayCommand : System.Windows.Input.ICommand {
             if ($this._executeCount -eq 1) { $this._execute.Invoke($commandParameter) }
             else { $this._execute.Invoke() }
         } catch {
-            Write-Error "Error handling Execute: $_"
+            Write-Error "Error handling RelayCommand.Execute: $_"
         }
     }
 
-    hidden [System.Management.Automation.PSMethod]$_execute
     hidden [int]$_executeCount
-    hidden [System.Management.Automation.PSMethod]$_canExecute
     hidden [int]$_canExecuteCount
 
+    #RelayCommand($Execute, $CanExecute) : base($Execute, $CanExecute) { # use default parameterless constructor to avoid calls to Init in this and the base class
     RelayCommand($Execute, $CanExecute) {
         $this.Init($Execute, $CanExecute)
     }
@@ -107,7 +154,7 @@ class RelayCommand : System.Windows.Input.ICommand {
         if ([string]::IsNullOrWhiteSpace($param)) { return 0 }
 
         $paramCount = $param.Split(",").Count
-        Write-Debug "$($Method.OverloadDefinitions[0].Split("(").Split(")")[1].Split(","))"
+        Write-Debug "$($Method.OverloadDefinitions[0].Split("(").Split(")")[1].Split(",")) relaycommand param count"
         if ($paramCount -gt 1) { throw "RelayCommand expected parameter count 0 or 1. Found PSMethod with count $paramCount" }
         return $paramCount
     }
@@ -149,13 +196,16 @@ class ViewModelBase : ComponentModel.INotifyPropertyChanged {
         [System.Management.Automation.PSMethod]$Execute,
         [System.Management.Automation.PSMethod]$CanExecute
     ) {
-        return [RelayCommand]::new($Execute, $CanExecute)
+        # still need to know the parameter and return types beforehand
+        #$delegateExecute = $this.GetType().GetMethod($Execute.Name).CreateDelegate([action[object]], $this)
+        #$delegateCanExecute = $this.GetType().GetMethod($CanExecute.Name).CreateDelegate([func[object,bool]], $this)
+        return [RelayCommandBase]::new($Execute, $CanExecute)
     }
 
     [Windows.Input.ICommand]NewCommand(
         [System.Management.Automation.PSMethod]$Execute
     ) {
-        return [RelayCommand]::new($Execute)
+        return [RelayCommandBase]::new($Execute)
     }
 }
 
@@ -195,28 +245,28 @@ class MainWindowViewModel : ViewModelBase {
         $this.ExtractedMethod($value)
     }
 
-    [bool]CanUpdateTextBlock() {
-        return $true
+    [bool]CanUpdateTextBlock([object]$RelayCommandParameter) {
+        return (-not [string]::IsNullOrWhiteSpace($this.TextBoxText))
     }
 
-    [void]BackgroundThreadCommand(){
+    [void]BackgroundThreadCommand() {
         [System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke({
-            $ps =[powershell]::Create()
-            $newRunspace = [RunspaceFactory]::CreateRunspace()
-            $newRunspace.Open()
-            $syncHash = [hashtable]::Synchronized(@{
-                This = $this
+                $ps = [powershell]::Create()
+                $newRunspace = [RunspaceFactory]::CreateRunspace()
+                $newRunspace.Open()
+                $syncHash = [hashtable]::Synchronized(@{
+                        This = $this
+                    })
+                $newRunspace.SessionStateProxy.SetVariable('syncHash', $syncHash)
+                $ps.Runspace = $newRunspace
+                $sb = {
+                    param($hash)
+                    Start-Sleep -Seconds 5
+                    $hash.This.SetTextBlockText(5)
+                }
+                $ps.AddScript($sb).AddParameter('hash', $syncHash)
+                $ps.BeginInvoke()
             })
-            $newRunspace.SessionStateProxy.SetVariable('syncHash', $syncHash)
-            $ps.Runspace = $newRunspace
-            $sb = {
-                param($hash)
-                Start-Sleep -Seconds 5
-                $hash.This.SetTextBlockText(5)
-            }
-            $ps.AddScript($sb).AddParameter('hash', $syncHash)
-            $ps.BeginInvoke()
-        })
     }
 }
 
@@ -249,19 +299,19 @@ Title="Minimal Example" Width="300" Height="150">
 -->
     <Grid>
         <StackPanel Margin="5">
-            <TextBox x:Name="TextBox1" Text="{Binding TextBoxText}" MinHeight="30" />
+            <!-- TextBox bound property does not update until textbox focus is lost. Use UpdateSourceTrigger=PropertyChanged to update as typed -->
+            <TextBox x:Name="TextBox1" Text="{Binding TextBoxText, UpdateSourceTrigger=PropertyChanged}" MinHeight="30" />
             <TextBlock x:Name="TextBlock1" Text="{Binding TextBlockText}" MinHeight="30" />
             <Button
                 x:Name="Button1"
                 Content="{Binding Button1Content}"
-                CommandParameter="3"
                 Command="{Binding TestCommand}" />
         </StackPanel>
     </Grid>
 </Window>
 ' #-creplace 'clr-namespace:;assembly=', "`$0$([MainWindowViewModel].Assembly.FullName)"
-# BLACK MAGIC. Hard coding the FullName in the xaml does not work.
-# If any edits, the console must be reset because the assembly stays loaded with the old viewmodel?
+# BLACK MAGIC. Hard coding the FullName in the xaml does not work even after loading the ps1 file.
+# If any edits, the console must be reset because the class/assembly stays loaded with the old viewmodel
 # DataContext can be loaded in Xaml
 # https://gist.github.com/nikonthethird/4e410ac3c04ea6633043a5cb7be1d717
 
