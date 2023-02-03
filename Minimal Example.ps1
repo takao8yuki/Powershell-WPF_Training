@@ -311,7 +311,8 @@ class ViewModelBase : ComponentModel.INotifyPropertyChanged {
 class MainWindowViewModel : ViewModelBase {
     [string]$TextBoxText
     [string]$TextBlockText
-    [string]$Button1Content = 'test button'
+    [string]$NoParameterContent = 'No Parameter'
+    [string]$ParameterContent = 'Parameter'
     [System.Windows.Input.ICommand]$TestCommand
 
     MainWindowViewModel() {
@@ -331,11 +332,8 @@ class MainWindowViewModel : ViewModelBase {
     }
 
     [void]UpdateTextBlock([object]$RelayCommandParameter) {
-        if ($null -eq $RelayCommandParameter) {
-            $testParameter = 1
-        } else {
-            $testParameter = $RelayCommandParameter
-        }
+        $testParameter = 1
+
         $message = "TextBoxText is '$($this.TextBoxText)'
 Command Parameter is '$RelayCommandParameter'
 If Command Parameter is null then $testParameter is used
@@ -343,6 +341,10 @@ OK To add TextBoxText
 Cancel to add Command Parameter"
 
         $result = Show-MessageBox -Message $message
+
+        if ($null -ne $RelayCommandParameter) {
+            $testParameter = $RelayCommandParameter
+        }
 
         if ($result -eq 'OK') {
             $value = $this.TextBoxText
@@ -416,9 +418,12 @@ Title="Minimal Example" Width="300" Height="150">
             <TextBox x:Name="TextBox1" Text="{Binding TextBoxText, UpdateSourceTrigger=PropertyChanged}" MinHeight="30" />
             <TextBlock x:Name="TextBlock1" Text="{Binding TextBlockText}" MinHeight="30" />
             <Button
-                x:Name="Button1"
-                Content="{Binding Button1Content}"
+                Content="{Binding NoParameterContent}"
                 Command="{Binding TestCommand}" />
+            <Button
+                Content="{Binding ParameterContent}"
+                Command="{Binding TestCommand}"
+                CommandParameter="3" />
         </StackPanel>
     </Grid>
 </Window>
