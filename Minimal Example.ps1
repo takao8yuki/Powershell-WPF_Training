@@ -37,7 +37,7 @@ function New-WPFWindow {
 # Not used. Not needed since XamlReader is the dedicated reader vs XmlNodeReader.
 function Get-CleanXML {
     Param([string]$RawInput)
-    $RawInput -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace 'x:Class=".*?"', '' -replace 'd:DesignHeight="\d*?"', '' -replace 'd:DesignWidth="\d*?"', ''
+    $RawInput -replace 'mc:Ignorable="d"', '' -replace 'x:N', 'N' -replace 'x:Class=".*?"', '' -replace 'd:DesignHeight="\d*?"', '' -replace 'd:DesignWidth="\d*?"', ''
 }
 
 # Not used. Used only to find named nodes in the Xaml.
@@ -64,7 +64,7 @@ class RelayCommandBase : System.Windows.Input.ICommand {
     # Arguments cannot be explicitly $null since they're optional
     # Maybe create delegate instead
     [bool]CanExecute([object]$commandParameter) {
-        Write-Debug "RelayCommandBase.CanExecute ran"
+        Write-Debug 'RelayCommandBase.CanExecute ran'
         if ($null -eq $this._canExecute) { return $true }
         return $this._canExecute.Invoke(@($commandParameter))
     }
@@ -103,12 +103,13 @@ class RelayCommandBase : System.Windows.Input.ICommand {
 }
 
 
-#Support for parameterless PSMethods
+# Support for parameterless PSMethods
+# Doesn't seem clean
 class RelayCommand : RelayCommandBase {
     [bool]CanExecute([object]$commandParameter) {
         if ($null -eq $this._canExecute) { return $true }
         # CanExecute is inefficient. Probably bind IsEnabled to ViewModel.
-        Write-Debug "RelayCommand.CanExecute ran"
+        Write-Debug 'RelayCommand.CanExecute ran'
         if ($this._canExecuteCount -eq 1) { return $this._canExecute.Invoke($commandParameter) }
         else { return $this._canExecute.Invoke() }
     }
@@ -150,13 +151,65 @@ class RelayCommand : RelayCommandBase {
     hidden [int]GetParameterCount([System.Management.Automation.PSMethod]$Method) {
         # Alternatively pass the viewmodel into RelayCommand
         # $ViewModel.GetType().GetMethod($PSMethod.Name).GetParameters().Count
-        $param = $Method.OverloadDefinitions[0].Split("(").Split(")")[1]
+        $param = $Method.OverloadDefinitions[0].Split('(').Split(')')[1]
         if ([string]::IsNullOrWhiteSpace($param)) { return 0 }
 
-        $paramCount = $param.Split(",").Count
-        Write-Debug "$($Method.OverloadDefinitions[0].Split("(").Split(")")[1].Split(",")) relaycommand param count"
+        $paramCount = $param.Split(',').Count
+        Write-Debug "$($Method.OverloadDefinitions[0].Split('(').Split(')')[1].Split(',')) relaycommand param count"
         if ($paramCount -gt 1) { throw "RelayCommand expected parameter count 0 or 1. Found PSMethod with count $paramCount" }
         return $paramCount
+    }
+}
+
+
+class DelegateCommand : System.Windows.Input.ICommand {
+    add_CanExecuteChanged([EventHandler] $value) {
+        [System.Windows.Input.CommandManager]::add_RequerySuggested($value)
+        Write-Debug "$value added"
+    }
+
+    remove_CanExecuteChanged([EventHandler] $value) {
+        [System.Windows.Input.CommandManager]::remove_RequerySuggested($value)
+        Write-Debug "$value removed"
+    }
+
+    # Delegate takes $null unlike invoking the PSMethod where to takes arguments
+    [bool]CanExecute([object]$commandParameter) {
+        Write-Debug 'DelegateCommand.CanExecute ran'
+        if ($null -eq $this._canExecute) { return $true }
+        return $this._canExecute.Invoke($commandParameter)
+    }
+
+    [void]Execute([object]$commandParameter) {
+        try {
+            $this._execute.Invoke($commandParameter)
+        } catch {
+            Write-Error "Error handling DelegateCommand.Execute: $_"
+        }
+    }
+
+    hidden [System.Delegate]$_execute
+    hidden [System.Delegate]$_canExecute
+
+    DelegateCommand($Execute, $CanExecute) {
+        $this.Init($Execute, $CanExecute)
+    }
+
+    DelegateCommand($Execute) {
+        $this.Init($Execute, $null)
+    }
+
+    DelegateCommand() {}
+
+    hidden Init($Execute, $CanExecute) {
+        if ($null -eq $Execute) { throw 'DelegateCommand.Execute is null. Supply a valid method.' }
+        $this._execute = $Execute
+        Write-Debug -Message $this._execute.ToString()
+
+        $this._canExecute = $CanExecute
+        if ($null -ne $this._canExecute) {
+            Write-Debug -Message $this._canExecute.ToString()
+        }
     }
 }
 
@@ -196,9 +249,6 @@ class ViewModelBase : ComponentModel.INotifyPropertyChanged {
         [System.Management.Automation.PSMethod]$Execute,
         [System.Management.Automation.PSMethod]$CanExecute
     ) {
-        # still need to know the parameter and return types beforehand
-        #$delegateExecute = $this.GetType().GetMethod($Execute.Name).CreateDelegate([action[object]], $this)
-        #$delegateCanExecute = $this.GetType().GetMethod($CanExecute.Name).CreateDelegate([func[object,bool]], $this)
         return [RelayCommandBase]::new($Execute, $CanExecute)
     }
 
@@ -207,6 +257,54 @@ class ViewModelBase : ComponentModel.INotifyPropertyChanged {
     ) {
         return [RelayCommandBase]::new($Execute)
     }
+
+    # Experimental
+    [Windows.Input.ICommand]NewDelegate(
+        [System.Management.Automation.PSMethod]$Execute,
+        [System.Management.Automation.PSMethod]$CanExecute
+    ) {
+        #$delegateExecute = $this.GetType().GetMethod($Execute.Name).CreateDelegate([action[object]], $this)
+        #$delegateCanExecute = $this.GetType().GetMethod($CanExecute.Name).CreateDelegate([func[object,bool]], $this)
+        $e = $this.BuildDelegate($Execute)
+        $ce = $this.BuildDelegate($CanExecute)
+        return [DelegateCommand]::new($e, $ce)
+    }
+
+    # Experimental
+    hidden [System.Delegate]BuildDelegate([System.Management.Automation.PSMethod]$Method) {
+        $typeMethod = $this.GetType().GetMethod($Method.Name)
+        $returnType = $typeMethod.ReturnType.Name
+        if ($returnType -eq 'Void') {
+            $delegateString = 'Action'
+            $delegateReturnParam = ']'
+        } else {
+            $delegateString = 'Func'
+            $delegateReturnParam = ",$returnType]"
+        }
+
+        $delegateParameters = $this.GetType().GetMethod($typeMethod.Name).GetParameters()
+        if ($delegateParameters.Count -ge 1) {
+            $delegateString += '['
+        }
+
+        $paramString = ''
+        foreach ($p in $delegateParameters) {
+            $paramString += "$($p.ParameterType.Name),"
+        }
+
+        if ($paramString.Length -gt 0) {
+            $paramString = $paramString.Substring(0, $paramString.Length - 1)
+        } else {
+            $delegateReturnParam = "[$returnType]"
+            if ($returnType -eq 'Void') { $delegateReturnParam = '' }
+        }
+
+        $paramString += "$delegateReturnParam"
+        $delegateString += "$paramString"
+        Write-Debug "$delegateString"
+        return $typeMethod.CreateDelegate(($delegateString -as [type]), $this)
+    }
+
 }
 
 
@@ -219,7 +317,7 @@ class MainWindowViewModel : ViewModelBase {
     MainWindowViewModel() {
         $this.Init('TextBlockText')
 
-        $this.TestCommand = $this.NewCommand(
+        $this.TestCommand = $this.NewDelegate(
             $this.UpdateTextBlock,
             $this.CanUpdateTextBlock
         )
@@ -233,13 +331,23 @@ class MainWindowViewModel : ViewModelBase {
     }
 
     [void]UpdateTextBlock([object]$RelayCommandParameter) {
-        $message = "TextBoxText is $($this.TextBoxText)`nCommand Parameter is $RelayCommandParameter`nOK To add TextBoxText`nCancel to add RelayCommandParameter"
+        if ($null -eq $RelayCommandParameter) {
+            $testParameter = 1
+        } else {
+            $testParameter = $RelayCommandParameter
+        }
+        $message = "TextBoxText is '$($this.TextBoxText)'
+Command Parameter is '$RelayCommandParameter'
+If Command Parameter is null then $testParameter is used
+OK To add TextBoxText
+Cancel to add Command Parameter"
+
         $result = Show-MessageBox -Message $message
 
         if ($result -eq 'OK') {
             $value = $this.TextBoxText
         } else {
-            $value = $RelayCommandParameter
+            $value = $testParameter
         }
 
         $this.ExtractedMethod($value)
@@ -249,14 +357,18 @@ class MainWindowViewModel : ViewModelBase {
         return (-not [string]::IsNullOrWhiteSpace($this.TextBoxText))
     }
 
+    # Todo - move to ViewModelBase
     [void]BackgroundThreadCommand() {
-        [System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke({
+        [System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke(
+            {
                 $ps = [powershell]::Create()
                 $newRunspace = [RunspaceFactory]::CreateRunspace()
                 $newRunspace.Open()
-                $syncHash = [hashtable]::Synchronized(@{
+                $syncHash = [hashtable]::Synchronized(
+                    @{
                         This = $this
-                    })
+                    }
+                )
                 $newRunspace.SessionStateProxy.SetVariable('syncHash', $syncHash)
                 $ps.Runspace = $newRunspace
                 $sb = {
@@ -266,7 +378,8 @@ class MainWindowViewModel : ViewModelBase {
                 }
                 $ps.AddScript($sb).AddParameter('hash', $syncHash)
                 $ps.BeginInvoke()
-            })
+            }
+        )
     }
 }
 
@@ -275,8 +388,8 @@ function Show-MessageBox {
     param(
         [Parameter(Mandatory)]
         [string]$Message,
-        [string]$Title = "Test",
-        [string]$Button = "OkCancel",
+        [string]$Title = 'Test',
+        [string]$Button = 'OkCancel',
         [string]$Icon = 'Information'
     )
     [System.Windows.MessageBox]::Show("$Message", $Title, $Button, $Icon)
