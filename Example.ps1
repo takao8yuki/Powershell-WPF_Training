@@ -311,24 +311,42 @@ class ViewModelBase : ComponentModel.INotifyPropertyChanged {
 
 class MainWindowViewModel : ViewModelBase {
     [string]$TextBoxText
-    [string]$TextBlockText
+    [string]$_TextBlockText
     [string]$NoParameterContent = 'No Parameter'
     [string]$ParameterContent = 'Parameter'
     [System.Windows.Input.ICommand]$TestCommand
 
-    MainWindowViewModel() {
-        $this.Init('TextBlockText')
+    # Turn into cmdlet instead?
+    hidden static [void]Init([string] $propertyName) {
+        $setter = [ScriptBlock]::Create("
+            param(`$value)
+            `$this.'_$propertyName' = `$value
+            `$this.OnPropertyChanged('_$propertyName')
+        ")
 
+        $getter = [ScriptBlock]::Create("`$this.'_$propertyName'")
+        Write-Debug $setter.ToString()
+        Write-Debug $getter.ToString()
+
+        Update-TypeData -TypeName 'MainWindowViewModel' -MemberName $propertyName -MemberType ScriptProperty -Value $getter -SecondValue $setter
+    }
+
+    static MainWindowViewModel() {
+        [MainWindowViewModel]::Init('TextBlockText')
+    }
+
+    MainWindowViewModel() {
         $this.TestCommand = $this.NewDelegate(
             $this.UpdateTextBlock,
             $this.CanUpdateTextBlock
         )
+        #$this.Init('TextBlockText')
     }
 
     [int]$i
     [void]ExtractedMethod([int]$i) {
         $this.i += $i
-        $this.SetTextBlockText($this.i)
+        $this.TextBlockText=$this.i
         Write-Debug $i
     }
 
@@ -417,7 +435,7 @@ Title="Minimal Example" Width="300" Height="150">
         <StackPanel Margin="5">
             <!-- TextBox bound property does not update until textbox focus is lost. Use UpdateSourceTrigger=PropertyChanged to update as typed -->
             <TextBox x:Name="TextBox1" Text="{Binding TextBoxText, UpdateSourceTrigger=PropertyChanged}" MinHeight="30" />
-            <TextBlock x:Name="TextBlock1" Text="{Binding TextBlockText}" MinHeight="30" />
+            <TextBlock x:Name="TextBlock1" Text="{Binding _TextBlockText}" MinHeight="30" />
             <Button
                 Content="{Binding NoParameterContent}"
                 Command="{Binding TestCommand}" />
