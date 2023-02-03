@@ -173,7 +173,7 @@ class DelegateCommand : System.Windows.Input.ICommand {
         Write-Debug "$value removed"
     }
 
-    # Delegate takes $null unlike invoking the PSMethod where to takes arguments
+    # Delegate takes $null unlike invoking the PSMethod where it passes as arguments
     [bool]CanExecute([object]$commandParameter) {
         Write-Debug 'DelegateCommand.CanExecute ran'
         if ($null -eq $this._canExecute) { return $true }
@@ -270,7 +270,7 @@ class ViewModelBase : ComponentModel.INotifyPropertyChanged {
         return [DelegateCommand]::new($e, $ce)
     }
 
-    # Experimental
+    # Experimental - Probably not needed in versions 7.2+
     hidden [System.Delegate]BuildDelegate([System.Management.Automation.PSMethod]$Method) {
         $typeMethod = $this.GetType().GetMethod($Method.Name)
         $returnType = $typeMethod.ReturnType.Name
