@@ -175,7 +175,7 @@ class DelegateCommand : System.Windows.Input.ICommand {
 
     # Delegate takes $null unlike invoking the PSMethod where it passes as arguments
     [bool]CanExecute([object]$commandParameter) {
-        Write-Debug 'DelegateCommand.CanExecute ran'
+        #Write-Debug 'DelegateCommand.CanExecute ran'
         if ($null -eq $this._canExecute) { return $true }
         return $this._canExecute.Invoke($commandParameter)
     }
@@ -235,14 +235,15 @@ class ViewModelBase : ComponentModel.INotifyPropertyChanged {
     [void]Init([string] $propertyName) {
         $setter = [ScriptBlock]::Create("
             param(`$value)
-            `$this.'$propertyName' = `$value
-            `$this.OnPropertyChanged('$propertyName')
+            `$this.'_$propertyName' = `$value
+            `$this.OnPropertyChanged('_$propertyName')
         ")
 
-        $getter = [ScriptBlock]::Create("`$this.'$propertyName'")
+        $getter = [ScriptBlock]::Create("`$this.'_$propertyName'")
+        Write-Debug $setter.ToString()
+        Write-Debug $getter.ToString()
 
-        $this | Add-Member -MemberType ScriptMethod -Name "Set$propertyName" -Value $setter
-        $this | Add-Member -MemberType ScriptMethod -Name "Get$PropertyName" -Value $getter
+        $this | Add-Member -MemberType ScriptProperty -Name "$propertyName" -Value $getter -SecondValue $setter
     }
 
     [Windows.Input.ICommand]NewCommand(
@@ -270,7 +271,7 @@ class ViewModelBase : ComponentModel.INotifyPropertyChanged {
         return [DelegateCommand]::new($e, $ce)
     }
 
-    # Experimental - Probably not needed in versions 7.2+
+    # Experimental - Probably not needed in PowerShell 7.2+
     hidden [System.Delegate]BuildDelegate([System.Management.Automation.PSMethod]$Method) {
         $typeMethod = $this.GetType().GetMethod($Method.Name)
         $returnType = $typeMethod.ReturnType.Name
