@@ -1,6 +1,74 @@
 #Remember to add the below two assemblies and dot source this file since powershell parses classes before add-types
 Add-Type -AssemblyName presentationframework, presentationcore
 
+function New-InitialSessionState {
+	<#
+		.SYNOPSIS
+			Creates a default session while also adding user functions and user variables to be used in a new runspace
+	#>
+	[CmdletBinding()]
+    [OutputType([System.Management.Automation.Runspaces.InitialSessionState])]
+	param(
+		[Parameter()]
+		[System.Collections.Generic.List[String]]$FunctionNames,
+		[Parameter()]
+		[System.Collections.Generic.List[String]]$VariableNames
+	)
+
+	process{
+
+		# Create an initial session state object required for runspaces
+		# CreateDefault allows default cmdlets to be used without being explicitly added in the runspace
+		$initialSessionState = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
+
+		# Add custom functions to the Session State to be added into a runspace
+		foreach( $functionName in $FunctionNames ) {
+			$functionDefinition = Get-Content Function:\$functionName -ErrorAction 'Stop'
+			$sessionStateFunction = New-Object System.Management.Automation.Runspaces.SessionStateFunctionEntry -ArgumentList $functionName, $functionDefinition
+			$initialSessionState.Commands.Add($sessionStateFunction)
+		}
+
+		# Add variables to the Session State to be added into a runspace
+		foreach( $variableName in $VariableNames ) {
+			$var = Get-Variable $variableName
+			$runspaceVariable = New-object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList $var.name, $var.value, $null
+			$initialSessionState.Variables.Add($runspaceVariable)
+		}
+
+		$initialSessionState
+	}
+}
+
+function New-RunspacePool {
+    <#
+		.SYNOPSIS
+			Creates a RunspacePool
+	#>
+	[CmdletBinding()]
+    [OutputType([System.Management.Automation.Runspaces.RunspacePool])]
+	param(
+		[Parameter()]
+		[InitialSessionState]$InitialSessionState,
+		[Parameter()]
+		[Int]$ThreadLimit = $([Int]$env:NUMBER_OF_PROCESSORS + 1),
+		[Parameter(
+			HelpMessage = 'Use STA on any thread that creates UI or when working with single thread COM Objects.'
+		)]
+		[ValidateSet("STA", "MTA", "Unknown")]
+		[String]$ApartmentState = "STA",
+		[Parameter()]
+		[ValidateSet("Default", "ReuseThread", "UseCurrentThread", "UseNewThread")]
+		[String]$ThreadOptions = "ReuseThread"
+	)
+
+	process {
+		$runspacePool = [RunspaceFactory]::CreateRunspacePool(1, $ThreadLimit, $InitialSessionState, $Host)
+		$runspacePool.ApartmentState = $ApartmentState
+		$runspacePool.ThreadOptions = $ThreadOptions
+		$runspacePool.Open()
+		$runspacePool
+	}
+}
 
 function New-WPFWindow {
     [CmdletBinding(DefaultParameterSetName = 'HereString')]
@@ -20,31 +88,8 @@ function New-WPFWindow {
     #Use the dedicated wpf xaml reader rather than the xmlreader.
     $window = [System.Windows.Markup.XamlReader]::Parse($Xaml)
     $window
-
-    <# old way with nodes
-    [xml]$Xaml = Get-CleanXML -RawInput $Xaml
-    $NamedNodes = Get-XamlNamedNodes -Xml $Xaml
-    $reader = ([System.Xml.XmlNodeReader]::new($Xaml))
-    $form = [Windows.Markup.XamlReader]::Load($reader)
-
-    $wpf = @{}
-    $NamedNodes | ForEach-Object { $wpf.Add($_.Name, $form.FindName($_.Name)) }
-    $wpf
-    #>
-
 }
 
-# Not used. Not needed since XamlReader is the dedicated reader vs XmlNodeReader.
-function Get-CleanXML {
-    Param([string]$RawInput)
-    $RawInput -replace 'mc:Ignorable="d"', '' -replace 'x:N', 'N' -replace 'x:Class=".*?"', '' -replace 'd:DesignHeight="\d*?"', '' -replace 'd:DesignWidth="\d*?"', ''
-}
-
-# Not used. Used only to find named nodes in the Xaml.
-function Get-XamlNamedNodes {
-    Param([xml]$Xml)
-    $Xml.SelectNodes("//*[@*[contains(translate(name(.),'n','N'),'Name')]]")
-}
 
 # Powershell does not like classes with whitespace or comments in place of whitespace if copied and pasted in the console.
 # Since the interface System.Windows.Input.ICommand methods Execute and CanExecute require parameters, we will keep it that way.
@@ -322,10 +367,11 @@ class ViewModelBase : ComponentModel.INotifyPropertyChanged {
 
 class MainWindowViewModel : ViewModelBase {
     [string]$TextBoxText
-    [string]$_TextBlockText
+    [int]$_TextBlockText
     [string]$NoParameterContent = 'No Parameter'
     [string]$ParameterContent = 'Parameter'
     [System.Windows.Input.ICommand]$TestCommand
+    [System.Windows.Input.ICommand]$TestBackgroundCommand
 
     # Turn into cmdlet instead?
     hidden static [void]Init([string] $propertyName) {
@@ -342,6 +388,9 @@ class MainWindowViewModel : ViewModelBase {
         Update-TypeData -TypeName 'MainWindowViewModel' -MemberName $propertyName -MemberType ScriptProperty -Value $getter -SecondValue $setter
     }
 
+    # This runs once and updates future types of this class in this scope will have the property. Other runspaces will need to load the class and initialize it.
+    # Don't need to do it this way since we're only going to need one viewmodel.
+    # For curosity / my first actual static method + constructor / demo purposes
     static MainWindowViewModel() {
         [MainWindowViewModel]::Init('TextBlockText')
     }
@@ -351,13 +400,17 @@ class MainWindowViewModel : ViewModelBase {
             $this.UpdateTextBlock,
             $this.CanUpdateTextBlock
         )
-        #$this.Init('TextBlockText')
+        $this.TestBackgroundCommand = $this.NewDelegate(
+            $this.BackgroundCommand,
+            $this.CanBackgroundCountCommand
+        )
+        # $this.Init('TextBlockText')
     }
 
     [int]$i
     [void]ExtractedMethod([int]$i) {
         $this.i += $i
-        $this.TextBlockText=$this.i
+        $this.TextBlockText += $i # Allowed since TextBlockText is added by Add-Member/Update-TypeData in which the set method raises OnPropertyChanged
         Write-Debug $i
     }
 
@@ -390,28 +443,61 @@ Cancel to add Command Parameter"
     }
 
     # Todo - move to ViewModelBase
-    [void]BackgroundThreadCommand() {
+    [void]BackgroundCommand([object]$RelayCommandParameter) {
+        #$this.IsBackgroundFree = $false
+        $this.CurrentBackgroundCount += 1
+        $this.OnPropertyChanged('CurrentBackgroundCount')
         [System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke(
             {
                 $ps = [powershell]::Create()
-                $newRunspace = [RunspaceFactory]::CreateRunspace()
-                $newRunspace.Open()
-                $syncHash = [hashtable]::Synchronized(
-                    @{
-                        This = $this
-                    }
-                )
-                $newRunspace.SessionStateProxy.SetVariable('syncHash', $syncHash)
-                $ps.Runspace = $newRunspace
+                # Class automagically knows $syncHash // I don't think this is clean // What if you had more viewmodels, those shouldn't be spinning up their own syncHashes...
+                $ps.RunspacePool = $script:syncHash.RSPool
                 $sb = {
-                    param($hash)
+                    function Show-MessageBox {
+                        [CmdletBinding()]
+                        param(
+                            [Parameter(Mandatory)]
+                            [string]$Message,
+                            [string]$Title = 'Test',
+                            [string]$Button = 'OkCancel',
+                            [string]$Icon = 'Information'
+                        )
+                        [System.Windows.MessageBox]::Show("$Message", $Title, $Button, $Icon)
+                    }
                     Start-Sleep -Seconds 5
-                    $hash.This.SetTextBlockText(5)
+                    # Works with Add-Member. Doesn't work with Update-TypeData - UNLESS class is new'ed up in a different PowerShell + RunspacePool that also knows its definition
+                    $syncHash.This.TextBlockText += 5
+                    #Show-MessageBox "$($syncHash.This.IsBackgroundFree)"
+                    #$syncHash.This.IsBackgroundFree = $true
+                    #Show-MessageBox "$($syncHash.This.IsBackgroundFree)"
+                    $syncHash.This.CurrentBackgroundCount -= 1
+                    $syncHash.This.OnPropertyChanged('CurrentBackgroundCount')
+                    $syncHash.This.RefreshAllButtons()
+                    #$hash.This.OnPropertyChanged('_TextBlockText')
+                    #Show-MessageBox "err: $($Error[0])"
+                    #Show-MessageBox "$($syncHash.This.GetType().GetMembers().Name)" #add Show-MessageBox to sessionstate so you don't need  to redefine it
                 }
-                $ps.AddScript($sb).AddParameter('hash', $syncHash)
+                $null = $ps.AddScript($sb)
                 $ps.BeginInvoke()
+                Write-Debug 'begin'
             }
         )
+    }
+
+    [bool]$IsBackgroundFree = $true
+    [bool]CanBackgroundCommand([object]$RelayCommandParameter) {
+        return $this.IsBackgroundFree
+    }
+
+    [int]$CurrentBackgroundCount = 0
+    [bool]CanBackgroundCountCommand([object]$RelayCommandParameter) {
+        return ($this.CurrentBackgroundCount -lt 5)
+    }
+
+    # REQUIRED fails to dispatch otherwise. The runspaces use their own dispatcher? Doesn't work even when using the dispatcher from syncHash.Window.Dispatcher
+    $localDispatcher = [System.Windows.Threading.Dispatcher]::CurrentDispatcher
+    [void]RefreshAllButtons(){
+        $this.localDispatcher.Invoke({[System.Windows.Input.CommandManager]::InvalidateRequerySuggested()})
     }
 }
 
@@ -436,7 +522,8 @@ xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 xmlns:local="clr-namespace:;assembly="
 mc:Ignorable="d"
-Title="Minimal Example" Width="300" Height="150">
+Title="Minimal Example" Width="300" Height="250"
+WindowStartupLocation="CenterScreen">
 <!--
     <Window.DataContext>
         <local:MainWindowViewModel />
@@ -454,6 +541,11 @@ Title="Minimal Example" Width="300" Height="150">
                 Content="{Binding ParameterContent}"
                 Command="{Binding TestCommand}"
                 CommandParameter="3" />
+            <TextBlock Text="Current Background Tasks" MinHeight="30" />
+            <TextBlock Text="{Binding CurrentBackgroundCount}" MinHeight="30" />
+            <Button
+                Content="Background Command"
+                Command="{Binding TestBackgroundCommand}" />
         </StackPanel>
     </Grid>
 </Window>
@@ -463,10 +555,11 @@ Title="Minimal Example" Width="300" Height="150">
 # DataContext can be loaded in Xaml
 # https://gist.github.com/nikonthethird/4e410ac3c04ea6633043a5cb7be1d717
 
-$window = New-WPFWindow -Xaml $Xaml
-$window.DataContext = [MainWindowViewModel]::new()
 
-$async = $window.Dispatcher.InvokeAsync(
-    { $null = $window.ShowDialog() }
-)
-$null = $async.Wait()
+
+
+
+# $async = $window.Dispatcher.InvokeAsync(
+#     { $null = $window.ShowDialog() }
+# )
+# $null = $async.Wait()
