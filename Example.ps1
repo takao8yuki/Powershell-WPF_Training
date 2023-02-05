@@ -507,7 +507,9 @@ function Show-MessageBox {
         [Parameter(Mandatory)]
         [string]$Message,
         [string]$Title = 'Test',
+        [ValidateSet('OK','OKCancel','AbortRetryIgnore','YesNoCancel','YesNo','RetryCancel')]
         [string]$Button = 'OkCancel',
+        [ValidateSet('None','Hand','Error','Stop','Question','Exclamation','Warning','Asterisk','Information')]
         [string]$Icon = 'Information'
     )
     [System.Windows.MessageBox]::Show("$Message", $Title, $Button, $Icon)
