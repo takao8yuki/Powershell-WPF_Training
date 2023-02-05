@@ -17,7 +17,7 @@ function New-WPFWindow {
         $Xaml = Get-Content -Path $Path
     }
 
-    #Use the dedicated wpf xaml reader rather than the xmlreader. This allows skipping Get-CleanXML.
+    #Use the dedicated wpf xaml reader rather than the xmlreader.
     $window = [System.Windows.Markup.XamlReader]::Parse($Xaml)
     $window
 
@@ -108,8 +108,8 @@ class RelayCommandBase : System.Windows.Input.ICommand {
 class RelayCommand : RelayCommandBase {
     [bool]CanExecute([object]$commandParameter) {
         if ($null -eq $this._canExecute) { return $true }
-        # CanExecute is inefficient. Probably bind IsEnabled to ViewModel.
-        Write-Debug 'RelayCommand.CanExecute ran'
+        # CanExecute is inefficient.
+        # Write-Debug 'RelayCommand.CanExecute ran'
         if ($this._canExecuteCount -eq 1) { return $this._canExecute.Invoke($commandParameter) }
         else { return $this._canExecute.Invoke() }
     }
@@ -264,7 +264,7 @@ class ViewModelBase : ComponentModel.INotifyPropertyChanged {
         return [RelayCommandBase]::new($Execute)
     }
 
-    # Experimental
+    # Experimental - Probably not needed in PowerShell 7.2+
     [Windows.Input.ICommand]NewDelegate(
         [System.Management.Automation.PSMethod]$Execute,
         [System.Management.Automation.PSMethod]$CanExecute
@@ -276,7 +276,13 @@ class ViewModelBase : ComponentModel.INotifyPropertyChanged {
         return [DelegateCommand]::new($e, $ce)
     }
 
-    # Experimental - Probably not needed in PowerShell 7.2+
+    [Windows.Input.ICommand]NewDelegate(
+        [System.Management.Automation.PSMethod]$Execute
+    ) {
+        $e = $this.BuildDelegate($Execute)
+        return [DelegateCommand]::new($e)
+    }
+
     hidden [System.Delegate]BuildDelegate([System.Management.Automation.PSMethod]$Method) {
         $typeMethod = $this.GetType().GetMethod($Method.Name)
         $returnType = $typeMethod.ReturnType.Name
