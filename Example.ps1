@@ -229,7 +229,12 @@ class ViewModelBase : ComponentModel.INotifyPropertyChanged {
         Write-Debug "Notified change of property '$propertyName'."
         #$this._propertyChanged.Invoke($this, $propertyName) # Why does this accepting a string also work?
         #$this._PropertyChanged.Invoke($this, (New-Object PropertyChangedEventArgs $propertyName))
-        $this._PropertyChanged.Invoke($this, [System.ComponentModel.PropertyChangedEventArgs]::new($propertyName))
+        # There are cases where it is null, which shoots a non terminating error. I forget when I ran into it.
+        if ($null -ne $this._PropertyChanged) {
+            $this._PropertyChanged.Invoke($this, [System.ComponentModel.PropertyChangedEventArgs]::new($propertyName))
+            Write-Debug "not null '$propertyName'."
+        }
+
     }
 
     [void]Init([string] $propertyName) {
