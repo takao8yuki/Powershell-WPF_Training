@@ -208,12 +208,15 @@ class RelayCommand : RelayCommandBase {
 
 
 class DelegateCommand : System.Windows.Input.ICommand {
+    # ICommand Implementation
     add_CanExecuteChanged([EventHandler] $value) {
+        $this._internalCanExecuteChanged = [Delegate]::Combine($this._internalCanExecuteChanged, $value)
         [System.Windows.Input.CommandManager]::add_RequerySuggested($value)
         Write-Debug "$value added"
     }
 
     remove_CanExecuteChanged([EventHandler] $value) {
+        $this._internalCanExecuteChanged = [Delegate]::Remove($this._internalCanExecuteChanged, $value)
         [System.Windows.Input.CommandManager]::remove_RequerySuggested($value)
         Write-Debug "$value removed"
     }
@@ -230,6 +233,22 @@ class DelegateCommand : System.Windows.Input.ICommand {
             $this._execute.Invoke($commandParameter)
         } catch {
             Write-Error "Error handling DelegateCommand.Execute: $_"
+        }
+    }
+    # End ICommand Implementation
+
+    [System.EventHandler]$_internalCanExecuteChanged
+
+    [void] RaiseCanExecuteChanged() {
+        if ($null -ne $this._canExecute) {
+            $this.OnCanExecuteChanged()
+        }
+    }
+
+    [void] OnCanExecuteChanged() {
+        [EventHandler]$eCanExecuteChanged = $this._internalCanExecuteChanged
+        if ($null -ne $eCanExecuteChanged) {
+            $eCanExecuteChanged.Invoke($this, [System.EventArgs]::Empty)
         }
     }
 
@@ -392,6 +411,7 @@ class MainWindowViewModel : ViewModelBase {
     # For curosity / my first actual static method + constructor / demo purposes
     static MainWindowViewModel() {
         [MainWindowViewModel]::Init('TextBlockText')
+        [MainWindowViewModel]::Init('IsBackgroundFree')
     }
 
     MainWindowViewModel() {
@@ -401,7 +421,7 @@ class MainWindowViewModel : ViewModelBase {
         )
         $this.TestBackgroundCommand = $this.NewDelegate(
             $this.BackgroundCommand,
-            $this.CanBackgroundCountCommand
+            $this.CanBackgroundCommand
         )
         # $this.Init('TextBlockText')
     }
