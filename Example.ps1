@@ -277,7 +277,6 @@ class ViewModelBase : ComponentModel.INotifyPropertyChanged {
         # There are cases where it is null, which shoots a non terminating error. I forget when I ran into it.
         if ($null -ne $this._PropertyChanged) {
             $this._PropertyChanged.Invoke($this, [System.ComponentModel.PropertyChangedEventArgs]::new($propertyName))
-            Write-Debug "not null '$propertyName'."
         }
 
     }
