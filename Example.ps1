@@ -2,41 +2,41 @@
 Add-Type -AssemblyName presentationframework, presentationcore
 
 function New-InitialSessionState {
-	<#
+    <#
 		.SYNOPSIS
 			Creates a default session while also adding user functions and user variables to be used in a new runspace
 	#>
-	[CmdletBinding()]
+    [CmdletBinding()]
     [OutputType([System.Management.Automation.Runspaces.InitialSessionState])]
-	param(
-		[Parameter()]
-		[System.Collections.Generic.List[String]]$FunctionNames,
-		[Parameter()]
-		[System.Collections.Generic.List[String]]$VariableNames
-	)
+    param(
+        [Parameter()]
+        [System.Collections.Generic.List[String]]$FunctionNames,
+        [Parameter()]
+        [System.Collections.Generic.List[String]]$VariableNames
+    )
 
-	process{
+    process {
 
-		# Create an initial session state object required for runspaces
-		# CreateDefault allows default cmdlets to be used without being explicitly added in the runspace
-		$initialSessionState = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
+        # Create an initial session state object required for runspaces
+        # CreateDefault allows default cmdlets to be used without being explicitly added in the runspace
+        $initialSessionState = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
 
-		# Add custom functions to the Session State to be added into a runspace
-		foreach( $functionName in $FunctionNames ) {
-			$functionDefinition = Get-Content Function:\$functionName -ErrorAction 'Stop'
-			$sessionStateFunction = New-Object System.Management.Automation.Runspaces.SessionStateFunctionEntry -ArgumentList $functionName, $functionDefinition
-			$initialSessionState.Commands.Add($sessionStateFunction)
-		}
+        # Add custom functions to the Session State to be added into a runspace
+        foreach ( $functionName in $FunctionNames ) {
+            $functionDefinition = Get-Content Function:\$functionName -ErrorAction 'Stop'
+            $sessionStateFunction = New-Object System.Management.Automation.Runspaces.SessionStateFunctionEntry -ArgumentList $functionName, $functionDefinition
+            $initialSessionState.Commands.Add($sessionStateFunction)
+        }
 
-		# Add variables to the Session State to be added into a runspace
-		foreach( $variableName in $VariableNames ) {
-			$var = Get-Variable $variableName
-			$runspaceVariable = New-object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList $var.name, $var.value, $null
-			$initialSessionState.Variables.Add($runspaceVariable)
-		}
+        # Add variables to the Session State to be added into a runspace
+        foreach ( $variableName in $VariableNames ) {
+            $var = Get-Variable $variableName
+            $runspaceVariable = New-Object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList $var.name, $var.value, $null
+            $initialSessionState.Variables.Add($runspaceVariable)
+        }
 
-		$initialSessionState
-	}
+        $initialSessionState
+    }
 }
 
 function New-RunspacePool {
@@ -44,30 +44,30 @@ function New-RunspacePool {
 		.SYNOPSIS
 			Creates a RunspacePool
 	#>
-	[CmdletBinding()]
+    [CmdletBinding()]
     [OutputType([System.Management.Automation.Runspaces.RunspacePool])]
-	param(
-		[Parameter()]
-		[InitialSessionState]$InitialSessionState,
-		[Parameter()]
-		[Int]$ThreadLimit = $([Int]$env:NUMBER_OF_PROCESSORS + 1),
-		[Parameter(
-			HelpMessage = 'Use STA on any thread that creates UI or when working with single thread COM Objects.'
-		)]
-		[ValidateSet("STA", "MTA", "Unknown")]
-		[String]$ApartmentState = "STA",
-		[Parameter()]
-		[ValidateSet("Default", "ReuseThread", "UseCurrentThread", "UseNewThread")]
-		[String]$ThreadOptions = "ReuseThread"
-	)
+    param(
+        [Parameter()]
+        [InitialSessionState]$InitialSessionState,
+        [Parameter()]
+        [Int]$ThreadLimit = $([Int]$env:NUMBER_OF_PROCESSORS + 1),
+        [Parameter(
+            HelpMessage = 'Use STA on any thread that creates UI or when working with single thread COM Objects.'
+        )]
+        [ValidateSet('STA', 'MTA', 'Unknown')]
+        [String]$ApartmentState = 'STA',
+        [Parameter()]
+        [ValidateSet('Default', 'ReuseThread', 'UseCurrentThread', 'UseNewThread')]
+        [String]$ThreadOptions = 'ReuseThread'
+    )
 
-	process {
-		$runspacePool = [RunspaceFactory]::CreateRunspacePool(1, $ThreadLimit, $InitialSessionState, $Host)
-		$runspacePool.ApartmentState = $ApartmentState
-		$runspacePool.ThreadOptions = $ThreadOptions
-		$runspacePool.Open()
-		$runspacePool
-	}
+    process {
+        $runspacePool = [RunspaceFactory]::CreateRunspacePool(1, $ThreadLimit, $InitialSessionState, $Host)
+        $runspacePool.ApartmentState = $ApartmentState
+        $runspacePool.ThreadOptions = $ThreadOptions
+        $runspacePool.Open()
+        $runspacePool
+    }
 }
 
 function New-WPFWindow {
@@ -300,6 +300,10 @@ class ViewModelBase : ComponentModel.INotifyPropertyChanged {
 
     }
 
+
+    # static $ViewModelDispatcher = [System.Windows.Threading.Dispatcher]::CurrentDispatcher
+
+
     [void]Init([string] $propertyName) {
         $setter = [ScriptBlock]::Create("
             param(`$value)
@@ -461,62 +465,56 @@ Cancel to add Command Parameter"
         return (-not [string]::IsNullOrWhiteSpace($this.TextBoxText))
     }
 
-    # Todo - move to ViewModelBase
+    # Todo - move to ViewModelBase // This crashes eventually even with one task
+    # Any RunspacePool task must call localdispatch
     [void]BackgroundCommand([object]$RelayCommandParameter) {
-        #$this.IsBackgroundFree = $false
-        $this.CurrentBackgroundCount += 1
-        $this.OnPropertyChanged('CurrentBackgroundCount')
-        [System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke(
-            {
-                $ps = [powershell]::Create()
-                # Class automagically knows $syncHash // I don't think this is clean // What if you had more viewmodels, those shouldn't be spinning up their own syncHashes...
-                $ps.RunspacePool = $script:syncHash.RSPool
-                $sb = {
-                    function Show-MessageBox {
-                        [CmdletBinding()]
-                        param(
-                            [Parameter(Mandatory)]
-                            [string]$Message,
-                            [string]$Title = 'Test',
-                            [string]$Button = 'OkCancel',
-                            [string]$Icon = 'Information'
-                        )
-                        [System.Windows.MessageBox]::Show("$Message", $Title, $Button, $Icon)
-                    }
-                    Start-Sleep -Seconds 5
-                    # Works with Add-Member. Doesn't work with Update-TypeData - UNLESS class is new'ed up in a different PowerShell + RunspacePool that also knows its definition
-                    $syncHash.This.TextBlockText += 5
-                    #Show-MessageBox "$($syncHash.This.IsBackgroundFree)"
-                    #$syncHash.This.IsBackgroundFree = $true
-                    #Show-MessageBox "$($syncHash.This.IsBackgroundFree)"
-                    $syncHash.This.CurrentBackgroundCount -= 1
-                    $syncHash.This.OnPropertyChanged('CurrentBackgroundCount')
-                    $syncHash.This.RefreshAllButtons()
-                    #$hash.This.OnPropertyChanged('_TextBlockText')
-                    #Show-MessageBox "err: $($Error[0])"
-                    #Show-MessageBox "$($syncHash.This.GetType().GetMembers().Name)" #add Show-MessageBox to sessionstate so you don't need  to redefine it
-                }
-                $null = $ps.AddScript($sb)
-                $ps.BeginInvoke()
-                Write-Debug 'begin'
-            }
-        )
+        $this.IsBackgroundFree = $false
+        $this.TestBackgroundCommand.RaiseCanExecuteChanged()
+        if (-not $script:syncHash.VM) { $script:syncHash.VM = $this }
+        $ps = [powershell]::Create()
+        $ps.RunspacePool = $script:syncHash.RSPool
+        $ps.AddScript({
+            param($vm)
+            $script:syncHash.pop = 'yes'
+            Start-Sleep -Seconds 2
+            # $vm.localdispatch.Invoke({$vm.yolo()}) # freezes UI for a small sec, better to call method in viewmodel that is already wrapped in a dispatcher invoke
+            $vm.yolo()
+            #$vm.RefreshAllButtons()
+            # $script:syncHash.VM.yolo()
+        }).AddParameter('vm', $this)
+        $ps.BeginInvoke()#remember to add dispose
     }
 
-    [bool]$IsBackgroundFree = $true
+    [void]yolo() {
+        #[MainWindowViewModel]::ViewModelDispatcher.Invoke({
+        #[System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke({
+        $this.localdispatch.Invoke({
+            #Show-MessageBox -Message 'yolo'
+            $this.TextBlockText++
+            $this.IsBackgroundFree = $true
+            $this.TestBackgroundCommand.RaiseCanExecuteChanged()
+        })
+    }
+
+    [bool]$_IsBackgroundFree = $true
     [bool]CanBackgroundCommand([object]$RelayCommandParameter) {
-        return $this.IsBackgroundFree
+        return $this._IsBackgroundFree
     }
 
     [int]$CurrentBackgroundCount = 0
+    [int]$CurrentBackgroundCount2 = 0
     [bool]CanBackgroundCountCommand([object]$RelayCommandParameter) {
-        return ($this.CurrentBackgroundCount -lt 5)
+        return (($this.CurrentBackgroundCount - $this.CurrentBackgroundCount2) -lt 4)
     }
 
     # REQUIRED fails to dispatch otherwise. The runspaces use their own dispatcher? Doesn't work even when using the dispatcher from syncHash.Window.Dispatcher
-    $localDispatcher = [System.Windows.Threading.Dispatcher]::CurrentDispatcher
-    [void]RefreshAllButtons(){
-        $this.localDispatcher.Invoke({[System.Windows.Input.CommandManager]::InvalidateRequerySuggested()})
+    $localdispatch = [System.Windows.Threading.Dispatcher]::CurrentDispatcher
+    # Slow
+    [void]RefreshAllButtons() {
+        $this.localdispatch.Invoke({[System.Windows.Input.CommandManager]::InvalidateRequerySuggested()})
+        #[System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke({[System.Windows.Input.CommandManager]::InvalidateRequerySuggested()})
+        #[MainWindowViewModel]::ViewModelDispatcher.Invoke({ [System.Windows.Input.CommandManager]::InvalidateRequerySuggested() })
+        #$this.ViewModelDispatcher.Invoke({[System.Windows.Input.CommandManager]::InvalidateRequerySuggested()})
     }
 }
 
@@ -526,9 +524,9 @@ function Show-MessageBox {
         [Parameter(Mandatory)]
         [string]$Message,
         [string]$Title = 'Test',
-        [ValidateSet('OK','OKCancel','AbortRetryIgnore','YesNoCancel','YesNo','RetryCancel')]
+        [ValidateSet('OK', 'OKCancel', 'AbortRetryIgnore', 'YesNoCancel', 'YesNo', 'RetryCancel')]
         [string]$Button = 'OkCancel',
-        [ValidateSet('None','Hand','Error','Stop','Question','Exclamation','Warning','Asterisk','Information')]
+        [ValidateSet('None', 'Hand', 'Error', 'Stop', 'Question', 'Exclamation', 'Warning', 'Asterisk', 'Information')]
         [string]$Icon = 'Information'
     )
     [System.Windows.MessageBox]::Show("$Message", $Title, $Button, $Icon)
