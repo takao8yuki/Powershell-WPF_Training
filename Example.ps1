@@ -310,10 +310,7 @@ class ViewModelBase : ComponentModel.INotifyPropertyChanged {
             `$this.'_$propertyName' = `$value
             `$this.OnPropertyChanged('_$propertyName')
         ")
-
         $getter = [ScriptBlock]::Create("`$this.'_$propertyName'")
-        Write-Debug $setter.ToString()
-        Write-Debug $getter.ToString()
 
         $this | Add-Member -MemberType ScriptProperty -Name "$propertyName" -Value $getter -SecondValue $setter
     }
@@ -338,19 +335,19 @@ class ViewModelBase : ComponentModel.INotifyPropertyChanged {
     ) {
         #$delegateExecute = $this.GetType().GetMethod($Execute.Name).CreateDelegate([action[object]], $this)
         #$delegateCanExecute = $this.GetType().GetMethod($CanExecute.Name).CreateDelegate([func[object,bool]], $this)
-        $e = $this.BuildDelegate($Execute)
-        $ce = $this.BuildDelegate($CanExecute)
+        $e = $this.GetDelegate($Execute)
+        $ce = $this.GetDelegate($CanExecute)
         return [DelegateCommand]::new($e, $ce)
     }
 
     [Windows.Input.ICommand]NewDelegate(
         [System.Management.Automation.PSMethod]$Execute
     ) {
-        $e = $this.BuildDelegate($Execute)
+        $e = $this.GetDelegate($Execute)
         return [DelegateCommand]::new($e)
     }
 
-    hidden [System.Delegate]BuildDelegate([System.Management.Automation.PSMethod]$Method) {
+    hidden [System.Delegate]GetDelegate([System.Management.Automation.PSMethod]$Method) {
         $typeMethod = $this.GetType().GetMethod($Method.Name)
         $returnType = $typeMethod.ReturnType.Name
         if ($returnType -eq 'Void') {
@@ -380,7 +377,7 @@ class ViewModelBase : ComponentModel.INotifyPropertyChanged {
 
         $paramString += "$delegateReturnParam"
         $delegateString += "$paramString"
-        Write-Debug "$delegateString"
+        Write-Debug "$($Method.Name) converted to: $delegateString"
         return $typeMethod.CreateDelegate(($delegateString -as [type]), $this)
     }
 
@@ -396,16 +393,14 @@ class MainWindowViewModel : ViewModelBase {
     [System.Windows.Input.ICommand]$TestBackgroundCommand
 
     # Turn into cmdlet instead?
+    # These cannot be bound to the xaml
     hidden static [void]Init([string] $propertyName) {
         $setter = [ScriptBlock]::Create("
             param(`$value)
             `$this.'_$propertyName' = `$value
             `$this.OnPropertyChanged('_$propertyName')
         ")
-
         $getter = [ScriptBlock]::Create("`$this.'_$propertyName'")
-        Write-Debug $setter.ToString()
-        Write-Debug $getter.ToString()
 
         Update-TypeData -TypeName 'MainWindowViewModel' -MemberName $propertyName -MemberType ScriptProperty -Value $getter -SecondValue $setter
     }
@@ -438,6 +433,11 @@ class MainWindowViewModel : ViewModelBase {
     }
 
     [void]UpdateTextBlock([object]$RelayCommandParameter) {
+        # all false if .ShowDialog()
+        Write-Debug ($script:syncHash.Window.Dispatcher -eq [System.Windows.Application]::Current.Dispatcher) # true
+        Write-Debug ($this.localDispatcher -eq $script:syncHash.Window.Dispatcher) # false // console thread?
+        Write-Debug ($this.localDispatcher -eq [System.Windows.Application]::Current.Dispatcher) # false // console thread?
+        Write-Debug ([System.Windows.Threading.Dispatcher]::CurrentDispatcher -eq [System.Windows.Application]::Current.Dispatcher) # true - current dispatcher in ui is the application dispatcher
         $testParameter = 1
 
         $message = "TextBoxText is '$($this.TextBoxText)'
@@ -461,39 +461,40 @@ Cancel to add Command Parameter"
         $this.ExtractedMethod($value)
     }
 
+    # Is this code smell? Takes a parameter but will never use it...
     [bool]CanUpdateTextBlock([object]$RelayCommandParameter) {
         return (-not [string]::IsNullOrWhiteSpace($this.TextBoxText))
     }
 
-    # Todo - move to ViewModelBase // This crashes eventually even with one task
+    # Todo - move to ViewModelBase
     # Any RunspacePool task must call localdispatch
     [void]BackgroundCommand([object]$RelayCommandParameter) {
         $this.IsBackgroundFree = $false
         $this.TestBackgroundCommand.RaiseCanExecuteChanged()
         if (-not $script:syncHash.VM) { $script:syncHash.VM = $this }
+        $e = $this.GetDelegate($this.BackgroundCallback)
         $ps = [powershell]::Create()
         $ps.RunspacePool = $script:syncHash.RSPool
         $ps.AddScript({
-            param($vm)
-            $script:syncHash.pop = 'yes'
+            param($vm,$delegate)
+            $script:syncHash.BackgroundRunning = 'yes'
             Start-Sleep -Seconds 2
-            # $vm.localdispatch.Invoke({$vm.yolo()}) # freezes UI for a small sec, better to call method in viewmodel that is already wrapped in a dispatcher invoke
-            $vm.yolo()
-            #$vm.RefreshAllButtons()
-            # $script:syncHash.VM.yolo()
-        }).AddParameter('vm', $this)
-        $ps.BeginInvoke()#remember to add dispose
+            # $vm.localdispatch.BeginInvoke(9, $test)
+            $vm.localdispatch.Invoke($delegate) # this is not the ui application dispatcher, but it works...
+            $script:syncHash.BackgroundRunning = 'no'
+        }).AddParameter('vm', $this).AddParameter('delegate', $e)
+        $handle = $ps.BeginInvoke() # remember to add dispose
     }
 
-    [void]yolo() {
+    [void]BackgroundCallback() {
         #[MainWindowViewModel]::ViewModelDispatcher.Invoke({
         #[System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke({
-        $this.localdispatch.Invoke({
-            #Show-MessageBox -Message 'yolo'
+        #$this.localdispatch.Invoke({
+            # Show-MessageBox -Message 'yolo'
             $this.TextBlockText++
             $this.IsBackgroundFree = $true
             $this.TestBackgroundCommand.RaiseCanExecuteChanged()
-        })
+        #})
     }
 
     [bool]$_IsBackgroundFree = $true
@@ -507,14 +508,13 @@ Cancel to add Command Parameter"
         return (($this.CurrentBackgroundCount - $this.CurrentBackgroundCount2) -lt 4)
     }
 
-    # REQUIRED fails to dispatch otherwise. The runspaces use their own dispatcher? Doesn't work even when using the dispatcher from syncHash.Window.Dispatcher
+    # REQUIRED fails to dispatch otherwise. Which dispatcher is this? It's neither the application nor the current dispatcher.
     $localdispatch = [System.Windows.Threading.Dispatcher]::CurrentDispatcher
     # Slow
     [void]RefreshAllButtons() {
         $this.localdispatch.Invoke({[System.Windows.Input.CommandManager]::InvalidateRequerySuggested()})
         #[System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke({[System.Windows.Input.CommandManager]::InvalidateRequerySuggested()})
         #[MainWindowViewModel]::ViewModelDispatcher.Invoke({ [System.Windows.Input.CommandManager]::InvalidateRequerySuggested() })
-        #$this.ViewModelDispatcher.Invoke({[System.Windows.Input.CommandManager]::InvalidateRequerySuggested()})
     }
 }
 
