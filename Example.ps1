@@ -268,12 +268,12 @@ class DelegateCommand : System.Windows.Input.ICommand {
     hidden Init($Execute, $CanExecute) {
         if ($null -eq $Execute) { throw 'DelegateCommand.Execute is null. Supply a valid method.' }
         $this._execute = $Execute
-        Write-Debug -Message $this._execute.ToString()
+        # Write-Debug -Message $this._execute.ToString()
 
         $this._canExecute = $CanExecute
-        if ($null -ne $this._canExecute) {
-            Write-Debug -Message $this._canExecute.ToString()
-        }
+        # if ($null -ne $this._canExecute) {
+        #     Write-Debug -Message $this._canExecute.ToString()
+        # }
     }
 }
 
@@ -385,7 +385,7 @@ class ViewModelBase : ComponentModel.INotifyPropertyChanged {
 
 
 class MainWindowViewModel : ViewModelBase {
-    [string]$TextBoxText
+    [int]$TextBoxText
     [int]$_TextBlockText
     [string]$NoParameterContent = 'No Parameter'
     [string]$ParameterContent = 'Parameter'
@@ -393,14 +393,15 @@ class MainWindowViewModel : ViewModelBase {
     [System.Windows.Input.ICommand]$TestBackgroundCommand
 
     # Turn into cmdlet instead?
-    # These cannot be bound to the xaml
+    # ScriptProperties cannot be bound to the xaml
+    # Does not persist across runspaces - Add-Member does however
     hidden static [void]Init([string] $propertyName) {
         $setter = [ScriptBlock]::Create("
             param(`$value)
             `$this.'_$propertyName' = `$value
             `$this.OnPropertyChanged('_$propertyName')
         ")
-        $getter = [ScriptBlock]::Create("`$this.'_$propertyName'")
+        $getter = [ScriptBlock]::Create("return `$this.'_$propertyName'")
 
         Update-TypeData -TypeName 'MainWindowViewModel' -MemberName $propertyName -MemberType ScriptProperty -Value $getter -SecondValue $setter
     }
@@ -461,7 +462,7 @@ Cancel to add Command Parameter"
         $this.ExtractedMethod($value)
     }
 
-    # Is this code smell? Takes a parameter but will never use it...
+    # Is this code smell? Takes a parameter but will never use it... See class 'RelayCommand' for 'fix'
     [bool]CanUpdateTextBlock([object]$RelayCommandParameter) {
         return (-not [string]::IsNullOrWhiteSpace($this.TextBoxText))
     }
@@ -512,7 +513,7 @@ Cancel to add Command Parameter"
     $localdispatch = [System.Windows.Threading.Dispatcher]::CurrentDispatcher
     # Slow
     [void]RefreshAllButtons() {
-        $this.localdispatch.Invoke({[System.Windows.Input.CommandManager]::InvalidateRequerySuggested()})
+        $this.localdispatch.Invoke({ [System.Windows.Input.CommandManager]::InvalidateRequerySuggested() })
         #[System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke({[System.Windows.Input.CommandManager]::InvalidateRequerySuggested()})
         #[MainWindowViewModel]::ViewModelDispatcher.Invoke({ [System.Windows.Input.CommandManager]::InvalidateRequerySuggested() })
     }
