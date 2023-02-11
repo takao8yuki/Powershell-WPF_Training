@@ -62,15 +62,15 @@ function New-RunspacePool {
         [Parameter()]
         [InitialSessionState]$InitialSessionState,
         [Parameter()]
-        [Int]$ThreadLimit = $([Int]$env:NUMBER_OF_PROCESSORS + 1),
+        [int]$ThreadLimit = $([Int]$env:NUMBER_OF_PROCESSORS + 1),
         [Parameter(
             HelpMessage = 'Use STA on any thread that creates UI or when working with single thread COM Objects.'
         )]
         [ValidateSet('STA', 'MTA', 'Unknown')]
-        [String]$ApartmentState = 'STA',
+        [string]$ApartmentState = 'STA',
         [Parameter()]
         [ValidateSet('Default', 'ReuseThread', 'UseCurrentThread', 'UseNewThread')]
-        [String]$ThreadOptions = 'ReuseThread'
+        [string]$ThreadOptions = 'ReuseThread'
     )
 
     process {
@@ -397,6 +397,8 @@ class ViewModelBase : ComponentModel.INotifyPropertyChanged {
 
 
 class MainWindowViewModel : ViewModelBase {
+    [System.Windows.Threading.Dispatcher]$UIDispatcher
+
     [int]$TextBoxText
     [int]$_TextBlockText
     [string]$NoParameterContent = 'No Parameter'
@@ -419,7 +421,7 @@ class MainWindowViewModel : ViewModelBase {
     }
 
     # This runs once and updates future types of this class in this scope will have the property. Other runspaces will need to load the class and initialize it.
-    # Don't need to do it this way since we're only going to need one viewmodel.
+    # Don't need to do it this way since we're only going to need one viewmodel. Useful if you need to create many.
     # For curosity / my first actual static method + constructor / demo purposes
     static MainWindowViewModel() {
         [MainWindowViewModel]::Init('TextBlockText')
@@ -427,6 +429,7 @@ class MainWindowViewModel : ViewModelBase {
     }
 
     MainWindowViewModel() {
+        $this.UIDispatcher = [System.Windows.Threading.Dispatcher]::CurrentDispatcher
         $this.TestCommand = $this.NewDelegate(
             $this.UpdateTextBlock,
             $this.CanUpdateTextBlock
@@ -436,38 +439,20 @@ class MainWindowViewModel : ViewModelBase {
             $this.CanBackgroundCommand
         )
         # $this.Init('TextBlockText')
+        # $this.Init('IsBackgroundFree')
     }
 
-    [int]$i
+    [int]$ExtractedMethodRunCount
     [void]ExtractedMethod([int]$i) {
-        $this.i += $i
+        $this.ExtractedMethodRunCount++
         $this.TextBlockText += $i # Allowed since TextBlockText is added by Add-Member/Update-TypeData in which the set method raises OnPropertyChanged
     }
 
-    [void]UpdateTextBlock([object]$RelayCommandParameter) {
-        # all false if .ShowDialog()
-        Write-Debug ($script:syncHash.Window.Dispatcher -eq [System.Windows.Application]::Current.Dispatcher) # true
-        Write-Debug ($this.localDispatcher -eq $script:syncHash.Window.Dispatcher) # false // console thread?
-        Write-Debug ($this.localDispatcher -eq [System.Windows.Application]::Current.Dispatcher) # false // console thread?
-        Write-Debug ([System.Windows.Threading.Dispatcher]::CurrentDispatcher -eq [System.Windows.Application]::Current.Dispatcher) # true - current dispatcher in ui is the application dispatcher
-        $testParameter = 1
-
-        $message = "TextBoxText is '$($this.TextBoxText)'
-Command Parameter is '$RelayCommandParameter'
-If Command Parameter is null then $testParameter is used
-OK To add TextBoxText
-Cancel to add Command Parameter"
-
-        $result = Show-MessageBox -Message $message
-
-        if ($null -ne $RelayCommandParameter) {
-            $testParameter = $RelayCommandParameter
-        }
-
-        if ($result -eq 'OK') {
+    hidden [void]UpdateTextBlock([object]$RelayCommandParameter) {
+        if ($null -eq $RelayCommandParameter) {
             $value = $this.TextBoxText
         } else {
-            $value = $testParameter
+            $value = $RelayCommandParameter
         }
 
         $this.ExtractedMethod($value)
