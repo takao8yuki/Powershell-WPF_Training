@@ -9,6 +9,7 @@ $syncHash.RSPool = $pool
 $a = [MainWindowViewModel]::new($syncHash.RSPool)
 $a.TextBoxText = 5
 $a.UpdateTextBlock($null)
+$a.TextBlockText -eq 5
 
 $a.DoStuffBackgroundOrNot(5,0) -eq 5
 
