@@ -3,11 +3,11 @@ Add-Type -AssemblyName presentationframework, presentationcore
 
 function New-InitialSessionState {
     <#
-		.SYNOPSIS
-			Creates a default session with options to add session functions and variables to be used in a new runspace
+        .SYNOPSIS
+            Creates a default session with options to add session functions and variables to be used in a new runspace
         .PARAMETER StartUpScripts
             Runs the provided .ps1 file paths in the runspace on open. Can be used to add class objects from ps1 files that can't be imported by ImportPSModule'
-	#>
+    #>
     [CmdletBinding()]
     [OutputType([System.Management.Automation.Runspaces.InitialSessionState])]
     param(
@@ -53,9 +53,9 @@ function New-InitialSessionState {
 
 function New-RunspacePool {
     <#
-		.SYNOPSIS
-			Creates a RunspacePool
-	#>
+        .SYNOPSIS
+            Creates a RunspacePool
+    #>
     [CmdletBinding()]
     [OutputType([System.Management.Automation.Runspaces.RunspacePool])]
     param(
