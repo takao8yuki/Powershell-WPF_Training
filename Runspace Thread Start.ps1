@@ -16,7 +16,7 @@ $ps.RunspacePool = $syncHash.RSPool
 $null = $ps.AddScript({
     # . "$projectPath\Example.ps1"
     $syncHash.Window = New-WPFWindow -Xaml $Xaml
-    $syncHash.Window.DataContext = [MainWindowViewModel]::new() # Window.DataContext is null for some reason if newed up here
+    $syncHash.Window.DataContext = [MainWindowViewModel]::new($syncHash.RSPool) # Window.DataContext is null for some reason if newed up here
     # $syncHash.application = [System.Windows.Application]::new()
     # $syncHash.application.ShutdownMode = [System.Windows.ShutdownMode]::OnMainWindowClose
     # $syncHash.application.Run($syncHash.Window)

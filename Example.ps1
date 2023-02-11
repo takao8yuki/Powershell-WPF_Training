@@ -398,6 +398,7 @@ class ViewModelBase : ComponentModel.INotifyPropertyChanged {
 
 class MainWindowViewModel : ViewModelBase {
     [System.Windows.Threading.Dispatcher]$UIDispatcher
+    $RunspacePoolDependency
 
     [int]$TextBoxText
     [int]$_TextBlockText
@@ -428,8 +429,10 @@ class MainWindowViewModel : ViewModelBase {
         [MainWindowViewModel]::Init('IsBackgroundFree')
     }
 
-    MainWindowViewModel() {
+    MainWindowViewModel($RunspacePool) {
         $this.UIDispatcher = [System.Windows.Threading.Dispatcher]::CurrentDispatcher
+        $this.RunspacePoolDependency = $RunspacePool
+
         $this.TestCommand = $this.NewDelegate(
             $this.UpdateTextBlock,
             $this.CanUpdateTextBlock
@@ -469,19 +472,15 @@ class MainWindowViewModel : ViewModelBase {
         $workDelegate = $this.GetDelegate($Work)
         $callbackDelegate = $this.GetDelegate($Callback)
         $ps = [powershell]::Create()
-        $script:syncHash.ps = $ps
-        $ps.RunspacePool = $script:syncHash.RSPool # Pool should be injected to ViewModel instead of being automagically available here
+        $ps.RunspacePool = $this.RunspacePoolDependency # Pool should be injected to ViewModel instead of being automagically available here
         $ps.AddScript({
                 param($delegate, $delegateParams, $callback)
                 $callbackParam = [System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke($delegate, $delegateParams)
                 [System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke($callback, $callbackParam)
-                $script:syncHash.returnValue = $callbackParam
-                $script:syncHash.ErrorBackground = $Error
             }
         ).AddParameter('delegate', $workDelegate).AddParameter('delegateParams', $WorkParams).AddParameter('callback', $callbackDelegate)
 
-        $script:syncHash.handle = $ps.BeginInvoke() # remember to add dispose with another thread
-        $script:syncHash.ErrorBackgroundInvoke = $Error
+        $ps.BeginInvoke() # remember to add dispose with another thread
     }
 
     hidden [void]BackgroundCommand([object]$RelayCommandParameter) {
