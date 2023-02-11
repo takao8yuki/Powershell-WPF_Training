@@ -6,14 +6,16 @@ $DebugPreference = 'Continue'
 # Might as well since we're in this deep. Interchangable, no unique methods were used.
 # [hashtable]::Synchronized(@{})
 $script:syncHash = [System.Collections.Concurrent.ConcurrentDictionary[string, object]]::new()
-$state = New-InitialSessionState -VariableNames @('syncHash') -FunctionNames 'New-WPFWindow'
+
+$state = New-InitialSessionState -VariableNames @('syncHash') #-StartUpScripts "$PSScriptRoot\Example.ps1"
 $pool = New-RunspacePool -InitialSessionState $state
 $syncHash.RSPool = $pool
 
 $syncHash.Window = New-WPFWindow -Xaml $Xaml
-$syncHash.Window.DataContext = [MainWindowViewModel]::new()
+$syncHash.Window.DataContext = [MainWindowViewModel]::new() # Does not load with static constructor if has StartUpScripts with viewmodel definition
 # $application = [System.Windows.Application]::new()
 # $application.ShutdownMode = [System.Windows.ShutdownMode]::OnMainWindowClose
-# $application.Run($syncHash.Window)
+# $null = $application.Run($syncHash.Window)
 $syncHash.Window.ShowDialog()
+$syncHash.Window.add_Closing($syncHash.Window.Dispatcher.InvokeShutdown())
 $syncHash.Error = $Error
