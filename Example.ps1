@@ -464,34 +464,51 @@ class MainWindowViewModel : ViewModelBase {
     }
 
     # Todo - move to ViewModelBase
-    # Any RunspacePool task must call localdispatch
-    [void]BackgroundCommand([object]$RelayCommandParameter) {
-        $this.IsBackgroundFree = $false
-        $this.TestBackgroundCommand.RaiseCanExecuteChanged()
-        if (-not $script:syncHash.VM) { $script:syncHash.VM = $this }
-        $e = $this.GetDelegate($this.BackgroundCallback)
+    # Any RunspacePool task must call Dispatcher if it modifies the UI
+    hidden [void]BackgroundInvoke ([System.Management.Automation.PSMethod]$Work, [object[]]$WorkParams, [System.Management.Automation.PSMethod]$Callback) {
+        $workDelegate = $this.GetDelegate($Work)
+        $callbackDelegate = $this.GetDelegate($Callback)
         $ps = [powershell]::Create()
-        $ps.RunspacePool = $script:syncHash.RSPool
+        $script:syncHash.ps = $ps
+        $ps.RunspacePool = $script:syncHash.RSPool # Pool should be injected to ViewModel instead of being automagically available here
         $ps.AddScript({
-            param($vm,$delegate)
-            $script:syncHash.BackgroundRunning = 'yes'
-            Start-Sleep -Seconds 2
-            # $vm.localdispatch.BeginInvoke(9, $test)
-            $vm.localdispatch.Invoke($delegate) # this is not the ui application dispatcher, but it works...
-            $script:syncHash.BackgroundRunning = 'no'
-        }).AddParameter('vm', $this).AddParameter('delegate', $e)
-        $handle = $ps.BeginInvoke() # remember to add dispose
+                param($delegate, $delegateParams, $callback)
+                $callbackParam = [System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke($delegate, $delegateParams)
+                [System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke($callback, $callbackParam)
+                $script:syncHash.returnValue = $callbackParam
+                $script:syncHash.ErrorBackground = $Error
+            }
+        ).AddParameter('delegate', $workDelegate).AddParameter('delegateParams', $WorkParams).AddParameter('callback', $callbackDelegate)
+
+        $script:syncHash.handle = $ps.BeginInvoke() # remember to add dispose with another thread
+        $script:syncHash.ErrorBackgroundInvoke = $Error
     }
 
-    [void]BackgroundCallback() {
-        #[MainWindowViewModel]::ViewModelDispatcher.Invoke({
-        #[System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke({
-        #$this.localdispatch.Invoke({
-            # Show-MessageBox -Message 'yolo'
-            $this.TextBlockText++
-            $this.IsBackgroundFree = $true
-            $this.TestBackgroundCommand.RaiseCanExecuteChanged()
-        #})
+    hidden [void]BackgroundCommand([object]$RelayCommandParameter) {
+        $this.IsBackgroundFree = $false
+        $this.TestBackgroundCommand.RaiseCanExecuteChanged()
+        # dispatcher cannnot unbox PSObject - we've left the realm of powershell magic // the backing fields should work
+        $param1 = $this.TextBoxText
+        $param2 = [int]$this.TextBlockText
+        $this.BackgroundInvoke($this.DoStuffBackgroundOrNot, ($param1, $param2), $this.BackgroundCallback)
+    }
+
+    [int]DoStuffBackgroundOrNot ([int]$waitSeconds, [int]$startNumber) {
+        $endNumber = $startNumber
+        for ($o = 1; $o -le $waitSeconds; $o++) {
+            Start-Sleep -Seconds 1
+            $this.UIDispatcher.Invoke({ $this.ExtractedMethod(1) })
+        }
+        $endNumber += $waitSeconds
+        return $endNumber
+    }
+
+    [void]BackgroundCallback($a) {
+        $this.UIDispatcher.Invoke({
+                $this.TextBlockText += $a
+                $this.IsBackgroundFree = $true
+                $this.TestBackgroundCommand.RaiseCanExecuteChanged()
+            })
     }
 
     [bool]$_IsBackgroundFree = $true
@@ -501,10 +518,32 @@ class MainWindowViewModel : ViewModelBase {
 
     # Slow
     [void]RefreshAllButtons() {
-        $this.localdispatch.Invoke({ [System.Windows.Input.CommandManager]::InvalidateRequerySuggested() })
-        #[System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke({[System.Windows.Input.CommandManager]::InvalidateRequerySuggested()})
-        #[MainWindowViewModel]::ViewModelDispatcher.Invoke({ [System.Windows.Input.CommandManager]::InvalidateRequerySuggested() })
+        $this.UIDispatcher.Invoke({ [System.Windows.Input.CommandManager]::InvalidateRequerySuggested() })
     }
+}
+
+# Does not work
+class DispatcherUtil {
+    [void]DoEvents($d) {
+        $frame = [System.Windows.Threading.DispatcherFrame]::new()
+        $z = [System.Windows.Threading.DispatcherOperationCallback]::Combine($d)
+        [System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke(
+            $z,
+            $frame)
+        [System.Windows.Threading.Dispatcher]::PushFrame($frame)
+    }
+    DispatcherUtil () {}
+    [object]ExitFrame([object]$frame) {
+        $frame.Continue = $false
+        return $null
+    }
+}
+
+# Does not work
+function zDoEvents {
+    $utility = [DispatcherUtil]::new()
+    $delgate = [DispatcherUtil].GetMethod('ExitFrame').CreateDelegate('func[object,object]' -as [type], $utility)
+    $utility.DoEvents($delgate)
 }
 
 function Show-MessageBox {
@@ -548,7 +587,7 @@ WindowStartupLocation="CenterScreen">
             <Button
                 Content="{Binding ParameterContent}"
                 Command="{Binding TestCommand}"
-                CommandParameter="3" />
+                CommandParameter="100" />
             <TextBlock Text="Current Background Tasks" MinHeight="30" />
             <TextBlock Text="{Binding CurrentBackgroundCount}" MinHeight="30" />
             <Button
@@ -562,12 +601,3 @@ WindowStartupLocation="CenterScreen">
 # If any edits, the console must be reset because the class/assembly stays loaded with the old viewmodel
 # DataContext can be loaded in Xaml
 # https://gist.github.com/nikonthethird/4e410ac3c04ea6633043a5cb7be1d717
-
-
-
-
-
-# $async = $window.Dispatcher.InvokeAsync(
-#     { $null = $window.ShowDialog() }
-# )
-# $null = $async.Wait()
