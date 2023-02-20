@@ -407,8 +407,10 @@ class MainWindowViewModel : ViewModelBase {
     [int]$_TextBlockText
     [string]$NoParameterContent = 'No Parameter'
     [string]$ParameterContent = 'Parameter'
+    [int]$ExtractedMethodRunCount
     [System.Windows.Input.ICommand]$TestCommand
     [System.Windows.Input.ICommand]$TestBackgroundCommand
+    [bool]$_IsBackgroundFree = $true
 
     # Turn into cmdlet instead?
     # ScriptProperties cannot be bound to the xaml
@@ -448,7 +450,6 @@ class MainWindowViewModel : ViewModelBase {
         # $this.Init('IsBackgroundFree')
     }
 
-    [int]$ExtractedMethodRunCount
     [void]ExtractedMethod([int]$i) {
         $this.ExtractedMethodRunCount++
         $this.TextBlockText += $i # Allowed since TextBlockText is added by Add-Member/Update-TypeData in which the set method raises OnPropertyChanged
@@ -516,7 +517,6 @@ class MainWindowViewModel : ViewModelBase {
         Write-Debug "$($this.TextBlockText)"
     }
 
-    [bool]$_IsBackgroundFree = $true
     [bool]CanBackgroundCommand([object]$RelayCommandParameter) {
         return $this._IsBackgroundFree
     }
