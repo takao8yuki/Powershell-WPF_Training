@@ -330,21 +330,21 @@ class ViewModelBase : ComponentModel.INotifyPropertyChanged {
         $this | Add-Member -MemberType ScriptProperty -Name "$propertyName" -Value $getter -SecondValue $setter
     }
 
-    [Windows.Input.ICommand]NewCommand(
+    [System.Windows.Input.ICommand]NewCommand(
         [System.Management.Automation.PSMethod]$Execute,
         [System.Management.Automation.PSMethod]$CanExecute
     ) {
         return [RelayCommandBase]::new($Execute, $CanExecute)
     }
 
-    [Windows.Input.ICommand]NewCommand(
+    [System.Windows.Input.ICommand]NewCommand(
         [System.Management.Automation.PSMethod]$Execute
     ) {
         return [RelayCommandBase]::new($Execute)
     }
 
     # Experimental - Probably not needed in PowerShell 7.2+
-    [Windows.Input.ICommand]NewDelegate(
+    [System.Windows.Input.ICommand]NewDelegate(
         [System.Management.Automation.PSMethod]$Execute,
         [System.Management.Automation.PSMethod]$CanExecute
     ) {
@@ -355,7 +355,7 @@ class ViewModelBase : ComponentModel.INotifyPropertyChanged {
         return [DelegateCommand]::new($e, $ce)
     }
 
-    [Windows.Input.ICommand]NewDelegate(
+    [System.Windows.Input.ICommand]NewDelegate(
         [System.Management.Automation.PSMethod]$Execute
     ) {
         $e = $this.GetDelegate($Execute)
