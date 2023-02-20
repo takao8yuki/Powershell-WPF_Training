@@ -452,6 +452,7 @@ class MainWindowViewModel : ViewModelBase {
     [void]ExtractedMethod([int]$i) {
         $this.ExtractedMethodRunCount++
         $this.TextBlockText += $i # Allowed since TextBlockText is added by Add-Member/Update-TypeData in which the set method raises OnPropertyChanged
+        Write-Debug "$($this.TextBlockText)"
     }
 
     hidden [void]UpdateTextBlock([object]$RelayCommandParameter) {
@@ -475,7 +476,7 @@ class MainWindowViewModel : ViewModelBase {
         $workDelegate = $this.GetDelegate($Work)
         $callbackDelegate = $this.GetDelegate($Callback)
         $ps = [powershell]::Create()
-        $ps.RunspacePool = $this.RunspacePoolDependency # Pool should be injected to ViewModel instead of being automagically available here
+        $ps.RunspacePool = $this.RunspacePoolDependency
         $ps.AddScript({
                 param($delegate, $delegateParams, $callback)
                 $callbackParam = [System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke($delegate, $delegateParams)
@@ -489,7 +490,7 @@ class MainWindowViewModel : ViewModelBase {
     hidden [void]BackgroundCommand([object]$RelayCommandParameter) {
         $this.IsBackgroundFree = $false
         $this.TestBackgroundCommand.RaiseCanExecuteChanged()
-        # dispatcher cannnot unbox PSObject - we've left the realm of powershell magic // the backing fields should work
+        # delegates cannnot unbox PSObject - we've left the realm of powershell magic
         $param1 = $this.TextBoxText
         $param2 = [int]$this.TextBlockText
         $this.BackgroundInvoke($this.DoStuffBackgroundOrNot, ($param1, $param2), $this.BackgroundCallback)
@@ -510,7 +511,9 @@ class MainWindowViewModel : ViewModelBase {
                 $this.TextBlockText += $a
                 $this.IsBackgroundFree = $true
                 $this.TestBackgroundCommand.RaiseCanExecuteChanged()
-            })
+            }
+        )
+        Write-Debug "$($this.TextBlockText)"
     }
 
     [bool]$_IsBackgroundFree = $true
@@ -524,7 +527,7 @@ class MainWindowViewModel : ViewModelBase {
     }
 }
 
-# Does not work
+# Alternative to [System.Windows.Forms.Application]::DoEvents() from Add-Type -AssemblyName System.Windows.Forms
 class DispatcherUtil {
     [void]DoEvents($d) {
         $frame = [System.Windows.Threading.DispatcherFrame]::new()
@@ -541,8 +544,7 @@ class DispatcherUtil {
     }
 }
 
-# Does not work
-function zDoEvents {
+function Send-Events {
     $utility = [DispatcherUtil]::new()
     $delgate = [DispatcherUtil].GetMethod('ExitFrame').CreateDelegate('func[object,object]' -as [type], $utility)
     $utility.DoEvents($delgate)
