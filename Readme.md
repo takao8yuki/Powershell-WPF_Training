@@ -14,11 +14,7 @@ The latter will keep the console available for use.
 
 Enter a number in seconds that the background command will run for in the textbox. Then click the background command button. You are still able to move and resize the window and click other buttons. No frozen UI!
 
-<br>
-
-You mentioned view model, that means I can spin up the class without the ui? Why of course! See `ViewModel Test Script.ps1`
-
-<br>
+You mentioned view model, that means I can spin up the class without the UI? Why of course! See `ViewModel.Tests.ps1`
 
 # Helpful References
 
