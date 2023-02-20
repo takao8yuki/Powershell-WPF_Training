@@ -409,6 +409,7 @@ class MainWindowViewModel : ViewModelBase {
     [string]$ParameterContent = 'Parameter'
     [System.Windows.Input.ICommand]$TestCommand
     [System.Windows.Input.ICommand]$TestBackgroundCommand
+    [bool]$_IsBackgroundFree = $true
 
     # Turn into cmdlet instead?
     # ScriptProperties cannot be bound to the xaml
@@ -516,7 +517,6 @@ class MainWindowViewModel : ViewModelBase {
         Write-Debug "$($this.TextBlockText)"
     }
 
-    [bool]$_IsBackgroundFree = $true
     [bool]CanBackgroundCommand([object]$RelayCommandParameter) {
         return $this._IsBackgroundFree
     }
