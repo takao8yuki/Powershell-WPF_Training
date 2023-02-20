@@ -25,10 +25,8 @@ function New-InitialSessionState {
         # CreateDefault allows default cmdlets to be used without being explicitly added in the runspace
         $initialSessionState = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
 
-        foreach ($modulePath in $ModulePaths) {
-            if (Test-Path -Path $modulePath -PathType Leaf) {
-                $initialSessionState.ImportPSModule($modulePath) | Out-Null
-            }
+        if ($PSBoundParameters['ModulePaths']) {
+            $null = $initialSessionState.ImportPSModule($ModulePaths)
         }
 
         foreach ($functionName in $FunctionNames) {
@@ -43,7 +41,7 @@ function New-InitialSessionState {
             $initialSessionState.Variables.Add($runspaceVariable)
         }
 
-        If ($PSBoundParameters['StartUpScripts']) {
+        if ($PSBoundParameters['StartUpScripts']) {
             $null = $initialSessionState.StartupScripts.Add($StartUpScripts)
         }
 
@@ -59,7 +57,7 @@ function New-RunspacePool {
     [CmdletBinding()]
     [OutputType([System.Management.Automation.Runspaces.RunspacePool])]
     param(
-        [Parameter()]
+        [Parameter(Mandatory)]
         [InitialSessionState]$InitialSessionState,
         [Parameter()]
         [int]$ThreadLimit = $([Int]$env:NUMBER_OF_PROCESSORS + 1),
@@ -77,6 +75,7 @@ function New-RunspacePool {
         $runspacePool = [RunspaceFactory]::CreateRunspacePool(1, $ThreadLimit, $InitialSessionState, $Host)
         $runspacePool.ApartmentState = $ApartmentState
         $runspacePool.ThreadOptions = $ThreadOptions
+        $runspacePool.CleanupInterval = [timespan]::FromMinutes(2)
         $runspacePool.Open()
         $runspacePool
     }
