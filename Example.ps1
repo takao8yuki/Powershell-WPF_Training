@@ -415,6 +415,7 @@ class MainWindowViewModel : ViewModelBase {
     # Turn into cmdlet instead?
     # ScriptProperties cannot be bound to the xaml
     # Does not persist across runspaces - Add-Member does however
+    # It is shared between runspaces if initialized in a runspace pool
     hidden static [void]Init([string] $propertyName) {
         $setter = [ScriptBlock]::Create("
             param(`$value)
@@ -466,7 +467,7 @@ class MainWindowViewModel : ViewModelBase {
         $this.ExtractedMethod($value)
     }
 
-    # Is this code smell? Takes a parameter but will never use it... See class 'RelayCommand' for 'fix'
+    # Is this code smell? Takes a parameter but will never use it... See class 'RelayCommand' for "fix"
     [bool]CanUpdateTextBlock([object]$RelayCommandParameter) {
         return (-not [string]::IsNullOrWhiteSpace($this.TextBoxText))
     }
@@ -497,19 +498,19 @@ class MainWindowViewModel : ViewModelBase {
         $this.BackgroundInvoke($this.DoStuffBackgroundOrNot, ($param1, $param2), $this.BackgroundCallback)
     }
 
-    [int]DoStuffBackgroundOrNot ([int]$waitSeconds, [int]$startNumber) {
-        $endNumber = $startNumber
-        for ($o = 1; $o -le $waitSeconds; $o++) {
+    [int]DoStuffBackgroundOrNot ([int]$WaitSeconds, [int]$StartNumber) {
+        $endNumber = $StartNumber
+        for ($o = 1; $o -le $WaitSeconds; $o++) {
             Start-Sleep -Seconds 1
             $this.UIDispatcher.Invoke({ $this.ExtractedMethod(1) })
         }
-        $endNumber += $waitSeconds
+        $endNumber += $WaitSeconds
         return $endNumber
     }
 
-    [void]BackgroundCallback($a) {
+    [void]BackgroundCallback($NumberToAdd) {
         $this.UIDispatcher.Invoke({
-                $this.TextBlockText += $a
+                $this.TextBlockText += $NumberToAdd
                 $this.IsBackgroundFree = $true
                 $this.TestBackgroundCommand.RaiseCanExecuteChanged()
                 Write-Debug "$($this.TextBlockText)" # This crashes the ui if outside the dispatcher.invoke()
@@ -529,11 +530,11 @@ class MainWindowViewModel : ViewModelBase {
 
 # Alternative to [System.Windows.Forms.Application]::DoEvents() from Add-Type -AssemblyName System.Windows.Forms
 class DispatcherUtil {
-    [void]DoEvents($d) {
+    [void]DoEvents($ExitFrameDelegate) {
         $frame = [System.Windows.Threading.DispatcherFrame]::new()
-        $z = [System.Windows.Threading.DispatcherOperationCallback]::Combine($d)
+        $callback = [System.Windows.Threading.DispatcherOperationCallback]::Combine($ExitFrameDelegate)
         [System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke(
-            $z,
+            $callback,
             $frame)
         [System.Windows.Threading.Dispatcher]::PushFrame($frame)
     }
