@@ -512,9 +512,9 @@ class MainWindowViewModel : ViewModelBase {
                 $this.TextBlockText += $a
                 $this.IsBackgroundFree = $true
                 $this.TestBackgroundCommand.RaiseCanExecuteChanged()
+                Write-Debug "$($this.TextBlockText)" # This crashes the ui if outside the dispatcher.invoke()
             }
         )
-        Write-Debug "$($this.TextBlockText)"
     }
 
     [bool]CanBackgroundCommand([object]$RelayCommandParameter) {
