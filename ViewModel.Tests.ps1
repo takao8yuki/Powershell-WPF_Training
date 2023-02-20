@@ -10,7 +10,7 @@ Describe "TextBlockText is updated" {
         $state = New-InitialSessionState -VariableNames @('syncHash')
         $pool = New-RunspacePool -InitialSessionState $state
         $syncHash.RSPool = $pool
-        $mockObject = [MainWindowViewModel]::new($syncHash.RSPool)
+        $script:mockObject = [MainWindowViewModel]::new($syncHash.RSPool)
     }
 
     Context "UpdateTextBlock updates TextBlockText" {
