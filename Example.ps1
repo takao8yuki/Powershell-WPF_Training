@@ -82,6 +82,10 @@ function New-RunspacePool {
 }
 
 function New-WPFWindow {
+    <#
+        .SYNOPSIS
+            Creates a WPF Window with given Xaml from a string or file
+    #>
     [CmdletBinding(DefaultParameterSetName = 'HereString')]
     param (
         [Parameter(Mandatory, ParameterSetName = 'HereString' )]
@@ -92,7 +96,7 @@ function New-WPFWindow {
         [System.IO.FileSystemInfo]$Path
     )
 
-    if ($Path) {
+    if ($PSBoundParameters['Path']) {
         $Xaml = Get-Content -Path $Path
     }
 
