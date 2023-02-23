@@ -18,4 +18,4 @@ $syncHash.Window.DataContext = [MainWindowViewModel]::new($syncHash.RSPool) # Do
 # $null = $application.Run($syncHash.Window)
 $syncHash.Window.ShowDialog()
 $syncHash.Window.add_Closing($syncHash.Window.Dispatcher.InvokeShutdown())
-$syncHash.Error = $Error
+$pool.Dispose()
