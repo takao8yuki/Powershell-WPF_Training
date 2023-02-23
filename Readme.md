@@ -17,7 +17,7 @@ Enter a number, in seconds, that the background command will run for in the text
 
 You mentioned view model, that means I can spin up the class without the UI? Why of course! See `ViewModel.Tests.ps1` and `ViewModelDP.Tests.ps1`. Set the console location to the aforementioned files location and call `Invoke-Pester` and watch the magic happen.
 
-![Alt text](/Images/PesterResult.PNG?raw=true)
+![test](/Images/PesterResult.PNG?raw=true)
 
 # Notes
 
