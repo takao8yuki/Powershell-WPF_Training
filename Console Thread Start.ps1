@@ -12,7 +12,8 @@ $pool = New-RunspacePool -InitialSessionState $state
 $syncHash.RSPool = $pool
 
 $syncHash.Window = New-WPFWindow -Xaml $Xaml
-$syncHash.Window.DataContext = [MainWindowViewModel]::new($syncHash.RSPool) # Does not load with static constructor if has StartUpScripts with viewmodel definition
+# $syncHash.Window.DataContext = [MainWindowViewModel]::new($syncHash.RSPool)
+$syncHash.Window.DataContext = [MainWindowViewModelDP]::new($syncHash.RSPool)
 # $application = [System.Windows.Application]::new()
 # $application.ShutdownMode = [System.Windows.ShutdownMode]::OnMainWindowClose
 # $null = $application.Run($syncHash.Window)

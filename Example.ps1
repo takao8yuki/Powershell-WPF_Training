@@ -1,5 +1,5 @@
 #Remember to add the below two assemblies and dot source this file since powershell parses classes before add-types
-Add-Type -AssemblyName presentationframework, presentationcore
+Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
 
 function New-InitialSessionState {
     <#
@@ -273,7 +273,7 @@ class DelegateCommand : System.Windows.Input.ICommand {
 }
 
 
-class ViewModelBase : System.ComponentModel.INotifyPropertyChanged {
+class ViewModelBase : System.Windows.DependencyObject, System.ComponentModel.INotifyPropertyChanged {
     # INotifyPropertyChanged Implementation
     hidden [ComponentModel.PropertyChangedEventHandler] $_propertyChanged
 
@@ -398,8 +398,8 @@ class ViewModelBase : System.ComponentModel.INotifyPropertyChanged {
 
 
 class MainWindowViewModel : ViewModelBase {
-    [int]$TextBoxText
-    [int]$_TextBlockText
+    [int]$PrimaryInput
+    [int]$_Result
     [string]$NoParameterContent = 'No Parameter'
     [string]$ParameterContent = 'Parameter'
     [int]$ExtractedMethodRunCount
@@ -426,7 +426,7 @@ class MainWindowViewModel : ViewModelBase {
     # Don't need to do it this way since we're only going to need one viewmodel. Useful if you need to create many.
     # For curosity / my first actual static method + constructor / demo purposes
     static MainWindowViewModel() {
-        [MainWindowViewModel]::Init('TextBlockText')
+        [MainWindowViewModel]::Init('Result')
         [MainWindowViewModel]::Init('IsBackgroundFree')
     }
 
@@ -442,18 +442,18 @@ class MainWindowViewModel : ViewModelBase {
             $this.BackgroundCommand,
             $this.CanBackgroundCommand
         )
-        # $this.Init('TextBlockText')
+        # $this.Init('Result')
         # $this.Init('IsBackgroundFree')
     }
 
     [void]ExtractedMethod([int]$i) {
         $this.ExtractedMethodRunCount++
-        $this.TextBlockText += $i # Allowed since TextBlockText is added by Add-Member/Update-TypeData in which the set method raises OnPropertyChanged
+        $this.Result += $i # Allowed since Result is added by Add-Member/Update-TypeData in which the set method raises OnPropertyChanged
     }
 
     hidden [void]UpdateTextBlock([object]$RelayCommandParameter) {
         if ($null -eq $RelayCommandParameter) {
-            $value = $this.TextBoxText
+            $value = $this.PrimaryInput
         } else {
             $value = $RelayCommandParameter
         }
@@ -463,15 +463,15 @@ class MainWindowViewModel : ViewModelBase {
 
     # Is this code smell? Takes a parameter but will never use it... See class 'RelayCommand' for "fix"
     [bool]CanUpdateTextBlock([object]$RelayCommandParameter) {
-        return ($this.TextBoxText -ne 0)
+        return ($this.PrimaryInput -ne 0)
     }
 
     hidden [void]BackgroundCommand([object]$RelayCommandParameter) {
         $this.IsBackgroundFree = $false
         $this.TestBackgroundCommand.RaiseCanExecuteChanged()
         # delegates cannnot unbox PSObject - we've left the realm of powershell magic
-        $param1 = $this.TextBoxText
-        $param2 = [int]$this.TextBlockText
+        $param1 = $this.PrimaryInput
+        $param2 = [int]$this.Result
         $this.BackgroundInvoke($this.DoStuffBackgroundOrNot, ($param1, $param2), $this.BackgroundCallback)
     }
 
@@ -493,7 +493,7 @@ class MainWindowViewModel : ViewModelBase {
 
     [void]BackgroundCallback($NumberToAdd) {
         $this.UIDispatcher.Invoke({
-                $this.TextBlockText += $NumberToAdd
+                $this.Result += $NumberToAdd
                 $this.IsBackgroundFree = $true
                 $this.TestBackgroundCommand.RaiseCanExecuteChanged()
             }
@@ -509,6 +509,118 @@ class MainWindowViewModel : ViewModelBase {
         $this.UIDispatcher.Invoke({ [System.Windows.Input.CommandManager]::InvalidateRequerySuggested() })
     }
 }
+
+
+class MainWindowViewModelDP : ViewModelBase {
+    static [System.Windows.DependencyProperty]$ResultProperty = [System.Windows.DependencyProperty]::Register(
+        '_Result', [int], [MainWindowViewModelDP], [System.Windows.PropertyMetadata]::new(0, {
+                param([MainWindowViewModelDP]$vm, [System.Windows.DependencyPropertyChangedEventArgs] $e)
+                Write-Debug "ResultProperty new value: $($e.NewValue)"
+                if ($e.NewValue -eq 10) {
+                    Write-Debug 'I do callback if ResultProperty is 10'
+                }
+            })
+    )
+
+    static [System.Windows.DependencyProperty]$PrimaryInputProperty = [System.Windows.DependencyProperty]::Register(
+        'PrimaryInput', [int], [MainWindowViewModelDP], [System.Windows.PropertyMetadata]::new(0, {
+                param([MainWindowViewModelDP]$vm, [System.Windows.DependencyPropertyChangedEventArgs] $e)
+                Write-Debug "PrimaryInputProperty new value: $($e.NewValue)"
+                if ($e.NewValue -gt 10000) {
+                    Write-Debug 'I do calback if PrimaryInputProperty is greater than 10,000'
+                }
+                Write-Debug "$($vm.NoParameterContent) I have access to this vm"
+            })
+    )
+
+    static [System.Windows.DependencyProperty]$IsBackgroundFreeProperty = [System.Windows.DependencyProperty]::Register(
+        'IsBackgroundFree', [bool], [MainWindowViewModelDP], [System.Windows.PropertyMetadata]::new($true, {
+                param([MainWindowViewModelDP]$vm, [System.Windows.DependencyPropertyChangedEventArgs] $e)
+                Write-Debug "IsBackgroundFreeProperty new value: $($e.NewValue)"
+                if ($e.NewValue -eq $false) {
+                    Write-Debug 'I do callback if IsBackgroundFreeProperty is not true'
+                }
+            })
+    )
+
+    [string]$NoParameterContent = 'No Parameter'
+    [string]$ParameterContent = 'Parameter'
+    [int]$ExtractedMethodRunCount
+    [System.Windows.Input.ICommand]$TestCommand
+    [System.Windows.Input.ICommand]$TestBackgroundCommand
+
+    MainWindowViewModelDP($RunspacePool) {
+        $this.UIDispatcher = [System.Windows.Threading.Dispatcher]::CurrentDispatcher
+        $this.RunspacePoolDependency = $RunspacePool
+
+        $this.TestCommand = $this.NewDelegate(
+            $this.UpdateTextBlock,
+            $this.CanUpdateTextBlock
+        )
+        $this.TestBackgroundCommand = $this.NewDelegate(
+            $this.BackgroundCommand,
+            $this.CanBackgroundCommand
+        )
+    }
+
+    [void]ExtractedMethod([int]$i) {
+        $this.ExtractedMethodRunCount++
+        $this.SetValue([MainWindowViewModelDP]::ResultProperty, $this.GetValue([MainWindowViewModelDP]::ResultProperty) + $i)
+    }
+
+    hidden [void]UpdateTextBlock([object]$RelayCommandParameter) {
+        if ($null -eq $RelayCommandParameter) {
+            $value = $this.GetValue([MainWindowViewModelDP]::PrimaryInputProperty)
+        } else {
+            $value = $RelayCommandParameter
+        }
+
+        $this.ExtractedMethod($value)
+    }
+
+    [bool]CanUpdateTextBlock([object]$RelayCommandParameter) {
+        return ($this.GetValue([MainWindowViewModelDP]::PrimaryInputProperty) -ne 0)
+    }
+
+    hidden [void]BackgroundCommand([object]$RelayCommandParameter) {
+        $this.SetValue([MainWindowViewModelDP]::IsBackgroundFreeProperty, $false)
+        $this.TestBackgroundCommand.RaiseCanExecuteChanged()
+
+        $param1 = $this.GetValue([MainWindowViewModelDP]::PrimaryInputProperty)
+        $param2 = $this.GetValue([MainWindowViewModelDP]::ResultProperty)
+        $this.BackgroundInvoke($this.DoStuffBackgroundOrNot, ($param1, $param2), $this.BackgroundCallback)
+    }
+
+    [int]DoStuffBackgroundOrNot ([int]$WaitSeconds, [int]$StartNumber) {
+        $increment = 1
+        if ($WaitSeconds -lt 0) {
+            $increment = -1
+            $WaitSeconds *= $increment
+        }
+
+        $endNumber = $StartNumber
+        for ($o = 1; $o -le $WaitSeconds; $o++) {
+            Start-Sleep -Seconds 1
+            $this.UIDispatcher.Invoke({ $this.ExtractedMethod($increment) })
+        }
+        $endNumber += ($WaitSeconds * $increment)
+        return $endNumber
+    }
+
+    [void]BackgroundCallback($NumberToAdd) {
+        $this.UIDispatcher.Invoke({
+                $this.SetValue([MainWindowViewModelDP]::ResultProperty, $this.GetValue([MainWindowViewModelDP]::ResultProperty) + $NumberToAdd)
+                $this.SetValue([MainWindowViewModelDP]::IsBackgroundFreeProperty, $true)
+                $this.TestBackgroundCommand.RaiseCanExecuteChanged()
+            }
+        )
+    }
+
+    [bool]CanBackgroundCommand([object]$RelayCommandParameter) {
+        return $this.GetValue([MainWindowViewModelDP]::IsBackgroundFreeProperty)
+    }
+}
+
 
 # Alternative to [System.Windows.Forms.Application]::DoEvents() from Add-Type -AssemblyName System.Windows.Forms
 class DispatcherUtil {
@@ -566,8 +678,8 @@ WindowStartupLocation="CenterScreen">
     <Grid>
         <StackPanel Margin="5">
             <!-- TextBox bound property does not update until textbox focus is lost. Use UpdateSourceTrigger=PropertyChanged to update as typed -->
-            <TextBox x:Name="TextBox1" Text="{Binding TextBoxText, UpdateSourceTrigger=PropertyChanged}" MinHeight="30" />
-            <TextBlock x:Name="TextBlock1" Text="{Binding _TextBlockText}" MinHeight="30" />
+            <TextBox x:Name="TextBox1" Text="{Binding PrimaryInput, UpdateSourceTrigger=PropertyChanged}" MinHeight="30" />
+            <TextBlock x:Name="TextBlock1" Text="{Binding _Result}" MinHeight="30" />
             <Button
                 Content="{Binding NoParameterContent}"
                 Command="{Binding TestCommand}" />
