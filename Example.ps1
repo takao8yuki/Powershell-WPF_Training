@@ -111,12 +111,12 @@ function New-WPFWindow {
 class RelayCommandBase : System.Windows.Input.ICommand {
     add_CanExecuteChanged([EventHandler] $value) {
         [System.Windows.Input.CommandManager]::add_RequerySuggested($value)
-        Write-Debug "$value added"
+        Write-Debug "$value add_CanExecuteChanged"
     }
 
     remove_CanExecuteChanged([EventHandler] $value) {
         [System.Windows.Input.CommandManager]::remove_RequerySuggested($value)
-        Write-Debug "$value removed"
+        Write-Debug "$value remove_CanExecuteChanged"
     }
 
     # Invoke does not take a $null parameter so we wrap $null in an array for all cases
@@ -124,7 +124,6 @@ class RelayCommandBase : System.Windows.Input.ICommand {
     # Arguments cannot be explicitly $null since they're optional
     # Maybe create delegate instead
     [bool]CanExecute([object]$commandParameter) {
-        Write-Debug 'RelayCommandBase.CanExecute ran'
         if ($null -eq $this._canExecute) { return $true }
         return $this._canExecute.Invoke(@($commandParameter))
     }
@@ -153,12 +152,7 @@ class RelayCommandBase : System.Windows.Input.ICommand {
     hidden Init($Execute, $CanExecute) {
         if ($null -eq $Execute) { throw 'RelayCommandBase.Execute is null. Supply a valid method.' }
         $this._execute = $Execute
-        Write-Debug -Message $this._execute.ToString()
-
         $this._canExecute = $CanExecute
-        if ($null -ne $this._canExecute) {
-            Write-Debug -Message $this._canExecute.ToString()
-        }
     }
 }
 
@@ -168,8 +162,6 @@ class RelayCommandBase : System.Windows.Input.ICommand {
 class RelayCommand : RelayCommandBase {
     [bool]CanExecute([object]$commandParameter) {
         if ($null -eq $this._canExecute) { return $true }
-        # CanExecute is inefficient.
-        # Write-Debug 'RelayCommand.CanExecute ran'
         if ($this._canExecuteCount -eq 1) { return $this._canExecute.Invoke($commandParameter) }
         else { return $this._canExecute.Invoke() }
     }
@@ -199,12 +191,10 @@ class RelayCommand : RelayCommandBase {
         if ($null -eq $Execute) { throw 'RelayCommand.Execute is null. Supply a valid method.' }
         $this._executeCount = $this.GetParameterCount($Execute)
         $this._execute = $Execute
-        Write-Debug -Message $this._execute.ToString()
 
         $this._canExecute = $CanExecute
         if ($null -ne $this._canExecute) {
             $this._canExecuteCount = $this.GetParameterCount($CanExecute)
-            Write-Debug -Message $this._canExecute.ToString()
         }
     }
 
@@ -227,18 +217,17 @@ class DelegateCommand : System.Windows.Input.ICommand {
     add_CanExecuteChanged([EventHandler] $value) {
         $this._internalCanExecuteChanged = [Delegate]::Combine($this._internalCanExecuteChanged, $value)
         [System.Windows.Input.CommandManager]::add_RequerySuggested($value)
-        Write-Debug "$value added"
+        Write-Debug "$value add_CanExecuteChanged"
     }
 
     remove_CanExecuteChanged([EventHandler] $value) {
         $this._internalCanExecuteChanged = [Delegate]::Remove($this._internalCanExecuteChanged, $value)
         [System.Windows.Input.CommandManager]::remove_RequerySuggested($value)
-        Write-Debug "$value removed"
+        Write-Debug "$value remove_CanExecuteChanged"
     }
 
     # Delegate takes $null unlike invoking the PSMethod where it passes as arguments
     [bool]CanExecute([object]$commandParameter) {
-        #Write-Debug 'DelegateCommand.CanExecute ran'
         if ($null -eq $this._canExecute) { return $true }
         return $this._canExecute.Invoke($commandParameter)
     }
@@ -283,17 +272,13 @@ class DelegateCommand : System.Windows.Input.ICommand {
     hidden Init($Execute, $CanExecute) {
         if ($null -eq $Execute) { throw 'DelegateCommand.Execute is null. Supply a valid method.' }
         $this._execute = $Execute
-        # Write-Debug -Message $this._execute.ToString()
-
         $this._canExecute = $CanExecute
-        # if ($null -ne $this._canExecute) {
-        #     Write-Debug -Message $this._canExecute.ToString()
-        # }
     }
 }
 
 
-class ViewModelBase : ComponentModel.INotifyPropertyChanged {
+class ViewModelBase : System.ComponentModel.INotifyPropertyChanged {
+    # INotifyPropertyChanged Implementation
     hidden [ComponentModel.PropertyChangedEventHandler] $_propertyChanged
 
     [void]add_PropertyChanged([ComponentModel.PropertyChangedEventHandler] $value) {
@@ -305,19 +290,15 @@ class ViewModelBase : ComponentModel.INotifyPropertyChanged {
     }
 
     [void]OnPropertyChanged([string] $propertyName) {
-        Write-Debug "Notified change of property '$propertyName'."
         #$this._propertyChanged.Invoke($this, $propertyName) # Why does this accepting a string also work?
-        #$this._PropertyChanged.Invoke($this, (New-Object PropertyChangedEventArgs $propertyName))
         # There are cases where it is null, which shoots a non terminating error. I forget when I ran into it.
         if ($null -ne $this._PropertyChanged) {
             $this._PropertyChanged.Invoke($this, [System.ComponentModel.PropertyChangedEventArgs]::new($propertyName))
+            Write-Debug "Notified change of property '$propertyName'."
         }
 
     }
-
-
-    # static $ViewModelDispatcher = [System.Windows.Threading.Dispatcher]::CurrentDispatcher
-
+    # End INotifyPropertyChanged Implementation
 
     [void]Init([string] $propertyName) {
         $setter = [ScriptBlock]::Create("
