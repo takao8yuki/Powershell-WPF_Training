@@ -16,6 +16,7 @@ A **threaded** PowerShell UI! Supported by a view model and relay command.
 Enter a number, in seconds, that the background command will run for in the textbox. Then click the background command button. You are still able to move, resize the window, and click other buttons. No frozen UI!
 
 You mentioned view model, that means I can spin up the class without the UI? Why of course! See `ViewModel.Tests.ps1` and `ViewModelDP.Tests.ps1`. Set the console location to the aforementioned files location and call `Invoke-Pester` and watch the magic happen.
+![Screenshot](Images\PesterResult.png)
 
 # Notes
 
