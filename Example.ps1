@@ -296,6 +296,9 @@ class ViewModelBase : System.ComponentModel.INotifyPropertyChanged {
     }
     # End INotifyPropertyChanged Implementation
 
+    [System.Windows.Threading.Dispatcher]$UIDispatcher
+    $RunspacePoolDependency
+
     [void]Init([string] $propertyName) {
         $setter = [ScriptBlock]::Create("
             param(`$value)
@@ -305,6 +308,24 @@ class ViewModelBase : System.ComponentModel.INotifyPropertyChanged {
         $getter = [ScriptBlock]::Create("`$this.'_$propertyName'")
 
         $this | Add-Member -MemberType ScriptProperty -Name "$propertyName" -Value $getter -SecondValue $setter
+    }
+
+    # Any RunspacePool task must call Dispatcher if it modifies the UI
+    hidden [void]BackgroundInvoke ([System.Management.Automation.PSMethod]$Work, [object[]]$WorkParams, [System.Management.Automation.PSMethod]$Callback) {
+        $workDelegate = $this.GetDelegate($Work)
+        $callbackDelegate = $this.GetDelegate($Callback)
+        $ps = [powershell]::Create()
+        $ps.RunspacePool = $this.RunspacePoolDependency
+        $ps.AddScript({
+                param($delegate, $delegateParams, $callback)
+                $callbackParam = [System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke($delegate, $delegateParams)
+                [System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke($callback, $callbackParam)
+            }
+        ).AddParameter('delegate', $workDelegate).AddParameter('delegateParams', $WorkParams).AddParameter('callback', $callbackDelegate)
+
+        # Remember to add dispose with another thread
+        # $asyncState = $ps.BeginInvoke()
+        $ps.BeginInvoke()
     }
 
     [System.Windows.Input.ICommand]NewCommand(
@@ -377,9 +398,6 @@ class ViewModelBase : System.ComponentModel.INotifyPropertyChanged {
 
 
 class MainWindowViewModel : ViewModelBase {
-    [System.Windows.Threading.Dispatcher]$UIDispatcher
-    $RunspacePoolDependency
-
     [int]$TextBoxText
     [int]$_TextBlockText
     [string]$NoParameterContent = 'No Parameter'
@@ -445,24 +463,7 @@ class MainWindowViewModel : ViewModelBase {
 
     # Is this code smell? Takes a parameter but will never use it... See class 'RelayCommand' for "fix"
     [bool]CanUpdateTextBlock([object]$RelayCommandParameter) {
-        return (-not [string]::IsNullOrWhiteSpace($this.TextBoxText))
-    }
-
-    # Todo - move to ViewModelBase
-    # Any RunspacePool task must call Dispatcher if it modifies the UI
-    hidden [void]BackgroundInvoke ([System.Management.Automation.PSMethod]$Work, [object[]]$WorkParams, [System.Management.Automation.PSMethod]$Callback) {
-        $workDelegate = $this.GetDelegate($Work)
-        $callbackDelegate = $this.GetDelegate($Callback)
-        $ps = [powershell]::Create()
-        $ps.RunspacePool = $this.RunspacePoolDependency
-        $ps.AddScript({
-                param($delegate, $delegateParams, $callback)
-                $callbackParam = [System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke($delegate, $delegateParams)
-                [System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke($callback, $callbackParam)
-            }
-        ).AddParameter('delegate', $workDelegate).AddParameter('delegateParams', $WorkParams).AddParameter('callback', $callbackDelegate)
-
-        $ps.BeginInvoke() # remember to add dispose with another thread
+        return ($this.TextBoxText -ne 0)
     }
 
     hidden [void]BackgroundCommand([object]$RelayCommandParameter) {
