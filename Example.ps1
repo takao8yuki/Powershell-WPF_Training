@@ -111,12 +111,10 @@ function New-WPFWindow {
 class RelayCommandBase : System.Windows.Input.ICommand {
     add_CanExecuteChanged([EventHandler] $value) {
         [System.Windows.Input.CommandManager]::add_RequerySuggested($value)
-        Write-Debug "$value add_CanExecuteChanged"
     }
 
     remove_CanExecuteChanged([EventHandler] $value) {
         [System.Windows.Input.CommandManager]::remove_RequerySuggested($value)
-        Write-Debug "$value remove_CanExecuteChanged"
     }
 
     # Invoke does not take a $null parameter so we wrap $null in an array for all cases
@@ -205,7 +203,7 @@ class RelayCommand : RelayCommandBase {
         if ([string]::IsNullOrWhiteSpace($param)) { return 0 }
 
         $paramCount = $param.Split(',').Count
-        Write-Debug "$($Method.OverloadDefinitions[0].Split('(').Split(')')[1].Split(',')) relaycommand param count"
+        # Write-Debug "$($Method.OverloadDefinitions[0].Split('(').Split(')')[1].Split(',')) relaycommand param count"
         if ($paramCount -gt 1) { throw "RelayCommand expected parameter count 0 or 1. Found PSMethod with count $paramCount" }
         return $paramCount
     }
@@ -217,13 +215,11 @@ class DelegateCommand : System.Windows.Input.ICommand {
     add_CanExecuteChanged([EventHandler] $value) {
         $this._internalCanExecuteChanged = [Delegate]::Combine($this._internalCanExecuteChanged, $value)
         [System.Windows.Input.CommandManager]::add_RequerySuggested($value)
-        Write-Debug "$value add_CanExecuteChanged"
     }
 
     remove_CanExecuteChanged([EventHandler] $value) {
         $this._internalCanExecuteChanged = [Delegate]::Remove($this._internalCanExecuteChanged, $value)
         [System.Windows.Input.CommandManager]::remove_RequerySuggested($value)
-        Write-Debug "$value remove_CanExecuteChanged"
     }
 
     # Delegate takes $null unlike invoking the PSMethod where it passes as arguments
@@ -294,7 +290,7 @@ class ViewModelBase : System.ComponentModel.INotifyPropertyChanged {
         # There are cases where it is null, which shoots a non terminating error. I forget when I ran into it.
         if ($null -ne $this._PropertyChanged) {
             $this._PropertyChanged.Invoke($this, [System.ComponentModel.PropertyChangedEventArgs]::new($propertyName))
-            Write-Debug "Notified change of property '$propertyName'."
+            # Write-Debug "Notified change of property '$propertyName'."
         }
 
     }
@@ -373,7 +369,7 @@ class ViewModelBase : System.ComponentModel.INotifyPropertyChanged {
 
         $paramString += "$delegateReturnParam"
         $delegateString += "$paramString"
-        Write-Debug "$($Method.Name) converted to: $delegateString"
+        # Write-Debug "$($Method.Name) converted to: $delegateString"
         return $typeMethod.CreateDelegate(($delegateString -as [type]), $this)
     }
 
@@ -435,7 +431,6 @@ class MainWindowViewModel : ViewModelBase {
     [void]ExtractedMethod([int]$i) {
         $this.ExtractedMethodRunCount++
         $this.TextBlockText += $i # Allowed since TextBlockText is added by Add-Member/Update-TypeData in which the set method raises OnPropertyChanged
-        Write-Debug "$($this.TextBlockText)"
     }
 
     hidden [void]UpdateTextBlock([object]$RelayCommandParameter) {
@@ -500,7 +495,6 @@ class MainWindowViewModel : ViewModelBase {
                 $this.TextBlockText += $NumberToAdd
                 $this.IsBackgroundFree = $true
                 $this.TestBackgroundCommand.RaiseCanExecuteChanged()
-                Write-Debug "$($this.TextBlockText)" # This crashes the ui if outside the dispatcher.invoke()
             }
         )
     }
