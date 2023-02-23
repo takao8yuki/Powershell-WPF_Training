@@ -4,7 +4,7 @@ Add-Type -AssemblyName presentationframework
 $DebugPreference = 'Continue'
 . "$PSScriptRoot\Example.ps1"
 
-Describe 'TextBlockText is updated' {
+Describe '_Result is updated' {
     BeforeAll {
         $syncHash = [System.Collections.Concurrent.ConcurrentDictionary[string, object]]::new()
         $state = New-InitialSessionState -VariableNames @('syncHash')
@@ -13,72 +13,72 @@ Describe 'TextBlockText is updated' {
         $script:mockObject = [MainWindowViewModel]::new($syncHash.RSPool)
     }
 
-    Context 'UpdateTextBlock updates TextBlockText' {
-        It 'TextBoxText should be 5' {
-            $mockObject.TextBoxText = 5
-            $mockObject.TextBoxText | Should Be 5
+    Context 'UpdateTextBlock updates _Result' {
+        It 'PrimaryInput should be 5' {
+            $mockObject.PrimaryInput = 5
+            $mockObject.PrimaryInput | Should Be 5
         }
 
-        It 'TextBlockText should be 5' {
+        It '_Result should be 5' {
             $mockObject.UpdateTextBlock($null)
-            $mockObject.TextBlockText | Should Be 5
+            $mockObject._Result | Should Be 5
         }
 
-        It 'Should add the number entered from above to TextBlockText' {
+        It 'Should add the number entered from above to _Result' {
             $mockObject.UpdateTextBlock($null)
-            $mockObject.TextBlockText | Should Be 10
+            $mockObject._Result | Should Be 10
         }
     }
 
-    Context 'Reset TextBlockText' {
-        It 'TextBlockText should be 0' {
-            $mockObject.TextBlockText = 0
-            $mockObject.TextBlockText | Should Be 0
+    Context 'Reset _Result' {
+        It '_Result should be 0' {
+            $mockObject._Result = 0
+            $mockObject._Result | Should Be 0
         }
     }
 
-    Context 'Background command internal methods works and updates TextBlockText by wait time and start number' {
+    Context 'Background command internal methods works and updates _Result by wait time and start number' {
         It 'Should return the sum of number that were entered' {
-            $mockObject.TextBoxText = 1
-            $result = $mockObject.DoStuffBackgroundOrNot([int]$mockObject.TextBoxText, [int]$mockObject.TextBlockText)
+            $mockObject.PrimaryInput = 1
+            $result = $mockObject.DoStuffBackgroundOrNot([int]$mockObject.PrimaryInput, [int]$mockObject._Result)
             $result | Should Be 1
             $mockObject.BackgroundCallback($result)
-            $mockObject.TextBlockText | Should Be 2
+            $mockObject._Result | Should Be 2
         }
 
-        It 'Should add to TextBlockText after summing' {
-            $result = $mockObject.DoStuffBackgroundOrNot($mockObject.TextBoxText, $mockObject.TextBlockText)
+        It 'Should add to _Result after summing' {
+            $result = $mockObject.DoStuffBackgroundOrNot($mockObject.PrimaryInput, $mockObject._Result)
             $result | Should Be 3
             $mockObject.BackgroundCallback($result)
             # 2(from above) + 1(from loop from ExtractedMethod) + 3(from here)
-            $mockObject.TextBlockText | Should Be 6
+            $mockObject._Result | Should Be 6
         }
 
-        # This doesn't work if $mockObject.TextBlockText is compared where it is invoked.
+        # This doesn't work if $mockObject._Result is compared where it is invoked.
         # But we can test the methods called to run in the background above.
         # Or test it separately after background is run like so:
         It 'Do BackgroundCommand again. Sleep for $waitSeconds' {
             $waitSeconds = 1
-            $script:expectedResult = ($mockObject.TextBlockText + ($waitSeconds * $mockObject.TextBoxText)) + ($mockObject.TextBlockText + ($waitSeconds * $mockObject.TextBoxText))
-            $mockObject.TextBoxText = $waitSeconds
+            $script:expectedResult = ($mockObject._Result + ($waitSeconds * $mockObject.PrimaryInput)) + ($mockObject._Result + ($waitSeconds * $mockObject.PrimaryInput))
+            $mockObject.PrimaryInput = $waitSeconds
             $mockObject.BackgroundCommand($null)
             Send-Events
         }
 
-        It 'BackgroundCommand finished and TextBlockText is updated' {
-            $mockObject.TextBlockText | Should Be $script:expectedResult
+        It 'BackgroundCommand finished and _Result is updated' {
+            $mockObject._Result | Should Be $script:expectedResult
         }
 
         It 'Do BackgroundCommand again. Sleep for $waitSeconds' {
             $waitSeconds = 5
-            $script:expectedResult = ($mockObject.TextBlockText + ($waitSeconds * $mockObject.TextBoxText)) * 2
-            $mockObject.TextBoxText = $waitSeconds
+            $script:expectedResult = ($mockObject._Result + ($waitSeconds * $mockObject.PrimaryInput)) * 2
+            $mockObject.PrimaryInput = $waitSeconds
             $mockObject.BackgroundCommand($null)
             Send-Events
         }
 
-        It 'BackgroundCommand finished and TextBlockText is updated' {
-            $mockObject.TextBlockText | Should Be $script:expectedResult
+        It 'BackgroundCommand finished and _Result is updated' {
+            $mockObject._Result | Should Be $script:expectedResult
         }
     }
 }
