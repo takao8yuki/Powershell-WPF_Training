@@ -9,12 +9,21 @@ Challenge:
 # Result
 A **threaded** PowerShell UI! Supported by a view model and relay command.
 
-Right click and run with powershell or load up vscode and run the debugger on your choice of `Console Thread Start.ps1` or `Runspace Thread Start.ps1`
-The latter will keep the console available for use.
+`Console Thread Start.ps1` Right click and run with powershell or load up vscode and run the debugger or dot source.
 
-Enter a number in seconds that the background command will run for in the textbox. Then click the background command button. You are still able to move and resize the window and click other buttons. No frozen UI!
+`Runspace Thread Start.ps1` Dot source or run the vscode debugger. This will keep the console available for use but will not receive debug messages.
+
+Enter a number, in seconds, that the background command will run for in the textbox. Then click the background command button. You are still able to move, resize the window, and click other buttons. No frozen UI!
 
 You mentioned view model, that means I can spin up the class without the UI? Why of course! See `ViewModel.Tests.ps1`
+
+# Notes
+
+Dependency Properties are awesome.
+
+If using INotifyPropertyChanged, binding variables cannot raise property changed for other properties due to the lack of setters.
+
+It's okay to take the easier route. The code behind doesn't need to be devoid of any code whatsoever. The UI was created using something that wasn't meant to create a UI.
 
 # Helpful References
 
@@ -33,9 +42,3 @@ https://gist.github.com/nikonthethird/2ab6bfad9a81d5fe127fd0d1c2844b7c
 Minesweeper
 
 https://gist.github.com/nikonthethird/4e410ac3c04ea6633043a5cb7be1d717
-
-<br>
-
-# Notes
-
-##### It's okay to take the easier route. The code behind doesn't need to be devoid of any code whatsoever. The UI was created using something that wasn't meant to create a UI.
