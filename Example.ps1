@@ -499,12 +499,18 @@ class MainWindowViewModel : ViewModelBase {
     }
 
     [int]DoStuffBackgroundOrNot ([int]$WaitSeconds, [int]$StartNumber) {
+        $increment = 1
+        if ($WaitSeconds -lt 0) {
+            $increment = -1
+            $WaitSeconds *= $increment
+        }
+
         $endNumber = $StartNumber
         for ($o = 1; $o -le $WaitSeconds; $o++) {
             Start-Sleep -Seconds 1
-            $this.UIDispatcher.Invoke({ $this.ExtractedMethod(1) })
+            $this.UIDispatcher.Invoke({ $this.ExtractedMethod($increment) })
         }
-        $endNumber += $WaitSeconds
+        $endNumber += ($WaitSeconds * $increment)
         return $endNumber
     }
 
