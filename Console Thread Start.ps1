@@ -11,7 +11,7 @@ $state = New-InitialSessionState -VariableNames @('syncHash') #-StartUpScripts "
 $pool = New-RunspacePool -InitialSessionState $state
 $syncHash.RSPool = $pool
 
-$syncHash.Window = New-WPFWindow -Xaml $Xaml
+$syncHash.Window = New-WPFObject -Xaml $Xaml
 # $syncHash.Window.DataContext = [MainWindowViewModel]::new($syncHash.RSPool)
 $syncHash.Window.DataContext = [MainWindowViewModelDP]::new($syncHash.RSPool)
 # $application = [System.Windows.Application]::new()

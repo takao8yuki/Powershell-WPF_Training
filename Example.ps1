@@ -81,28 +81,30 @@ function New-RunspacePool {
     }
 }
 
-function New-WPFWindow {
+function New-WPFObject {
     <#
         .SYNOPSIS
-            Creates a WPF Window with given Xaml from a string or file
+            Creates a WPF object with given Xaml from a string or file
+            Uses the dedicated wpf xaml reader rather than the xmlreader.
     #>
     [CmdletBinding(DefaultParameterSetName = 'HereString')]
     param (
-        [Parameter(Mandatory, ParameterSetName = 'HereString' )]
-        [string]$Xaml,
+        [Parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'HereString' )]
+        [string[]]$Xaml,
 
-        [Parameter(Mandatory, ParameterSetName = 'Path')]
+        [Alias('FullName')]
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, ParameterSetName = 'Path')]
         [ValidateScript({ Test-Path $_ })]
-        [System.IO.FileSystemInfo]$Path
+        [string[]]$Path
     )
 
-    if ($PSBoundParameters['Path']) {
-        $Xaml = Get-Content -Path $Path
-    }
+    process {
+        if ($PSBoundParameters['Path']) {
+            $Xaml = Get-Content -Path $Path
+        }
 
-    #Use the dedicated wpf xaml reader rather than the xmlreader.
-    $window = [System.Windows.Markup.XamlReader]::Parse($Xaml)
-    $window
+        [System.Windows.Markup.XamlReader]::Parse($Xaml)
+    }
 }
 
 
