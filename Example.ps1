@@ -25,7 +25,7 @@ function New-InitialSessionState {
         # CreateDefault allows default cmdlets to be used without being explicitly added in the runspace
         $initialSessionState = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
 
-        if ($PSBoundParameters['ModulePaths']) {
+        if ($PSBoundParameters.ContainsKey('ModulePaths')) {
             $null = $initialSessionState.ImportPSModule($ModulePaths)
         }
 
@@ -41,7 +41,7 @@ function New-InitialSessionState {
             $initialSessionState.Variables.Add($runspaceVariable)
         }
 
-        if ($PSBoundParameters['StartUpScripts']) {
+        if ($PSBoundParameters.ContainsKey('StartUpScripts')) {
             $null = $initialSessionState.StartupScripts.Add($StartUpScripts)
         }
 
@@ -57,7 +57,7 @@ function New-RunspacePool {
     [CmdletBinding()]
     [OutputType([System.Management.Automation.Runspaces.RunspacePool])]
     param(
-        [Parameter(Mandatory)]
+        [Parameter()]
         [InitialSessionState]$InitialSessionState,
         [Parameter()]
         [int]$ThreadLimit = $([Int]$env:NUMBER_OF_PROCESSORS + 1),
@@ -72,7 +72,8 @@ function New-RunspacePool {
     )
 
     process {
-        $runspacePool = [RunspaceFactory]::CreateRunspacePool(1, $ThreadLimit, $InitialSessionState, $Host)
+        $State = if ($PSBoundParameters.ContainsKey('InitialSessionState')) { $InitialSessionState } else { [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault() }
+        $runspacePool = [RunspaceFactory]::CreateRunspacePool(1, $ThreadLimit, $State, $Host)
         $runspacePool.ApartmentState = $ApartmentState
         $runspacePool.ThreadOptions = $ThreadOptions
         $runspacePool.CleanupInterval = [timespan]::FromMinutes(2)
@@ -99,11 +100,13 @@ function New-WPFObject {
     )
 
     process {
-        if ($PSBoundParameters['Path']) {
-            $Xaml = Get-Content -Path $Path
+        $RawXaml = if ($PSBoundParameters.ContainsKey('Path')) {
+            Get-Content -Path $Path
+        } else {
+            $Xaml
         }
 
-        [System.Windows.Markup.XamlReader]::Parse($Xaml)
+        [System.Windows.Markup.XamlReader]::Parse($RawXaml)
     }
 }
 
