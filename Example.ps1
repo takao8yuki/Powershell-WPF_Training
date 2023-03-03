@@ -317,6 +317,8 @@ class ViewModelBase : System.Windows.DependencyObject, System.ComponentModel.INo
 
     # Any RunspacePool task must call Dispatcher if it modifies the UI
     hidden [void]BackgroundInvoke ([System.Management.Automation.PSMethod]$Work, [object[]]$WorkParams, [System.Management.Automation.PSMethod]$Callback) {
+        if ($null -eq $this.RunspacePoolDependency) {throw "Can't run a background task without a runspace."}
+
         $workDelegate = $this.GetDelegate($Work)
         $callbackDelegate = $this.GetDelegate($Callback)
         $ps = [powershell]::Create()
@@ -407,8 +409,8 @@ class MainWindowViewModel : ViewModelBase {
     [string]$NoParameterContent = 'No Parameter'
     [string]$ParameterContent = 'Parameter'
     [int]$ExtractedMethodRunCount
-    [System.Windows.Input.ICommand]$TestCommand
-    [System.Windows.Input.ICommand]$TestBackgroundCommand
+    [System.Windows.Input.ICommand]$TestCommand = $this.NewDelegate($this.UpdateTextBlock, $this.CanUpdateTextBlock)
+    [System.Windows.Input.ICommand]$TestBackgroundCommand = $this.NewDelegate($this.BackgroundCommand, $this.CanBackgroundCommand)
     [bool]$_IsBackgroundFree = $true
 
     # Turn into cmdlet instead?
@@ -434,18 +436,17 @@ class MainWindowViewModel : ViewModelBase {
         [MainWindowViewModel]::Init('IsBackgroundFree')
     }
 
-    MainWindowViewModel($RunspacePool) {
-        $this.UIDispatcher = [System.Windows.Threading.Dispatcher]::CurrentDispatcher
-        $this.RunspacePoolDependency = $RunspacePool
+    MainWindowViewModel() {
+        $this.Start($null)
+    }
 
-        $this.TestCommand = $this.NewDelegate(
-            $this.UpdateTextBlock,
-            $this.CanUpdateTextBlock
-        )
-        $this.TestBackgroundCommand = $this.NewDelegate(
-            $this.BackgroundCommand,
-            $this.CanBackgroundCommand
-        )
+    MainWindowViewModel($RunspacePool) {
+        $this.Start($RunspacePool)
+    }
+
+    hidden Start($Pool) {
+        $this.UIDispatcher = [System.Windows.Threading.Dispatcher]::CurrentDispatcher
+        if ($null -ne $Pool) { $this.RunspacePoolDependency = $Pool }
         # $this.Init('Result')
         # $this.Init('IsBackgroundFree')
     }
@@ -550,21 +551,20 @@ class MainWindowViewModelDP : ViewModelBase {
     [string]$NoParameterContent = 'No Parameter'
     [string]$ParameterContent = 'Parameter'
     [int]$ExtractedMethodRunCount
-    [System.Windows.Input.ICommand]$TestCommand
-    [System.Windows.Input.ICommand]$TestBackgroundCommand
+    [System.Windows.Input.ICommand]$TestCommand = $this.NewDelegate($this.UpdateTextBlock, $this.CanUpdateTextBlock)
+    [System.Windows.Input.ICommand]$TestBackgroundCommand = $this.NewDelegate($this.BackgroundCommand, $this.CanBackgroundCommand)
+
+    MainWindowViewModelDP() {
+        $this.Start($null)
+    }
 
     MainWindowViewModelDP($RunspacePool) {
-        $this.UIDispatcher = [System.Windows.Threading.Dispatcher]::CurrentDispatcher
-        $this.RunspacePoolDependency = $RunspacePool
+        $this.Start($RunspacePool)
+    }
 
-        $this.TestCommand = $this.NewDelegate(
-            $this.UpdateTextBlock,
-            $this.CanUpdateTextBlock
-        )
-        $this.TestBackgroundCommand = $this.NewDelegate(
-            $this.BackgroundCommand,
-            $this.CanBackgroundCommand
-        )
+    hidden Start($Pool) {
+        $this.UIDispatcher = [System.Windows.Threading.Dispatcher]::CurrentDispatcher
+        if ($null -ne $Pool) { $this.RunspacePoolDependency = $Pool }
     }
 
     [void]ExtractedMethod([int]$i) {
