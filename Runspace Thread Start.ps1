@@ -14,17 +14,17 @@ $syncHash.PS = [powershell]::Create()
 $syncHash.PS.RunspacePool = $syncHash.RSPool
 $null = $syncHash.PS.AddScript({
         $syncHash.Window = New-WPFObject -Xaml $Xaml
-        $syncHash.Window.DataContext = [MainWindowViewModel]::new($syncHash.RSPool) # Window.DataContext is null for some reason if newed up here
-        # $syncHash.Window.DataContext = [MainWindowViewModelDP]::new($syncHash.RSPool)
+        $syncHash.Window.DataContext = [MainWindowViewModel]::new($syncHash.RSPool)
+        # $syncHash.Window.DataContext = [MainWindowViewModelDP]::new()
         # $syncHash.application = [System.Windows.Application]::new()
         # $syncHash.application.ShutdownMode = [System.Windows.ShutdownMode]::OnMainWindowClose
         # $syncHash.application.Run($syncHash.Window)
         $syncHash.Window.ShowDialog()
-        $syncHash.Window.add_Closing($syncHash.Window.Dispatcher.InvokeShutdown())
+        $syncHash.Window.add_Closing({ $syncHash.Window.Dispatcher.InvokeShutdown() })
         $syncHash.Error = $Error
     }
 )
 
 $syncHash.AsyncState = $syncHash.PS.BeginInvoke()
-# Remember to dispose
+# Remember to dispose when finished
 # $syncHash.RSPool.Dispose()
