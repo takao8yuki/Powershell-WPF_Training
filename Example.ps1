@@ -126,14 +126,14 @@ class RelayCommandBase : System.Windows.Input.ICommand {
     # Providing the original method with $null will work, invoking with $null will not because invoke() provides arguments not parameters.
     # Arguments cannot be explicitly $null since they're optional
     # Maybe create delegate instead
-    [bool]CanExecute([object]$commandParameter) {
+    [bool]CanExecute([object]$CommandParameter) {
         if ($null -eq $this._canExecute) { return $true }
-        return $this._canExecute.Invoke(@($commandParameter))
+        return $this._canExecute.Invoke(@($CommandParameter))
     }
 
-    [void]Execute([object]$commandParameter) {
+    [void]Execute([object]$CommandParameter) {
         try {
-            $this._execute.Invoke(@($commandParameter))
+            $this._execute.Invoke(@($CommandParameter))
         } catch {
             Write-Error "Error handling RelayCommandBase.Execute: $_"
         }
@@ -163,15 +163,15 @@ class RelayCommandBase : System.Windows.Input.ICommand {
 # Support for parameterless PSMethods
 # Doesn't seem clean
 class RelayCommand : RelayCommandBase {
-    [bool]CanExecute([object]$commandParameter) {
+    [bool]CanExecute([object]$CommandParameter) {
         if ($null -eq $this._canExecute) { return $true }
-        if ($this._canExecuteCount -eq 1) { return $this._canExecute.Invoke($commandParameter) }
+        if ($this._canExecuteCount -eq 1) { return $this._canExecute.Invoke($CommandParameter) }
         else { return $this._canExecute.Invoke() }
     }
 
-    [void]Execute([object]$commandParameter) {
+    [void]Execute([object]$CommandParameter) {
         try {
-            if ($this._executeCount -eq 1) { $this._execute.Invoke($commandParameter) }
+            if ($this._executeCount -eq 1) { $this._execute.Invoke($CommandParameter) }
             else { $this._execute.Invoke() }
         } catch {
             Write-Error "Error handling RelayCommand.Execute: $_"
@@ -228,14 +228,14 @@ class DelegateCommand : System.Windows.Input.ICommand {
     }
 
     # Delegate takes $null unlike invoking the PSMethod where it passes as arguments
-    [bool]CanExecute([object]$commandParameter) {
+    [bool]CanExecute([object]$CommandParameter) {
         if ($null -eq $this._canExecute) { return $true }
-        return $this._canExecute.Invoke($commandParameter)
+        return $this._canExecute.Invoke($CommandParameter)
     }
 
-    [void]Execute([object]$commandParameter) {
+    [void]Execute([object]$CommandParameter) {
         try {
-            $this._execute.Invoke($commandParameter)
+            $this._execute.Invoke($CommandParameter)
         } catch {
             Write-Error "Error handling DelegateCommand.Execute: $_"
         }
@@ -244,13 +244,13 @@ class DelegateCommand : System.Windows.Input.ICommand {
 
     [System.EventHandler]$_internalCanExecuteChanged
 
-    [void] RaiseCanExecuteChanged() {
+    [void]RaiseCanExecuteChanged() {
         if ($null -ne $this._canExecute) {
             $this.OnCanExecuteChanged()
         }
     }
 
-    [void] OnCanExecuteChanged() {
+    [void]OnCanExecuteChanged() {
         [EventHandler]$eCanExecuteChanged = $this._internalCanExecuteChanged
         if ($null -ne $eCanExecuteChanged) {
             $eCanExecuteChanged.Invoke($this, [System.EventArgs]::Empty)
@@ -322,15 +322,14 @@ class ViewModelBase : System.Windows.DependencyObject, System.ComponentModel.INo
         $ps = [powershell]::Create()
         $ps.RunspacePool = $this.RunspacePoolDependency
         $ps.AddScript({
-                param($delegate, $delegateParams, $callback)
-                $callbackParam = [System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke($delegate, $delegateParams)
-                [System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke($callback, $callbackParam)
+                param($Delegate, $DelegateParams, $Callback)
+                $callbackParam = [System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke($Delegate, $DelegateParams)
+                [System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke($Callback, $callbackParam)
             }
-        ).AddParameter('delegate', $workDelegate).AddParameter('delegateParams', $WorkParams).AddParameter('callback', $callbackDelegate)
+        ).AddParameter('Delegate', $workDelegate).AddParameter('DelegateParams', $WorkParams).AddParameter('Callback', $callbackDelegate)
 
-        # Remember to add dispose with another thread
-        # $asyncState = $ps.BeginInvoke()
-        $ps.BeginInvoke()
+        # Do we have to dispose? Memory doesn't seem to constantly increase after invokeing multiple times.
+        $null = $ps.BeginInvoke()
     }
 
     [System.Windows.Input.ICommand]NewCommand(
