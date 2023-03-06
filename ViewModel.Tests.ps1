@@ -11,6 +11,7 @@ Describe '_Result is updated' {
         $pool = New-RunspacePool -InitialSessionState $state
         $syncHash.RSPool = $pool
         $script:mockObject = [MainWindowViewModel]::new($syncHash.RSPool)
+        Send-Events
     }
 
     Context 'UpdateTextBlock updates _Result' {
@@ -40,23 +41,40 @@ Describe '_Result is updated' {
     Context 'Background command internal methods works and updates _Result by wait time and start number' {
         It 'Should return the sum of number that were entered' {
             $mockObject.PrimaryInput = 1
-            $result = $mockObject.DoStuffBackgroundOrNot([int]$mockObject.PrimaryInput, [int]$mockObject._Result)
-            $result | Should Be 1
+            $script:result = $mockObject.DoStuffBackgroundOrNot([int]$mockObject.PrimaryInput, [int]$mockObject._Result)
+            Send-Events
+            $script:result | Should Be 1
+        }
+
+        It 'Performs callback' {
             $mockObject.BackgroundCallback($result)
+            Send-Events
+        }
+
+        It 'Should sum' {
             $mockObject._Result | Should Be 2
         }
 
-        It 'Should add to _Result after summing' {
-            $result = $mockObject.DoStuffBackgroundOrNot($mockObject.PrimaryInput, $mockObject._Result)
-            $result | Should Be 3
-            $mockObject.BackgroundCallback($result)
-            # 2(from above) + 1(from loop from ExtractedMethod) + 3(from here)
-            $mockObject._Result | Should Be 6
+        It 'Should return the sum of number that were entered again' {
+            $script:result = $mockObject.DoStuffBackgroundOrNot($mockObject.PrimaryInput, $mockObject._Result)
+            Send-Events
+            $script:result | Should Be 3
         }
 
+        It 'Performs callback again' {
+            $mockObject.BackgroundCallback($script:result)
+            Send-Events
+        }
+
+        It 'Should sum again' {
+            $mockObject._Result | Should Be 6
+        }
+    }
+
+    Context 'Test runspace seperate calls and returns' {
         # This doesn't work if $mockObject._Result is compared where it is invoked.
         # But we can test the methods called to run in the background above.
-        # Or test it separately after background is run like so:
+        # Or test it separately after background command is ran like so:
         It 'Do BackgroundCommand again. Sleep for $waitSeconds' {
             $waitSeconds = 1
             $script:expectedResult = ($mockObject._Result + ($waitSeconds * $mockObject.PrimaryInput)) + ($mockObject._Result + ($waitSeconds * $mockObject.PrimaryInput))
@@ -66,6 +84,8 @@ Describe '_Result is updated' {
         }
 
         It 'BackgroundCommand finished and _Result is updated' {
+            Send-Events
+            $mockObject.IsBackgroundFree | Should Be $true
             $mockObject._Result | Should Be $script:expectedResult
         }
 
@@ -78,6 +98,7 @@ Describe '_Result is updated' {
         }
 
         It 'BackgroundCommand finished and _Result is updated' {
+            Send-Events
             $mockObject._Result | Should Be $script:expectedResult
         }
     }
