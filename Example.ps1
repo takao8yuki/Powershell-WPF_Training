@@ -280,17 +280,17 @@ class DelegateCommand : System.Windows.Input.ICommand {
 
 class ViewModelBase : System.Windows.DependencyObject, System.ComponentModel.INotifyPropertyChanged {
     # INotifyPropertyChanged Implementation
-    hidden [ComponentModel.PropertyChangedEventHandler] $_propertyChanged
+    hidden [ComponentModel.PropertyChangedEventHandler]$_propertyChanged
 
-    [void]add_PropertyChanged([ComponentModel.PropertyChangedEventHandler] $value) {
+    [void]add_PropertyChanged([ComponentModel.PropertyChangedEventHandler]$value) {
         $this._propertyChanged = [Delegate]::Combine($this._propertyChanged, $value)
     }
 
-    [void]remove_PropertyChanged([ComponentModel.PropertyChangedEventHandler] $value) {
+    [void]remove_PropertyChanged([ComponentModel.PropertyChangedEventHandler]$value) {
         $this._propertyChanged = [Delegate]::Remove($this._propertyChanged, $value)
     }
 
-    [void]OnPropertyChanged([string] $propertyName) {
+    [void]OnPropertyChanged([string]$propertyName) {
         #$this._propertyChanged.Invoke($this, $propertyName) # Why does this accepting a string also work?
         # There are cases where it is null, which shoots a non terminating error. I forget when I ran into it.
         if ($null -ne $this._PropertyChanged) {
@@ -301,6 +301,7 @@ class ViewModelBase : System.Windows.DependencyObject, System.ComponentModel.INo
     }
     # End INotifyPropertyChanged Implementation
 
+    [bool]$DebugCreateLogs = $false
     [System.Windows.Threading.Dispatcher]$UIDispatcher
     $RunspacePoolDependency
 
@@ -316,7 +317,7 @@ class ViewModelBase : System.Windows.DependencyObject, System.ComponentModel.INo
     }
 
     # Any RunspacePool task must call Dispatcher if it modifies the UI
-    hidden [void]BackgroundInvoke ([System.Management.Automation.PSMethod]$Work, [object[]]$WorkParams, [System.Management.Automation.PSMethod]$Callback) {
+    hidden [void]BackgroundInvoke([System.Management.Automation.PSMethod]$Work, [object[]]$WorkParams, [System.Management.Automation.PSMethod]$Callback) {
         if ($null -eq $this.RunspacePoolDependency) {throw "Can't run a background task without a runspace."}
 
         $workDelegate = $this.GetDelegate($Work)
@@ -325,8 +326,12 @@ class ViewModelBase : System.Windows.DependencyObject, System.ComponentModel.INo
         $ps.RunspacePool = $this.RunspacePoolDependency
         $ps.AddScript({
                 param($Delegate, $DelegateParams, $Callback)
-                $callbackParam = [System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke($Delegate, $DelegateParams)
-                [System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke($Callback, $callbackParam)
+                try {
+                    $callbackParam = [System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke($Delegate, $DelegateParams)
+                    [System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke($Callback, $callbackParam)
+                } catch {
+                    if ($this.DebugCreateLogs) { Add-Content -Path "$PSScriptRoot\BackgroundInvokeErrors.log" -Value $Error }
+                }
             }
         ).AddParameter('Delegate', $workDelegate).AddParameter('DelegateParams', $WorkParams).AddParameter('Callback', $callbackDelegate)
 
