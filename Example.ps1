@@ -512,8 +512,6 @@ class MainWindowViewModel : ViewModelBase {
         $this.Result += $NumberToAdd
         $this.IsBackgroundFree = $true
         $this.TestBackgroundCommand.RaiseCanExecuteChanged()
-            }
-        )
     }
 
     [bool]CanBackgroundCommand([object]$RelayCommandParameter) {
@@ -531,9 +529,9 @@ class MainWindowViewModelDP : ViewModelBase {
     static [System.Windows.DependencyProperty]$ResultProperty = [System.Windows.DependencyProperty]::Register(
         '_Result', [int], [MainWindowViewModelDP], [System.Windows.PropertyMetadata]::new(0, {
                 param([MainWindowViewModelDP]$vm, [System.Windows.DependencyPropertyChangedEventArgs] $e)
-                Write-Debug "ResultProperty new value: $($e.NewValue)"
+                # Write-Debug "ResultProperty new value: $($e.NewValue)"
                 if ($e.NewValue -eq 10) {
-                    Write-Debug 'I do callback if ResultProperty is 10'
+                    # Write-Debug 'I do callback if ResultProperty is 10'
                 }
             })
     )
@@ -541,20 +539,20 @@ class MainWindowViewModelDP : ViewModelBase {
     static [System.Windows.DependencyProperty]$PrimaryInputProperty = [System.Windows.DependencyProperty]::Register(
         'PrimaryInput', [int], [MainWindowViewModelDP], [System.Windows.PropertyMetadata]::new(0, {
                 param([MainWindowViewModelDP]$vm, [System.Windows.DependencyPropertyChangedEventArgs] $e)
-                Write-Debug "PrimaryInputProperty new value: $($e.NewValue)"
+                # Write-Debug "PrimaryInputProperty new value: $($e.NewValue)"
                 if ($e.NewValue -gt 10000) {
-                    Write-Debug 'I do calback if PrimaryInputProperty is greater than 10,000'
+                    # Write-Debug 'I do calback if PrimaryInputProperty is greater than 10,000'
                 }
-                Write-Debug "$($vm.NoParameterContent) I have access to this vm"
+                # Write-Debug "$($vm.NoParameterContent) I have access to this vm"
             })
     )
 
     static [System.Windows.DependencyProperty]$IsBackgroundFreeProperty = [System.Windows.DependencyProperty]::Register(
         'IsBackgroundFree', [bool], [MainWindowViewModelDP], [System.Windows.PropertyMetadata]::new($true, {
                 param([MainWindowViewModelDP]$vm, [System.Windows.DependencyPropertyChangedEventArgs] $e)
-                Write-Debug "IsBackgroundFreeProperty new value: $($e.NewValue)"
+                # Write-Debug "IsBackgroundFreeProperty new value: $($e.NewValue)"
                 if ($e.NewValue -eq $false) {
-                    Write-Debug 'I do callback if IsBackgroundFreeProperty is not true'
+                    # Write-Debug 'I do callback if IsBackgroundFreeProperty is not true'
                 }
             })
     )
@@ -564,6 +562,9 @@ class MainWindowViewModelDP : ViewModelBase {
     [int]$ExtractedMethodRunCount
     [System.Windows.Input.ICommand]$TestCommand = $this.NewDelegate($this.UpdateTextBlock, $this.CanUpdateTextBlock)
     [System.Windows.Input.ICommand]$TestBackgroundCommand = $this.NewDelegate($this.BackgroundCommand, $this.CanBackgroundCommand)
+    # Background tasks should not be in charge of creating their own delegates within a delegate
+    $ExtractedMethodDelegate = $this.GetDelegate($this.ExtractedMethod)
+    $FinishBackgroundTaskDelegate = $this.GetDelegate($this.FinishBackgroundTask)
 
     MainWindowViewModelDP() {
         $this.Start($null)
@@ -606,7 +607,7 @@ class MainWindowViewModelDP : ViewModelBase {
         $this.BackgroundInvoke($this.DoStuffBackgroundOrNot, ($param1, $param2), $this.BackgroundCallback)
     }
 
-    [int]DoStuffBackgroundOrNot ([int]$WaitSeconds, [int]$StartNumber) {
+    [int]DoStuffBackgroundOrNot([int]$WaitSeconds, [int]$StartNumber) {
         $increment = 1
         if ($WaitSeconds -lt 0) {
             $increment = -1
@@ -615,20 +616,21 @@ class MainWindowViewModelDP : ViewModelBase {
 
         $endNumber = $StartNumber
         for ($o = 1; $o -le $WaitSeconds; $o++) {
-            Start-Sleep -Seconds 1
-            $this.UIDispatcher.Invoke({ $this.ExtractedMethod($increment) })
+            [System.Threading.Thread]::Sleep(1000) # Delegates/Runspaces do not like cmdlets - can crash in the background
+            $this.UIDispatcher.BeginInvoke(9,$this.ExtractedMethodDelegate,1)
         }
         $endNumber += ($WaitSeconds * $increment)
         return $endNumber
     }
 
     [void]BackgroundCallback($NumberToAdd) {
-        $this.UIDispatcher.Invoke({
-                $this.SetValue([MainWindowViewModelDP]::ResultProperty, $this.GetValue([MainWindowViewModelDP]::ResultProperty) + $NumberToAdd)
-                $this.SetValue([MainWindowViewModelDP]::IsBackgroundFreeProperty, $true)
-                $this.TestBackgroundCommand.RaiseCanExecuteChanged()
-            }
-        )
+        $this.UIDispatcher.BeginInvoke(9,$this.FinishBackgroundTaskDelegate,$NumberToAdd)
+    }
+
+    [void]FinishBackgroundTask($NumberToAdd) {
+        $this.SetValue([MainWindowViewModelDP]::ResultProperty, $this.GetValue([MainWindowViewModelDP]::ResultProperty) + $NumberToAdd)
+        $this.SetValue([MainWindowViewModelDP]::IsBackgroundFreeProperty, $true)
+        $this.TestBackgroundCommand.RaiseCanExecuteChanged()
     }
 
     [bool]CanBackgroundCommand([object]$RelayCommandParameter) {
@@ -711,7 +713,3 @@ WindowStartupLocation="CenterScreen">
     </Grid>
 </Window>
 ' #-creplace 'clr-namespace:;assembly=', "`$0$([MainWindowViewModel].Assembly.FullName)"
-# BLACK MAGIC. Hard coding the FullName in the xaml does not work even after loading the ps1 file.
-# If any edits, the console must be reset because the class/assembly stays loaded with the old viewmodel
-# DataContext can be loaded in Xaml
-# https://gist.github.com/nikonthethird/4e410ac3c04ea6633043a5cb7be1d717
