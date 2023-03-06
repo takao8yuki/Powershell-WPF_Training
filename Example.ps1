@@ -417,6 +417,9 @@ class MainWindowViewModel : ViewModelBase {
     [System.Windows.Input.ICommand]$TestCommand = $this.NewDelegate($this.UpdateTextBlock, $this.CanUpdateTextBlock)
     [System.Windows.Input.ICommand]$TestBackgroundCommand = $this.NewDelegate($this.BackgroundCommand, $this.CanBackgroundCommand)
     [bool]$_IsBackgroundFree = $true
+    # Background tasks should not be in charge of creating their own delegates within a delegate
+    $ExtractedMethodDelegate = $this.GetDelegate($this.ExtractedMethod)
+    $FinishBackgroundTaskDelegate = $this.GetDelegate($this.FinishBackgroundTask)
 
     # Turn into cmdlet instead?
     # ScriptProperties cannot be bound to the xaml
@@ -485,7 +488,7 @@ class MainWindowViewModel : ViewModelBase {
         $this.BackgroundInvoke($this.DoStuffBackgroundOrNot, ($param1, $param2), $this.BackgroundCallback)
     }
 
-    [int]DoStuffBackgroundOrNot ([int]$WaitSeconds, [int]$StartNumber) {
+    [int]DoStuffBackgroundOrNot([int]$WaitSeconds, [int]$StartNumber) {
         $increment = 1
         if ($WaitSeconds -lt 0) {
             $increment = -1
@@ -494,18 +497,21 @@ class MainWindowViewModel : ViewModelBase {
 
         $endNumber = $StartNumber
         for ($o = 1; $o -le $WaitSeconds; $o++) {
-            Start-Sleep -Seconds 1
-            $this.UIDispatcher.Invoke({ $this.ExtractedMethod($increment) })
+            [System.Threading.Thread]::Sleep(1000) # Delegates/Runspaces do not like cmdlets - can crash in the background
+            $this.UIDispatcher.BeginInvoke(9,$this.ExtractedMethodDelegate,1)
         }
         $endNumber += ($WaitSeconds * $increment)
         return $endNumber
     }
 
     [void]BackgroundCallback($NumberToAdd) {
-        $this.UIDispatcher.Invoke({
-                $this.Result += $NumberToAdd
-                $this.IsBackgroundFree = $true
-                $this.TestBackgroundCommand.RaiseCanExecuteChanged()
+        $this.UIDispatcher.BeginInvoke(9,$this.FinishBackgroundTaskDelegate,$NumberToAdd)
+    }
+
+    [void]FinishBackgroundTask($NumberToAdd) {
+        $this.Result += $NumberToAdd
+        $this.IsBackgroundFree = $true
+        $this.TestBackgroundCommand.RaiseCanExecuteChanged()
             }
         )
     }
