@@ -373,7 +373,6 @@ class ViewModelBase : System.Windows.DependencyObject, System.ComponentModel.INo
 
     hidden [System.Delegate]GetDelegate([System.Management.Automation.PSMethod]$Method) {
         $typeMethod = $this.GetType().GetMethod($Method.Name)
-        # $returnType = $typeMethod.ReturnType.Name
         $returnType = $typeMethod.ReturnType.ToString()
 
         if ($returnType -eq 'System.Void') {
