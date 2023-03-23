@@ -373,8 +373,10 @@ class ViewModelBase : System.Windows.DependencyObject, System.ComponentModel.INo
 
     hidden [System.Delegate]GetDelegate([System.Management.Automation.PSMethod]$Method) {
         $typeMethod = $this.GetType().GetMethod($Method.Name)
-        $returnType = $typeMethod.ReturnType.Name
-        if ($returnType -eq 'Void') {
+        # $returnType = $typeMethod.ReturnType.Name
+        $returnType = $typeMethod.ReturnType.ToString()
+
+        if ($returnType -eq 'System.Void') {
             $delegateString = 'Action'
             $delegateReturnParam = ']'
         } else {
@@ -389,14 +391,14 @@ class ViewModelBase : System.Windows.DependencyObject, System.ComponentModel.INo
 
         $paramString = ''
         foreach ($p in $delegateParameters) {
-            $paramString += "$($p.ParameterType.Name),"
+            $paramString += "$($p.ParameterType.ToString()),"
         }
 
         if ($paramString.Length -gt 0) {
             $paramString = $paramString.Substring(0, $paramString.Length - 1)
         } else {
             $delegateReturnParam = "[$returnType]"
-            if ($returnType -eq 'Void') { $delegateReturnParam = '' }
+            if ($returnType -eq 'System.Void') { $delegateReturnParam = '' }
         }
 
         $paramString += "$delegateReturnParam"
@@ -404,7 +406,6 @@ class ViewModelBase : System.Windows.DependencyObject, System.ComponentModel.INo
         # Write-Debug "$($Method.Name) converted to: $delegateString"
         return $typeMethod.CreateDelegate(($delegateString -as [type]), $this)
     }
-
 }
 
 
