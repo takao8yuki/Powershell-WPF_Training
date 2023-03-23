@@ -25,9 +25,11 @@ Anything that interacts with the UI must be invoked with the UI dispatcher. Pref
 
 Don't use cmdlets in PSMethods converted to Delegates. It will crash the ui if there is a task in the background thread.
 
-Dependency Properties are awesome with built in callbacks. A bit verbose, but this is powershell so everything is verbose.
+Dependency Properties are awesome with built in callbacks. A bit verbose, but this is powershell so everything is verbose. Also a cheat to include property get and property set in powershell classes. The down side is the syntax to use them.
 
-If using INotifyPropertyChanged, when modified from the view, binding variables cannot raise property changed or set other properties due to the lack of setters.
+INotifyPropertyChanged feels awkward since binding variables cannot raise property changed or set other properties due to the lack of setters. It is probably easier to learn c# and add the c# class through add-type. Would it be possible to take advantage of async/await if still running in powershell context?
+
+Xaml allows mapping a custom namespace with a dynamic assembly. You are be able to use custom powershell classes in the xaml.
 
 It's okay to take the easier route. The code behind doesn't need to be devoid of any code whatsoever. The UI was created using something that wasn't meant to create a UI.
 
