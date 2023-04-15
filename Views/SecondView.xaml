@@ -1,0 +1,38 @@
+<UserControl
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    x:Name="SecondUserControl"
+    Background="Transparent">
+
+    <UserControl.Resources>
+        <DataTemplate x:Key="GenericTemplate">
+            <StackPanel>
+                <TextBlock Text="Hidden text" />
+                <PasswordBox x:Name="PW" Margin="5" />
+                <TextBlock Text="Binding text" />
+                <TextBox x:Name="Modal" Margin="5" Text="{Binding TextToDisplay}" />
+                <Button
+                    x:Name="PWButton"
+                    Height="25"
+                    Content="Write-Verbose Password"
+                    CommandParameter="{Binding ElementName=PW}"
+                    Command="{Binding PrintPasswordCommand}" />
+                <Button
+                    x:Name="ModalButton"
+                    Height="25"
+                    Content="Show Message Box"
+                    Command="{Binding ShowMessageBoxCommand}" />
+            </StackPanel>
+            <DataTemplate.Triggers>
+                <Trigger Property="IsFocused" SourceName="PW" Value="True">
+                    <Setter Property="IsDefault" TargetName="PWButton" Value="True"/>
+                </Trigger>
+                <Trigger Property="IsFocused" SourceName="Modal" Value="True">
+                    <Setter Property="IsDefault" TargetName="ModalButton" Value="True"/>
+                </Trigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <ContentControl Content="{Binding}" ContentTemplate="{StaticResource GenericTemplate}" />
+</UserControl>

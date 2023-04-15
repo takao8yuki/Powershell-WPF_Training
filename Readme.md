@@ -7,15 +7,13 @@ Challenge:
 3. Limited to resources that come natively with Windows 10.
 
 # Result
-A **threaded** PowerShell UI! Supported by a view model and relay command.
+An **asynchronous** PowerShell UI! Supported by view models, multiple views and relay commands.
 
-`Console Thread Start.ps1` Right click and run with powershell or load up vscode and run the debugger or dot source.
+`OpenGUI.ps1` Right click and run with powershell, dot source, or load up vscode and run the debugger.
 
-`Runspace Thread Start.ps1` Dot source or run the vscode debugger. This will keep the console available for use but will not receive debug messages.
+Enter a number, in seconds, that the background command will run for in the textbox. Then click the background command button. You are still able to move, resize the window, click other buttons, and navigate to another tab. No frozen UI!
 
-Enter a number, in seconds, that the background command will run for in the textbox. Then click the background command button. You are still able to move, resize the window, and click other buttons. No frozen UI!
-
-You mentioned view model, that means I can spin up the class without the UI? Why of course! See `ViewModel.Tests.ps1` and `ViewModelDP.Tests.ps1`. Set the console location to the aforementioned files location and call `Invoke-Pester` and watch the magic happen. (Remove the calls to sleep for consistent results.)
+You mentioned view model, that means I can spin up the class without the UI? Why of course! See `FirstViewModel.Tests.ps1`.
 
 ![test](/Images/PesterResult.PNG?raw=true)
 
@@ -27,7 +25,7 @@ Don't use cmdlets in PSMethods converted to Delegates. It will crash the ui if t
 
 Dependency Properties are awesome with built in callbacks. A bit verbose, but this is powershell so everything is verbose. Also a cheat to include property get and property set in powershell classes. The down side is the syntax to use them.
 
-INotifyPropertyChanged feels awkward since binding variables cannot raise property changed or set other properties due to the lack of setters. It is probably easier to learn c# and add the c# class through add-type. Would it be possible to take advantage of async/await if still running in powershell context?
+INotifyPropertyChanged feels awkward since binding variables cannot raise property changed or set other properties due to the lack of setters. It is probably easier to learn c# and add the c# class through add-type.
 
 Xaml allows mapping a custom namespace with a dynamic assembly. You are be able to use custom powershell classes in the xaml.
 

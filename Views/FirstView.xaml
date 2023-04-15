@@ -1,0 +1,20 @@
+<UserControl
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    x:Name="FirstUserControl"
+    Background="Transparent">
+    <StackPanel Margin="5">
+        <TextBox Text="{Binding PrimaryInput, UpdateSourceTrigger=PropertyChanged}" MinHeight="30" />
+        <TextBlock Text="{Binding Result}" MinHeight="30" />
+        <Button
+            Content="{Binding NoParameterContent}"
+            Command="{Binding UpdateResultCommand}" />
+        <Button
+            Content="{Binding ParameterContent}"
+            CommandParameter="100"
+            Command="{Binding UpdateResultCommand}" />
+        <Button
+            Content="Background Command"
+            Command="{Binding TestBackgroundCommand}" />
+    </StackPanel>
+</UserControl>
