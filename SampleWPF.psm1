@@ -50,9 +50,6 @@ class FirstViewModel : ViewModelBase {
     [int]$UpdateResultRunCount
     [Input.ICommand]$UpdateResultCommand = $this.NewDelegate($this.UpdateResult, $this.CanUpdateResult)
     [Input.ICommand]$TestBackgroundCommand = $this.NewDelegate($this.BackgroundCommand, $this.CanRunBackgroundCommand)
-    # Dispatcher BeginInvoke requires delegates
-    # $UpdateResultDelegate = $this.GetDelegate($this.UpdateResult)
-    # $FinishBackgroundTaskDelegate = $this.GetDelegate($this.FinishBackgroundTask)
 
     FirstViewModel() {
         $this.Start()
