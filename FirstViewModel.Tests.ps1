@@ -1,6 +1,8 @@
 using module '.\Classes\WPFClassHelper\WPFClassHelper.psd1'
 using module '.\SampleWPF.psm1'
-# $DebugPreference = 'Continue'
+
+# DispatcherPriority should be less than the enumeration used in tested methods
+$DispatcherPriority = [System.Windows.Threading.DispatcherPriority]::ContextIdle
 
 Describe 'Result is updated' {
     BeforeAll {
@@ -35,13 +37,13 @@ Describe 'Result is updated' {
         It 'Should return the sum of number that were entered' {
             $testClass.SetValue([FirstViewModel]::PrimaryInputProperty, 1)
             $script:result = $testClass.DoStuffBackgroundOrNot($testClass.GetValue([FirstViewModel]::PrimaryInputProperty), $testClass.GetValue([FirstViewModel]::ResultProperty))
-            Send-Events
+            Send-Events -DispatcherPriority $DispatcherPriority
             $script:result | Should Be 1
         }
 
         It 'Performs callback' {
             $testClass.BackgroundCallback($script:result)
-            Send-Events
+            Send-Events -DispatcherPriority $DispatcherPriority
         }
 
         It 'Should sum' {
@@ -50,13 +52,13 @@ Describe 'Result is updated' {
 
         It 'Should return the sum of number that were entered again' {
             $script:result = $testClass.DoStuffBackgroundOrNot($testClass.GetValue([FirstViewModel]::PrimaryInputProperty), $testClass.GetValue([FirstViewModel]::ResultProperty))
-            Send-Events
+            Send-Events -DispatcherPriority $DispatcherPriority
             $script:result | Should Be 3
         }
 
         It 'Performs callback again' {
             $testClass.BackgroundCallback($script:result)
-            Send-Events
+            Send-Events -DispatcherPriority $DispatcherPriority
         }
 
         It 'Should sum again' {
@@ -71,11 +73,11 @@ Describe 'Result is updated' {
             $script:expectedResult = ($testClass.GetValue([FirstViewModel]::ResultProperty) + ($waitSeconds * $testClass.GetValue([FirstViewModel]::PrimaryInputProperty))) + ($testClass.GetValue([FirstViewModel]::ResultProperty) + ($waitSeconds * $testClass.GetValue([FirstViewModel]::PrimaryInputProperty)))
             $testClass.SetValue([FirstViewModel]::PrimaryInputProperty, $waitSeconds)
             $testClass.BackgroundCommand($null)
-            Send-Events
+            Send-Events -DispatcherPriority $DispatcherPriority
         }
 
         It 'BackgroundCommand finished and Result is updated' {
-            Send-Events
+            Send-Events -DispatcherPriority $DispatcherPriority
             $testClass.GetValue([FirstViewModel]::IsBackgroundFreeProperty) | Should Be $true
             $testClass.GetValue([FirstViewModel]::ResultProperty) | Should Be $script:expectedResult
         }
@@ -85,11 +87,11 @@ Describe 'Result is updated' {
             $script:expectedResult = ($testClass.GetValue([FirstViewModel]::ResultProperty) + ($waitSeconds * $testClass.GetValue([FirstViewModel]::PrimaryInputProperty))) * 2
             $testClass.SetValue([FirstViewModel]::PrimaryInputProperty, $waitSeconds)
             $testClass.BackgroundCommand($null)
-            Send-Events
+            Send-Events -DispatcherPriority $DispatcherPriority
         }
 
         It 'BackgroundCommand finished and Result is updated again' {
-            Send-Events
+            Send-Events -DispatcherPriority $DispatcherPriority
             $testClass.GetValue([FirstViewModel]::IsBackgroundFreeProperty) | Should Be $true
             $testClass.GetValue([FirstViewModel]::ResultProperty) | Should Be $script:expectedResult
         }
