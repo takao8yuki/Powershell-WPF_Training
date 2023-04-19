@@ -311,10 +311,10 @@ class ViewModelBase : System.Windows.DependencyObject, System.ComponentModel.INo
 #     }
 # }
 
-function Send-Events {
+function Send-Events ([System.Windows.Threading.DispatcherPriority]$DispatcherPriority)  {
     $frame = [System.Windows.Threading.DispatcherFrame]::new()
     $callback = [System.Windows.Threading.DispatcherOperationCallback]{param($frame) $frame.Continue = $false}
-    [System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke(4,
+    [System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke($DispatcherPriority, # for testing, dispatcher priority might need to be less than all other used priorities
         $callback,
         $frame)
     [System.Windows.Threading.Dispatcher]::PushFrame($frame)
