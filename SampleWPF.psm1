@@ -35,7 +35,10 @@ class FirstViewModel : ViewModelBase {
     )
 
     static [DependencyProperty]$PrimaryInputProperty = [DependencyProperty]::Register(
-        'PrimaryInput', [int], [FirstViewModel], [PropertyMetadata]::new(0)
+        'PrimaryInput', [int], [FirstViewModel], [PropertyMetadata]::new(0, {
+            param([FirstViewModel]$vm, [DependencyPropertyChangedEventArgs]$e)
+            $vm.UpdateResultCommand.RaiseCanExecuteChanged()
+        })
     )
 
     static [DependencyProperty]$IsBackgroundFreeProperty = [DependencyProperty]::Register(
@@ -52,17 +55,11 @@ class FirstViewModel : ViewModelBase {
     [Input.ICommand]$TestBackgroundCommand = $this.NewDelegate($this.BackgroundCommand, $this.CanRunBackgroundCommand)
 
     FirstViewModel() {
-        $this.Start()
         $this.Initialize()
     }
 
     FirstViewModel($RunspacePool) {
-        $this.Start()
         $this.Initialize($RunspacePool)
-    }
-
-    hidden Start() {
-        $this.UIDispatcher = [Threading.Dispatcher]::CurrentDispatcher
     }
 
     [void]UpdateResult([int]$i) {
@@ -75,11 +72,11 @@ class FirstViewModel : ViewModelBase {
         return ($this.GetValue([FirstViewModel]::PrimaryInputProperty) -ne 0)
     }
 
-    [void]BackgroundCommand([object]$RelayCommandParameter) {
+    [System.IAsyncResult]BackgroundCommand([object]$RelayCommandParameter) {
         $this.SetValue([FirstViewModel]::IsBackgroundFreeProperty, $false)
         $param1 = $this.GetValue([FirstViewModel]::PrimaryInputProperty)
         $param2 = $this.GetValue([FirstViewModel]::ResultProperty)
-        $this.BackgroundInvoke($this.DoStuffBackgroundOrNot, ($param1, $param2), $this.BackgroundCallback, $true)
+        return $this.BackgroundInvoke($this.DoStuffBackgroundOrNot, ($param1, $param2), $this.BackgroundCallback, $true)
     }
 
     [int]DoStuffBackgroundOrNot([int]$WaitSeconds, [int]$StartNumber) {
@@ -92,17 +89,17 @@ class FirstViewModel : ViewModelBase {
         $endNumber = $StartNumber
         for ($o = 1; $o -le $WaitSeconds; $o++) {
             [System.Threading.Thread]::Sleep(1000)
-            $this.UIDispatcher.BeginInvoke(4, [action[object, int]]{
+            $this.Dispatcher.BeginInvoke(4,[action[object, int]]{
                 param($this, $NumberToAdd)
                 $this.UpdateResult($NumberToAdd)
-            }, $this, 1)
+            }, $this, $increment)
         }
         $endNumber += ($WaitSeconds * $increment)
         return $endNumber
     }
 
     [void]BackgroundCallback($NumberToAdd) {
-        $this.UIDispatcher.BeginInvoke(4, [action[object, int]]{
+        $this.Dispatcher.BeginInvoke(4,[action[object, int]]{
             param($this, $NumberToAdd)
             $this.SetValue([FirstViewModel]::ResultProperty, $this.GetValue([FirstViewModel]::ResultProperty) + $NumberToAdd)
             $this.SetValue([FirstViewModel]::IsBackgroundFreeProperty, $true)
