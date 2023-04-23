@@ -107,12 +107,12 @@ class DelegateCommand : System.Windows.Input.ICommand {
     # ICommand Implementation
     add_CanExecuteChanged([EventHandler] $value) {
         $this._internalCanExecuteChanged = [Delegate]::Combine($this._internalCanExecuteChanged, $value)
-        [System.Windows.Input.CommandManager]::add_RequerySuggested($value)
+        # [System.Windows.Input.CommandManager]::add_RequerySuggested($value)
     }
 
     remove_CanExecuteChanged([EventHandler] $value) {
         $this._internalCanExecuteChanged = [Delegate]::Remove($this._internalCanExecuteChanged, $value)
-        [System.Windows.Input.CommandManager]::remove_RequerySuggested($value)
+        # [System.Windows.Input.CommandManager]::remove_RequerySuggested($value)
     }
 
     # Delegate takes $null unlike invoking the PSMethod where it passes as arguments
@@ -185,13 +185,12 @@ class ViewModelBase : System.Windows.DependencyObject, System.ComponentModel.INo
     }
     # End INotifyPropertyChanged Implementation
 
-    [System.Windows.Threading.Dispatcher]$UIDispatcher
     [System.Management.Automation.Runspaces.RunspacePool]$DefaultRunspacePool
 
     # Any RunspacePool task must call Dispatcher if it modifies the UI
-    [void]BackgroundInvoke([System.Management.Automation.PSMethod]$Work, [object[]]$WorkParams, [System.Management.Automation.PSMethod]$Callback, [bool]$UseWorkAsCallbackParam) {
-        if ($null -eq $this.DefaultRunspacePool) {throw "Can't run a background task without a runspace."}
-        if ($this.DefaultRunspacePool.IsDisposed) {throw "Runspacepool is disposed."}
+    [System.IAsyncResult]BackgroundInvoke([System.Management.Automation.PSMethod]$Work, [object[]]$WorkParams, [System.Management.Automation.PSMethod]$Callback, [bool]$UseWorkAsCallbackParam) {
+        if ($null -eq $this.DefaultRunspacePool) { throw "Can't run a background task without a runspace." }
+        if ($this.DefaultRunspacePool.IsDisposed) { throw 'Runspacepool is disposed.' }
 
         # $workDelegate = $this.GetDelegate($Work)
         # $callbackDelegate = $this.GetDelegate($Callback)
@@ -215,8 +214,8 @@ class ViewModelBase : System.Windows.DependencyObject, System.ComponentModel.INo
             }
         ).AddParameter('Delegate', $Work).AddParameter('DelegateParams', $WorkParams).AddParameter('Callback', $Callback).AddParameter('UseWorkReturn', $UseWorkAsCallbackParam)
 
-        # Do we have to dispose? Memory doesn't seem to constantly increase after invoking multiple times.
-        $null = $ps.BeginInvoke()
+        $handle = $ps.BeginInvoke()
+        return $handle
     }
 
     hidden Initialize () {
@@ -299,23 +298,19 @@ class ViewModelBase : System.Windows.DependencyObject, System.ComponentModel.INo
 }
 
 # Alternative to [System.Windows.Forms.Application]::DoEvents() from Add-Type -AssemblyName System.Windows.Forms
-# class DispatcherUtility {
-#     static [void]DoEvents() {
-#         $frame = [System.Windows.Threading.DispatcherFrame]::new()
-#         $callback = [System.Windows.Threading.DispatcherOperationCallback]{param($frame) $frame.Continue = $false}
-#         # [System.Windows.Threading.Dispatcher]::CurrentDispatcher.BeginInvoke(4,  # invoke gives consistent results
-#         [System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke(4,
-#             $callback,
-#             $frame)
-#         [System.Windows.Threading.Dispatcher]::PushFrame($frame)
-#     }
-# }
-
-function Send-Events ([System.Windows.Threading.DispatcherPriority]$DispatcherPriority)  {
+function Send-Events ([System.Windows.Threading.DispatcherPriority]$DispatcherPriority) {
     $frame = [System.Windows.Threading.DispatcherFrame]::new()
-    $callback = [System.Windows.Threading.DispatcherOperationCallback]{param($frame) $frame.Continue = $false}
+    $callback = [System.Windows.Threading.DispatcherOperationCallback] { param($frame) $frame.Continue = $false }
+    # $operation = [System.Windows.Threading.Dispatcher]::CurrentDispatcher.BeginInvoke($DispatcherPriority,
+    #     $callback,
+    #     $frame)
+    # while (-not $operation.GetAwaiter().IsCompleted) {
+    #     [System.Threading.Thread]::Sleep(1000)
+    # }
     [System.Windows.Threading.Dispatcher]::CurrentDispatcher.Invoke($DispatcherPriority, # for testing, dispatcher priority might need to be less than all other used priorities
         $callback,
         $frame)
     [System.Windows.Threading.Dispatcher]::PushFrame($frame)
+    # Don't think ExitAllFrames does anything here.
+    # [System.Windows.Threading.Dispatcher]::ExitAllFrames()
 }
