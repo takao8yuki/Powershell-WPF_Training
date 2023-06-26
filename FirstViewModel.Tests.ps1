@@ -67,7 +67,6 @@ Describe 'Testing FirstViewModel' {
     }
 
     Context 'Background command runs in the runspacepool' {
-        # This doesn't work if $testClass.Result is compared where it is invoked.
         It 'Do BackgroundCommand again. Sleep for $waitSeconds' {
             $waitSeconds = 1
             $script:expectedResult = ($testClass.GetValue([FirstViewModel]::ResultProperty) + ($waitSeconds * $testClass.GetValue([FirstViewModel]::PrimaryInputProperty))) + ($testClass.GetValue([FirstViewModel]::ResultProperty) + ($waitSeconds * $testClass.GetValue([FirstViewModel]::PrimaryInputProperty)))
