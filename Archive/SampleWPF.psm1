@@ -1,4 +1,4 @@
-using module '.\Classes\WPFClassHelper\WPFClassHelper.psd1'
+using module '.\WPFClassHelper\WPFClassHelper.psd1'
 using namespace System.Windows
 using namespace System.Collections.Generic
 

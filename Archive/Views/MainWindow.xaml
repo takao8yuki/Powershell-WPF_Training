@@ -1,0 +1,67 @@
+<Window
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    x:Name="MainWindow"
+    Title="TestViews"
+    WindowStartupLocation="CenterScreen"
+    Width="400"
+    Height="300">
+
+<!-- namespace 'local:' is added by parse context -->
+<!-- DataContext can be set in the xaml
+    <Window.DataContext>
+        <local:WindowViewModel />
+    </Window.DataContext>
+-->
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Common.Xaml" />
+            </ResourceDictionary.MergedDictionaries>
+<!--
+            <DataTemplate DataType="{x:Type local:FirstViewModel}">
+                <local:FirstUserControl />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type local:SecondViewModel}">
+                <local:SecondUserControl />
+            </DataTemplate>
+-->
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid x:Name="MainGrid">
+        <Grid.Resources>
+            <Style BasedOn="{StaticResource NavButton}" TargetType="RadioButton" />
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Border Grid.Row="0" BorderThickness="0, 0, 0, 1" BorderBrush="{StaticResource BrushPrimary1}">
+            <Grid Background="{StaticResource BrushPrimary2}" Height="Auto" MinHeight="30">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- No idea how to reference the enum in one line. But the below works -->
+                <RadioButton Grid.Column="0" Content="First" Command="{Binding SwitchViewCommand}" IsChecked="True">
+                    <RadioButton.CommandParameter>
+                        <local:ViewModelNames>First</local:ViewModelNames>
+                    </RadioButton.CommandParameter>
+                </RadioButton>
+
+                <RadioButton Grid.Column="1" Content="Second" Command="{Binding SwitchViewCommand}">
+                    <RadioButton.CommandParameter>
+                        <local:ViewModelNames>Second</local:ViewModelNames>
+                    </RadioButton.CommandParameter>
+                </RadioButton>
+            </Grid>
+        </Border>
+
+        <ContentControl Grid.Row="1" Content="{Binding Content}" />
+    </Grid>
+</Window>

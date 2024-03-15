@@ -1,50 +1,176 @@
-# Powershell 5.1 and WPF
-An attempt at learning WPF with PowerShell, along with VSCode, Git and, Github.
+# Powershell WPF
 
-Challenge:
-1. To write a GUI in pure PowerShell and .Net Framework.
-2. No custom C# classes through ```Add-Type```.
-3. Limited to resources that come natively with Windows 10.
+### Challenge:
+1. To write a GUI in PowerShell 5.1 and .Net Framework.
+2. No custom written C# classes through `Add-Type`.
+3. Limited to resources that come natively with Windows 10/11.
 
-# Result
-An **asynchronous** PowerShell UI! Supported by view models, multiple views and relay commands.
+### Result:
+An **Asynchronous** PowerShell UI! Supported by a ViewModel and Command Bindings.
 
-`OpenGUI.ps1` Right click and run with powershell, dot source, or load up vscode and run the debugger.
+`SampleGUI.ps1` Right click and run with powershell, dot source, or load up vscode and run the debugger to check out the sample.
 
-Enter a number, in seconds, that the background command will run for in the textbox. Then click the background command button. You are still able to move, resize the window, click other buttons, and navigate to another tab. No frozen UI!
+![SampleVideo](SampleVideo.mp4)
 
-You mentioned view model, that means I can spin up the class without the UI? Why of course! See `FirstViewModel.Tests.ps1`.
+## Xaml Custom Namespace
+You are able to use local powershell classes by adding `xmlns:local="clr-namespace:;assembly=PowerShell Class Assembly"` to the xaml. This allows for functionality close to C#. The following will create a PartialWindow class when parsed by the `XamlReader`.
 
-![test](/Images/PesterResult.PNG?raw=true)
+```xml
+<local:PartialWindow
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:;assembly=PowerShell Class Assembly">
+    <StackPanel>
+        <TextBlock Text="Custom WPF Object from xaml!" />
+    </StackPanel>
+</local:PartialWindow>
+```
 
-# Notes
+```Powershell
+class PartialWindow : System.Windows.Window {
+    PartialWindow() {
+        Write-Verbose 'PartialWindow was created!' -Verbose
+    }
+}
+```
 
-Anything that interacts with the UI must be invoked with the UI dispatcher. Prefer Dispatcher.BeginInvoke over Dispatcher.Invoke for multiple views and callbacks running at the same time.
+## Powershell and the Task Parallel Library
+You aren't able to call `[System.Threading.Tasks.Task]::Run([action]$Scriptblock)` due to there not being a runspace to execute the scriptblock. However, you are able to use `Factory.FromAsync()` and chain ContinueWith.
+```Powershell
+class DelegateClass {
+    DelegateClass() {}
 
-Don't use cmdlets in PSMethods converted to Delegates. It will crash the ui if there is a task in the background thread.
+    $MagicDelegate = $this.CreateDelegate($this.AutoMagicallyCallEndInvoke, $this)
 
-Dependency Properties are awesome with built in callbacks. A bit verbose, but this is powershell so everything is verbose. Also a cheat to include property get and property set in powershell classes. The down side is the syntax to use them.
+    [Delegate]CreateDelegate([System.Management.Automation.PSMethod]$Method, $Target) {
+        $ReflectionMethod = $Target.GetType().GetMethod($Method.Name)
+        $ParameterTypes = [System.Linq.Enumerable]::Select($ReflectionMethod.GetParameters(), [func[object,object]]{$args[0].parametertype})
+        $ConcatMethodTypes = $ParameterTypes + $ReflectionMethod.ReturnType
+        $DelegateType = [System.Linq.Expressions.Expression]::GetDelegateType($ConcatMethodTypes)
+        $Delegate = [delegate]::CreateDelegate($DelegateType, $Target, $ReflectionMethod.Name)
+        return $Delegate
+    }
 
-INotifyPropertyChanged feels awkward since binding variables cannot raise property changed or set other properties due to the lack of setters. It is probably easier to learn c# and add the c# class through add-type.
+    [object]AutoMagicallyCallEndInvoke([System.Threading.Tasks.Task]$Task, [object]$Powershell) {
+        $Powershell.Dispose()
+        return "$($Task.Result) ContinueWith"
+    }
+}
 
-Xaml allows mapping a custom namespace with a dynamic assembly. You are be able to use custom powershell classes in the xaml.
+$Class = [DelegateClass]::new()
+$Powershell = [powershell]::Create()
 
-It's okay to take the easier route. The code behind doesn't need to be devoid of any code whatsoever. The UI was created using something that wasn't meant to create a UI.
+# Convert the PSMethod EndInvoke to Delegate
+$EndInvokeDelegate = $Class.CreateDelegate($Powershell.EndInvoke, $Powershell)
 
-# Helpful References
+$Scriptblock = {'Task Result!'}
+$null = $Powershell.AddScript($Scriptblock)
+$Handle = $Powershell.BeginInvoke()
 
-RelayCommand
+$TaskFactory = [System.Threading.Tasks.TaskFactory]::new([System.Threading.Tasks.TaskScheduler]::Default)
+$Task = $TaskFactory.FromAsync($Handle, $EndInvokeDelegate)
+$ContinueWithTask = $Task.ContinueWith($Class.MagicDelegate, $Powershell)
+$Task.Result
+$ContinueWithTask.Result
 
-https://github.com/nohwnd/WpfToolkit
+```
 
-Incomplete example
+If you do call `$Task.Result` or `$Task` before the BeginInvoke is finished, it will hold up the console/thread. You can check its status with `$Task.Status` or `$Task.IsCompleted` without freezing.
 
-https://gist.github.com/mouadcherkaoui/7b0f32d9dbefa71102acdbb07299c9bb
+While you can call `[System.Threading.Tasks.Task]::Run($Class.CreateDelegate(Class.Method))`, it will still run in the current runspace.
 
-Snake
+## Concurrency
+Pwsh 7 has the attribute `[NoRunspaceAffinity()]`. Powershell 5.1 does not. The kind gentleman [here](https://github.com/PowerShell/PowerShell/issues/3651#issuecomment-306968528) has provided a way to do so. You can probably achieve the same result if you define a class in a runspace and immediately calling `(Get-Runspace -Id x).Close()`
 
-https://gist.github.com/nikonthethird/2ab6bfad9a81d5fe127fd0d1c2844b7c
+## ViewModel with native INotifyPropertyChanged Implementation
+Powershell classes can implement `INotifyPropertyChanged`. One of the things powershell classes lack are getters and setters, however, we can mimic it by inheriting a PSCustomObject. Doing so hides members behind `$ViewModel.psobject.Property`. You can then set getters and setters for the property that are visible by `$ViewModel.PropertyScriptMethod`. As a bonus, you can use `"{Binding Property}"` in the xaml even though it is only visible in the console via `$ViewModel.psobject.Property`
 
-Minesweeper
+```Powershell
+class ViewModelBase : PSCustomObject, System.ComponentModel.INotifyPropertyChanged {
+    [ComponentModel.PropertyChangedEventHandler]$PropertyChanged
 
-https://gist.github.com/nikonthethird/4e410ac3c04ea6633043a5cb7be1d717
+	add_PropertyChanged([System.ComponentModel.PropertyChangedEventHandler]$handler) {
+        $this.psobject.PropertyChanged = [Delegate]::Combine($this.psobject.PropertyChanged, $handler)
+	}
+
+	remove_PropertyChanged([System.ComponentModel.PropertyChangedEventHandler]$handler) {
+        $this.psobject.PropertyChanged = [Delegate]::Remove($this.psobject.PropertyChanged, $handler)
+	}
+
+	RaisePropertyChanged([string]$propname) {
+	    if ($this.psobject.PropertyChanged) {
+            $evargs = [System.ComponentModel.PropertyChangedEventArgs]::new($propname)
+            $this.psobject.PropertyChanged.Invoke($this, $evargs)
+	    }
+	}
+}
+
+class MyViewModel : ViewModelBase {
+    $SharedResource
+    MyViewModel() {
+        $this | Add-Member -Name SharedResource -MemberType ScriptProperty -Value {
+			return $this.psobject.SharedResource
+		} -SecondValue {
+			param($value)
+			$this.psobject.SharedResource = $value
+			$this.psobject.RaisePropertyChanged('SharedResource')
+            Write-Verbose "SharedResource is set to $value" -Verbose
+		}
+    }
+}
+```
+
+## Commands
+Last but not least, command bindings. You can set handlers in the "codebehind".
+```Powershell
+$Window.FindName('Button').add_Click({$Class.Method()})
+```
+
+However, since we're this far deep in wpf, we can also implement our own DelegateCommand Class. It can take care of interaction and even be responsible for running methods async. This allows for only needing to run tests on the ViewModel's methods. The ViewModel just works.
+```Powershell
+class DelegateCommand : ViewModelBase, System.Windows.Input.ICommand  {
+    [System.EventHandler]$InternalCanExecuteChanged
+
+    add_CanExecuteChanged([EventHandler]$value) {
+        $this.psobject.InternalCanExecuteChanged = [Delegate]::Combine($this.psobject.InternalCanExecuteChanged, $value)
+    }
+
+    remove_CanExecuteChanged([EventHandler]$value) {
+        $this.psobject.InternalCanExecuteChanged = [Delegate]::Remove($this.psobject.InternalCanExecuteChanged, $value)
+    }
+
+    [bool]CanExecute([object]$CommandParameter) {
+        if ($this.psobject.CanExecuteAction) { return $this.psobject.CanExecuteAction.Invoke() }
+        return $true
+    }
+
+    [void]Execute([object]$CommandParameter) {
+        if ($this.psobject.Action) {
+            $this.psobject.Action.Invoke()
+        } else {
+            $this.psobject.ActionObject.Invoke()
+        }
+    }
+
+    DelegateCommand([Action]$Action) {
+        $this.psobject.Action = $Action
+    }
+
+    DelegateCommand([Action[object]]$Action) {
+        $this.psobject.ActionObject = $Action
+    }
+
+    [void]RaiseCanExecuteChanged() {
+        $eCanExecuteChanged = $this.psobject.InternalCanExecuteChanged
+        if ($eCanExecuteChanged) {
+            if ($this.psobject.CanExecuteAction) {
+                $eCanExecuteChanged.Invoke($this, [System.EventArgs]::Empty)
+            }
+        }
+    }
+
+    $Action
+    $ActionObject
+    $CanExecuteAction
+}
+```
