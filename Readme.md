@@ -10,8 +10,6 @@ An **Asynchronous** PowerShell UI! Supported by a ViewModel and Command Bindings
 
 `SampleGUI.ps1` Right click and run with powershell, dot source, or load up vscode and run the debugger to check out the sample.
 
-https://github.com/Exathi/Powershell-WPF/assets/87538502/46a83c2b-9f6a-48e1-8dcd-b881f23443de
-
 ## Xaml Custom Namespace
 You are able to use local powershell classes by adding `xmlns:local="clr-namespace:;assembly=PowerShell Class Assembly"` to the xaml. This allows for functionality close to C#. The following will create a PartialWindow class when parsed by the `XamlReader`.
 
