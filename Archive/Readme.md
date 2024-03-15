@@ -15,7 +15,7 @@ Enter a number, in seconds, that the background command will run for in the text
 
 You mentioned view model, that means I can spin up the class without the UI? Why of course! See `FirstViewModel.Tests.ps1`.
 
-![test](/Images/PesterResult.PNG?raw=true)
+![test](./Images/PesterResult.PNG?raw=true)
 
 # Notes
 
