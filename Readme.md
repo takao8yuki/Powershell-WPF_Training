@@ -6,14 +6,14 @@
 3. Limited to resources that come natively with Windows 10/11.
 
 ### Result:
-An **Asynchronous** PowerShell UI! Supported by a ViewModel and Command Bindings.
+An **Asynchronous** PowerShell UI! Supported by a ViewModel and Command Bindings. Say goodbye to writing everything in an untestable scriptblock. Instead, just invoke native PowerShell class methods!
 
 `SampleGUI.ps1` Right click and run with powershell, dot source, or load up vscode and run the debugger to check out the sample.
 
 https://github.com/Exathi/Powershell-WPF/assets/87538502/c401887d-5f56-4dab-ab72-196e894e486b
 
 ## Xaml Custom Namespace
-You are able to use local powershell classes by adding `xmlns:local="clr-namespace:;assembly=PowerShell Class Assembly"` to the xaml. This allows for functionality close to C#. The following will create a PartialWindow class when parsed by the `XamlReader`.
+You are able to use local PowerShell classes by adding `xmlns:local="clr-namespace:;assembly=PowerShell Class Assembly"` to the xaml. This allows for functionality close to C#. The following will create a PartialWindow class when parsed by the `XamlReader`.
 
 ```xml
 <local:PartialWindow
@@ -26,7 +26,7 @@ You are able to use local powershell classes by adding `xmlns:local="clr-namespa
 </local:PartialWindow>
 ```
 
-```Powershell
+```PowerShell
 class PartialWindow : System.Windows.Window {
     PartialWindow() {
         Write-Verbose 'PartialWindow was created!' -Verbose
@@ -35,8 +35,8 @@ class PartialWindow : System.Windows.Window {
 ```
 
 ## Powershell and the Task Parallel Library
-You aren't able to call `[System.Threading.Tasks.Task]::Run([action]$Scriptblock)` due to there not being a runspace to execute the scriptblock. However, you are able to use `Factory.FromAsync()` and chain ContinueWith.
-```Powershell
+You aren't able to call `[System.Threading.Tasks.Task]::Run([action]$Scriptblock)` due to there not being a runspace to execute the scriptblock. However, you are able to use `Factory.FromAsync()` and chain ContinueWith. This way we can *automatically* clean up a runspace without dedicating a runspace with a permanent sleep loop.
+```PowerShell
 class DelegateClass {
     DelegateClass() {}
 
@@ -80,27 +80,27 @@ If you do call `$Task.Result` or `$Task` before the BeginInvoke is finished, it 
 While you can call `[System.Threading.Tasks.Task]::Run($Class.CreateDelegate(Class.Method))`, it will still run in the current runspace.
 
 ## Concurrency
-Pwsh 7 has the attribute `[NoRunspaceAffinity()]`. Powershell 5.1 does not. The kind gentleman [here](https://github.com/PowerShell/PowerShell/issues/3651#issuecomment-306968528) has provided a way to do so. You can probably achieve the same result if you define a class in a runspace and immediately calling `(Get-Runspace -Id x).Close()`
+Pwsh 7 has the attribute `[NoRunspaceAffinity()]`. PowerShell 5.1 does not. The kind gentleman [here](https://github.com/PowerShell/PowerShell/issues/3651#issuecomment-306968528) has provided a way to do so. You can probably achieve the same result if you define a class in a runspace and immediately calling `(Get-Runspace -Id x).Close()`
 
 ## ViewModel with native INotifyPropertyChanged Implementation
-Powershell classes can implement `INotifyPropertyChanged`. One of the things powershell classes lack are getters and setters, however, we can mimic it by inheriting a PSCustomObject. Doing so hides members behind `$ViewModel.psobject.Property`. You can then set getters and setters for the property that are visible by `$ViewModel.ScriptProperty` via `Add-Memner` in the constructor. As a bonus, you can use `"{Binding Property}"` in the xaml even though it is only visible in the console via `$ViewModel.psobject.Property`
+PowerShell classes can implement `INotifyPropertyChanged`. One of the things PowerShell classes lack are getters and setters, however, we can mimic it by inheriting a PSCustomObject. Doing so hides members behind `$ViewModel.psobject.Property`. You can then set getters and setters for the property that are visible by `$ViewModel.ScriptProperty` via `Add-Memner` in the constructor. As a bonus, you can use `"{Binding Property}"` in the xaml even though it is only visible in the console via `$ViewModel.psobject.Property`
 
-```Powershell
+```PowerShell
 class ViewModelBase : PSCustomObject, System.ComponentModel.INotifyPropertyChanged {
     [ComponentModel.PropertyChangedEventHandler]$PropertyChanged
 
 	add_PropertyChanged([System.ComponentModel.PropertyChangedEventHandler]$handler) {
-        $this.psobject.PropertyChanged = [Delegate]::Combine($this.psobject.PropertyChanged, $handler)
+            $this.psobject.PropertyChanged = [Delegate]::Combine($this.psobject.PropertyChanged, $handler)
 	}
 
 	remove_PropertyChanged([System.ComponentModel.PropertyChangedEventHandler]$handler) {
-        $this.psobject.PropertyChanged = [Delegate]::Remove($this.psobject.PropertyChanged, $handler)
+	    $this.psobject.PropertyChanged = [Delegate]::Remove($this.psobject.PropertyChanged, $handler)
 	}
 
 	RaisePropertyChanged([string]$propname) {
 	    if ($this.psobject.PropertyChanged) {
-            $evargs = [System.ComponentModel.PropertyChangedEventArgs]::new($propname)
-            $this.psobject.PropertyChanged.Invoke($this, $evargs)
+            	$evargs = [System.ComponentModel.PropertyChangedEventArgs]::new($propname)
+            	$this.psobject.PropertyChanged.Invoke($this, $evargs)
 	    }
 	}
 }
@@ -109,25 +109,25 @@ class MyViewModel : ViewModelBase {
     $SharedResource
     MyViewModel() {
         $this | Add-Member -Name SharedResource -MemberType ScriptProperty -Value {
-			return $this.psobject.SharedResource
-		} -SecondValue {
-			param($value)
-			$this.psobject.SharedResource = $value
-			$this.psobject.RaisePropertyChanged('SharedResource')
-            Write-Verbose "SharedResource is set to $value" -Verbose
-		}
+	    return $this.psobject.SharedResource
+	} -SecondValue {
+		param($value)
+		$this.psobject.SharedResource = $value
+		$this.psobject.RaisePropertyChanged('SharedResource')
+            	Write-Verbose "SharedResource is set to $value" -Verbose
+	}
     }
 }
 ```
 
 ## Commands
 Last but not least, command bindings. You can set handlers in the "codebehind".
-```Powershell
+```PowerShell
 $Window.FindName('Button').add_Click({$Class.Method()})
 ```
 
-However, since we're this far deep in wpf, we can also implement our own DelegateCommand Class. It can take care of interaction and even be responsible for running methods async. This allows for only needing to run tests on the ViewModel's methods. The ViewModel just works.
-```Powershell
+However, since we're this far deep in wpf, we can also implement our own DelegateCommand Class. It can take care of interaction and even be responsible for running methods **async**. This allows for only needing to run tests on the ViewModel's methods. The ViewModel just works.
+```PowerShell
 class DelegateCommand : ViewModelBase, System.Windows.Input.ICommand  {
     [System.EventHandler]$InternalCanExecuteChanged
 
@@ -174,3 +174,5 @@ class DelegateCommand : ViewModelBase, System.Windows.Input.ICommand  {
     $CanExecuteAction
 }
 ```
+### New-WPFObject
+A wrapper for `[System.Windows.Markup.XamlReader]`. One can make use of a `[System.Windows.Markup.ParserContext]` in order to add a uri for enabling a wpfobject to point to other files such as a resource dictionary.xaml file within their own xaml, without providing a fullpath. This allows for relative paths in the xaml.
