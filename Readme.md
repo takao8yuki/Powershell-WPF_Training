@@ -83,7 +83,7 @@ While you can call `[System.Threading.Tasks.Task]::Run($Class.CreateDelegate(Cla
 Pwsh 7 has the attribute `[NoRunspaceAffinity()]`. PowerShell 5.1 does not. The kind gentleman [here](https://github.com/PowerShell/PowerShell/issues/3651#issuecomment-306968528) has provided a way to do so. You can probably achieve the same result if you define a class in a runspace and immediately calling `(Get-Runspace -Id x).Close()`
 
 ## ViewModel with native INotifyPropertyChanged Implementation
-PowerShell classes can implement `INotifyPropertyChanged`. One of the things PowerShell classes lack are getters and setters, however, we can mimic it by inheriting a PSCustomObject. Doing so hides members behind `$ViewModel.psobject.Property`. You can then set getters and setters for the property that are visible by `$ViewModel.ScriptProperty` via `Add-Memner` in the constructor. As a bonus, you can use `"{Binding Property}"` in the xaml even though it is only visible in the console via `$ViewModel.psobject.Property`
+PowerShell classes can implement `INotifyPropertyChanged`. One of the things PowerShell classes lack are getters and setters, however, we can mimic it by inheriting a PSCustomObject. Doing so hides members behind `$ViewModel.psobject.Property`. You can then set getters and setters for the property that are visible by `$ViewModel.ScriptProperty` via `Add-Member` in the constructor. As a bonus, you can use `"{Binding Property}"` in the xaml even though it is only visible in the console via `$ViewModel.psobject.Property`
 
 ```PowerShell
 class ViewModelBase : PSCustomObject, System.ComponentModel.INotifyPropertyChanged {
