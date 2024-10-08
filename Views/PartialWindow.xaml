@@ -1,3 +1,4 @@
+<!-- カスタムウィンドウクラス（PartialWindow）を使用したメインウィンドウの定義 -->
 <local:PartialWindow
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -8,23 +9,27 @@
     Width="640"
     Height="720">
 
+    <!-- ウィンドウのリソース定義：スタイルや他のリソースを定義します -->
     <Window.Resources>
         <ResourceDictionary>
+            <!-- 外部のリソースディクショナリを読み込み：共通のスタイルなどを別ファイルから取り込みます -->
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Views\Common.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
 
+    <!-- WindowChromeの設定：ウィンドウの外観をカスタマイズします -->
     <WindowChrome.WindowChrome>
         <WindowChrome GlassFrameThickness="0" ResizeBorderThickness="4" CaptionHeight="35"/>
     </WindowChrome.WindowChrome>
 
+    <!-- ウィンドウのテンプレート：ウィンドウ全体の外観と構造を定義します -->
     <Window.Template>
         <ControlTemplate>
+            <!-- ウィンドウの背景と枠を設定 -->
             <Border Background="LightBlue" SnapsToDevicePixels="True">
-                <!-- Add to avoid border disappearing when window is maximized -->
-                <!-- ResizeBorderThickness + 2 looks good -->
+                <!-- ウィンドウの状態（最大化/通常）に応じて枠の太さを調整 -->
                 <Border.Style>
                     <Style TargetType="{x:Type Border}">
                         <Style.Triggers>
@@ -39,11 +44,13 @@
                         </Style.Triggers>
                     </Style>
                 </Border.Style>
+                <!-- ウィンドウの主要な構造を定義するグリッド -->
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="35" Name="TitleBarHeight" />
                         <RowDefinition />
                     </Grid.RowDefinitions>
+                        <!-- タイトルバーの内容 -->
                         <Grid Grid.Row="0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -51,8 +58,9 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <!-- Old School System Menu Top Left -->
+                            <!-- システムメニューとファイルメニュー -->
                             <StackPanel Grid.Column="0" WindowChrome.IsHitTestVisibleInChrome="True" Orientation="Horizontal" Margin="2,1,0,0" Name="TitleBarMenu">
+                                <!-- システムメニューボタン -->
                                 <Button
                                     Command="{x:Static SystemCommands.ShowSystemMenuCommand}"
                                     CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"
@@ -65,6 +73,7 @@
                                         </Path.RenderTransform>
                                     </Path>
                                 </Button>
+                                <!-- ファイルメニュー -->
                                 <Menu Background="Transparent" WindowChrome.IsHitTestVisibleInChrome="True">
                                     <MenuItem Header="File" Height="25" Margin="3,4,3,0">
                                         <MenuItem Header="E_xit" Command="{x:Static SystemCommands.CloseWindowCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" />
@@ -72,7 +81,7 @@
                                 </Menu>
                             </StackPanel>
 
-                            <!-- Window Title - Center Aligned -->
+                            <!-- ウィンドウタイトル（中央揃え） -->
                             <TextBlock
                                 Grid.Column="1"
                                 Grid.ColumnSpan="2"
@@ -82,7 +91,9 @@
                                 Text="{Binding Title, RelativeSource={RelativeSource TemplatedParent}}"
                                 Margin="{Binding Path=ActualWidth, ElementName=TitleBarMenu, Converter={StaticResource RightMarginConverter}}" />
 
+                            <!-- ウィンドウコントロールボタン（最小化、最大化/復元、閉じる） -->
                             <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="0,1,2,0">
+                                <!-- 最小化ボタン -->
                                 <Button Command="{x:Static SystemCommands.MinimizeWindowCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" Style="{StaticResource TitleBarButton}">
                                     <Path Fill="Black" Stroke="Black" StrokeThickness="1" Stretch="Uniform" Data="{StaticResource ChromeMinimize}" RenderTransformOrigin="0.5, 0.5">
                                         <Path.RenderTransform>
@@ -90,6 +101,7 @@
                                         </Path.RenderTransform>
                                     </Path>
                                 </Button>
+                                <!-- 復元ボタン -->
                                 <Button Command="{x:Static SystemCommands.RestoreWindowCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" Style="{StaticResource TitleBarButtonRestore}">
                                     <Path Fill="Black" Stroke="Black" StrokeThickness="0.33" Stretch="Uniform" Data="{StaticResource ChromeRestore}" RenderTransformOrigin="0.5, 0.5">
                                         <Path.RenderTransform>
@@ -97,6 +109,7 @@
                                         </Path.RenderTransform>
                                     </Path>
                                 </Button>
+                                <!-- 最大化ボタン -->
                                 <Button Command="{x:Static SystemCommands.MaximizeWindowCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" Style="{StaticResource TitleBarButtonMaximize}">
                                     <Path Fill="Black" Stroke="Black" StrokeThickness="0.33" Stretch="Uniform" Data="{StaticResource ChromeMaximize}" RenderTransformOrigin="0.5, 0.5">
                                         <Path.RenderTransform>
@@ -104,7 +117,7 @@
                                         </Path.RenderTransform>
                                     </Path>
                                 </Button>
-                                <!-- <Button Command="{Binding CloseWindowCommand}" Style="{StaticResource TitleBarButton}" Margin="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(WindowChrome.WindowChrome).ResizeBorderThickness}"> -->
+                                <!-- 閉じるボタン -->
                                 <Button Command="{x:Static SystemCommands.CloseWindowCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" Style="{StaticResource TitleBarButton}">
                                     <Path Fill="Black" Stroke="Black" StrokeThickness="0.33" Stretch="Uniform" Data="{StaticResource ChromeClose}" RenderTransformOrigin="0.5, 0.5">
                                         <Path.RenderTransform>
@@ -115,7 +128,7 @@
                             </StackPanel>
                         </Grid>
 
-                    <!-- This is the Window's main content area -->
+                    <!-- ウィンドウのメインコンテンツエリア -->
                     <Border Grid.Row="1" Grid.ColumnSpan="2" Background="#f8f8f8">
                         <ContentPresenter Content="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}"/>
                     </Border>
@@ -124,11 +137,14 @@
         </ControlTemplate>
     </Window.Template>
 
+    <!-- メインコンテンツのグリッドレイアウト -->
     <Grid Name="MainGrid" >
+        <!-- 2列のレイアウトを定義 -->
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
+        <!-- 5行のレイアウトを定義 -->
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="20" Name="ShowCaseHeaderRow" />
@@ -137,9 +153,11 @@
             <RowDefinition Height="*" Name="DataGridRow" />
         </Grid.RowDefinitions>
 
+        <!-- SharedResourceの表示 -->
         <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="SharedResource" Style="{StaticResource TextBlockShowCase}" />
         <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding SharedResource, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBlockShowCase}" />
 
+        <!-- ViewModelメソッドのグループボックス（左側） -->
         <GroupBox Grid.Row="3" Grid.Column="0" Header="ViewModel Method" Padding="5">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -151,14 +169,18 @@
                     <RowDefinition />
                     <RowDefinition />
                 </Grid.RowDefinitions>
+                <!-- Throttle（スロットル）の表示 -->
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Throttle" Style="{StaticResource TextBlockLabel}" />
                 <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding AddTenSlowlyCommand.Throttle, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBlockData}" />
+                <!-- Workers（ワーカー）の表示 -->
                 <TextBlock Grid.Row="1" Grid.Column="0" Text="Workers" Style="{StaticResource TextBlockLabel}" />
                 <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding AddTenSlowlyCommand.Workers, UpdateSourceTrigger=PropertyChanged}"  Style="{StaticResource TextBlockData}" />
+                <!-- AddTenSlowlyボタン -->
                 <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Command="{Binding AddTenSlowlyCommand}" Content="_AddTenSlowly" Height="25" />
             </Grid>
         </GroupBox>
 
+        <!-- 外部メソッド呼び出しのグループボックス（右側） -->
         <GroupBox Grid.Row="3" Grid.Column="1" Header="ViewModel Method Calling Another Class's Method" Padding="5">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -170,28 +192,37 @@
                     <RowDefinition />
                     <RowDefinition />
                 </Grid.RowDefinitions>
+                <!-- Throttle（スロットル）の表示 -->
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Throttle" Style="{StaticResource TextBlockLabel}" />
                 <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding ExternalMethodCommand.Throttle, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBlockData}" />
+                <!-- Workers（ワーカー）の表示 -->
                 <TextBlock Grid.Row="1" Grid.Column="0" Text="Workers" Style="{StaticResource TextBlockLabel}" />
                 <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding ExternalMethodCommand.Workers, UpdateSourceTrigger=PropertyChanged}"  Style="{StaticResource TextBlockData}" />
+                <!-- ExternalMethodボタン -->
                 <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Command="{Binding ExternalMethodCommand}" Content="_ExternalMethod" Height="25" />
             </Grid>
         </GroupBox>
 
+        <!-- ジョブ情報を表示するDataGrid -->
         <DataGrid Margin="1,1,1,5" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Name="JobGrid" ItemsSource="{Binding Jobs}" IsReadOnly="True" AutoGenerateColumns="False" CellStyle="{StaticResource DefaultDataGridCellStyle}">
             <DataGrid.Columns>
+                <!-- ジョブIDの列 -->
                 <DataGridTextColumn Header="Id"
                                     Width="25"
                                     Binding="{Binding Path=Id}" />
+                <!-- ジョブタイプの列 -->
                 <DataGridTextColumn Header="Type"
                                     Width="50"
                                     Binding="{Binding Path=Type}" />
+                <!-- 実行時間の列 -->
                 <DataGridTextColumn Header="Time"
                                     Width="*"
                                     Binding="{Binding Path=Time}" />
+                <!-- スナップショットの列 -->
                 <DataGridTextColumn Header="Snapshot"
                                     Width="*"
                                     Binding="{Binding Path=Snapshot}" />
+                <!-- メソッド名の列 -->
                 <DataGridTextColumn Header="Method"
                                     Width="*"
                                     Binding="{Binding Path=Method}" />

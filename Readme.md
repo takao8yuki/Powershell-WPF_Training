@@ -1,19 +1,19 @@
-# Powershell WPF
+# PowerShell WPF
 
-### Challenge:
-1. To write a GUI in PowerShell 5.1 and .Net Framework.
-2. No custom written C# classes through `Add-Type`.
-3. Limited to resources that come natively with Windows 10/11.
+### 課題:
+1. PowerShell 5.1と.NET Frameworkを使用してGUIを作成すること。
+2. `Add-Type`を通じてカスタムC#クラスを書かないこと。
+3. Windows 10/11にネイティブに付属するリソースのみに制限すること。
 
-### Result:
-An **Asynchronous** PowerShell UI! Supported by a ViewModel and Command Bindings. Say goodbye to writing everything in an untestable scriptblock. Instead, just invoke native PowerShell class methods!
+### 結果:
+**非同期**PowerShell UI！ ViewModelとCommandBindingsによってサポートされています。テスト不可能なスクリプトブロックにすべてを書く必要はもうありません。代わりに、ネイティブのPowerShellクラスメソッドを呼び出すだけです！
 
-`SampleGUI.ps1` Right click and run with powershell, dot source, or load up vscode and run the debugger to check out the sample.
+`SampleGUI.ps1` を右クリックしてPowerShellで実行するか、ドットソースするか、VSCodeでデバッガーを実行してサンプルを確認してください。
 
 https://github.com/Exathi/Powershell-WPF/assets/87538502/c401887d-5f56-4dab-ab72-196e894e486b
 
-## Xaml Custom Namespace
-You are able to use local PowerShell classes by adding `xmlns:local="clr-namespace:;assembly=PowerShell Class Assembly"` to the xaml. This allows for functionality close to C#. The following will create a PartialWindow class when parsed by the `XamlReader`.
+## XAMLカスタム名前空間
+XAMLに `xmlns:local="clr-namespace:;assembly=PowerShell Class Assembly"` を追加することで、ローカルのPowerShellクラスを使用できます。これにより、C#に近い機能が可能になります。以下は `XamlReader` によって解析されたときにPartialWindowクラスを作成します。
 
 ```xml
 <local:PartialWindow
@@ -21,7 +21,7 @@ You are able to use local PowerShell classes by adding `xmlns:local="clr-namespa
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:;assembly=PowerShell Class Assembly">
     <StackPanel>
-        <TextBlock Text="Custom WPF Object from xaml!" />
+        <TextBlock Text="XAMLからのカスタムWPFオブジェクト！" />
     </StackPanel>
 </local:PartialWindow>
 ```
@@ -29,13 +29,14 @@ You are able to use local PowerShell classes by adding `xmlns:local="clr-namespa
 ```PowerShell
 class PartialWindow : System.Windows.Window {
     PartialWindow() {
-        Write-Verbose 'PartialWindow was created!' -Verbose
+        Write-Verbose 'PartialWindowが作成されました！' -Verbose
     }
 }
 ```
 
-## Powershell and the Task Parallel Library
-You aren't able to call `[System.Threading.Tasks.Task]::Run([action]$Scriptblock)` due to there not being a runspace to execute the scriptblock. However, you are able to use `Factory.FromAsync()` and chain ContinueWith. This way we can *automatically* clean up a runspace without dedicating a runspace with a permanent sleep loop.
+## PowerShellとタスク並列ライブラリ
+スクリプトブロックを実行するランスペースがないため、`[System.Threading.Tasks.Task]::Run([action]$Scriptblock)` を呼び出すことはできません。しかし、`Factory.FromAsync()`を使用し、ContinueWithを連鎖させることができます。これにより、永続的なスリープループを持つランスペースを専用にすることなく、ランスペースを*自動的に*クリーンアップできます。
+
 ```PowerShell
 class DelegateClass {
     DelegateClass() {}
@@ -60,10 +61,10 @@ class DelegateClass {
 $Class = [DelegateClass]::new()
 $Powershell = [powershell]::Create()
 
-# Convert the PSMethod EndInvoke to Delegate
+# PSMethodのEndInvokeをデリゲートに変換
 $EndInvokeDelegate = $Class.CreateDelegate($Powershell.EndInvoke, $Powershell)
 
-$Scriptblock = {'Task Result!'}
+$Scriptblock = {'タスク結果！'}
 $null = $Powershell.AddScript($Scriptblock)
 $Handle = $Powershell.BeginInvoke()
 
@@ -75,15 +76,15 @@ $ContinueWithTask.Result
 
 ```
 
-If you do call `$Task.Result` or `$Task` before the BeginInvoke is finished, it will hold up the console/thread. You can check its status with `$Task.Status` or `$Task.IsCompleted` without freezing.
+BeginInvokeが終了する前に`$Task.Result`や`$Task`を呼び出すと、コンソール/スレッドが停止します。フリーズせずに`$Task.Status`や`$Task.IsCompleted`でステータスを確認できます。
 
-While you can call `[System.Threading.Tasks.Task]::Run($Class.CreateDelegate(Class.Method))`, it will still run in the current runspace.
+`[System.Threading.Tasks.Task]::Run($Class.CreateDelegate(Class.Method))`を呼び出すことはできますが、現在のランスペースで実行されます。
 
-## Concurrency
-Pwsh 7 has the attribute `[NoRunspaceAffinity()]`. PowerShell 5.1 does not. The kind gentleman [here](https://github.com/PowerShell/PowerShell/issues/3651#issuecomment-306968528) has provided a way to do so. You can probably achieve the same result if you define a class in a runspace and immediately calling `(Get-Runspace -Id x).Close()`
+## 並行性
+Pwsh 7には`[NoRunspaceAffinity()]`属性がありますが、PowerShell 5.1にはありません。[こちら](https://github.com/PowerShell/PowerShell/issues/3651#issuecomment-306968528)の親切な方が方法を提供してくれています。ランスペースでクラスを定義し、すぐに`(Get-Runspace -Id x).Close()`を呼び出せば、同じ結果を得られるでしょう。
 
-## ViewModel with native INotifyPropertyChanged Implementation
-PowerShell classes can implement `INotifyPropertyChanged`. One of the things PowerShell classes lack are getters and setters, however, we can mimic it by inheriting a PSCustomObject. Doing so hides members behind `$ViewModel.psobject.Property`. You can then set getters and setters for the property that are visible by `$ViewModel.ScriptProperty` via `Add-Member` in the constructor. As a bonus, you can use `"{Binding Property}"` in the xaml even though it is only visible in the console via `$ViewModel.psobject.Property`
+## ネイティブINotifyPropertyChanged実装を持つViewModel
+PowerShellクラスは`INotifyPropertyChanged`を実装できます。PowerShellクラスにはゲッターとセッターがありませんが、PSCustomObjectを継承することでそれを模倣できます。これにより、メンバーは`$ViewModel.psobject.Property`の背後に隠れます。そして、コンストラクタで`Add-Member`を介して`$ViewModel.ScriptProperty`で表示されるプロパティのゲッターとセッターを設定できます。ボーナスとして、コンソールでは`$ViewModel.psobject.Property`を介してのみ表示されるプロパティでも、XAMLで`"{Binding Property}"`を使用できます。
 
 ```PowerShell
 class ViewModelBase : PSCustomObject, System.ComponentModel.INotifyPropertyChanged {
@@ -114,19 +115,19 @@ class MyViewModel : ViewModelBase {
 		param($value)
 		$this.psobject.SharedResource = $value
 		$this.psobject.RaisePropertyChanged('SharedResource')
-            	Write-Verbose "SharedResource is set to $value" -Verbose
+            	Write-Verbose "SharedResourceが$valueに設定されました" -Verbose
 	}
     }
 }
 ```
 
-## Commands
-Last but not least, command bindings. You can set handlers in the "codebehind".
+## コマンド
+最後に、コマンドバインディングについて。"コードビハインド"でハンドラーを設定できます。
 ```PowerShell
 $Window.FindName('Button').add_Click({$Class.Method()})
 ```
 
-However, since we're this far deep in wpf, we can also implement our own DelegateCommand Class. It can take care of interaction and even be responsible for running methods **async**. This allows for only needing to run tests on the ViewModel's methods. The ViewModel just works.
+しかし、WPFにここまで深く入り込んでいるので、独自のDelegateCommandクラスを実装することもできます。これは相互作用を処理し、メソッドを**非同期**で実行する責任も持つことができます。これにより、ViewModelのメソッドに対してのみテストを実行する必要があります。ViewModelは単に機能します。
 ```PowerShell
 class DelegateCommand : ViewModelBase, System.Windows.Input.ICommand  {
     [System.EventHandler]$InternalCanExecuteChanged
@@ -175,4 +176,5 @@ class DelegateCommand : ViewModelBase, System.Windows.Input.ICommand  {
 }
 ```
 ### New-WPFObject
-A wrapper for `[System.Windows.Markup.XamlReader]`. One can make use of a `[System.Windows.Markup.ParserContext]` in order to add a uri for enabling a wpfobject to point to other files such as a resource dictionary.xaml file within their own xaml, without providing a fullpath. This allows for relative paths in the xaml.
+`[System.Windows.Markup.XamlReader]`のラッパーです。`[System.Windows.Markup.ParserContext]`を使用して、WPFオブジェクトが自身のXAML内で完全パスを提供せずにリソースディクショナリ.xamlファイルなどの他のファイルを指すためのURIを追加できます。これにより、XAML内で相対パスが可能になります。
+```
