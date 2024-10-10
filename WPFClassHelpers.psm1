@@ -278,15 +278,28 @@ class ActionCommand : ViewModelBase, System.Windows.Input.ICommand {
     # ICommandインターフェースの実装
     # このイベントは、コマンドの実行可能状態が変更されたときに発生します
     [System.EventHandler]$InternalCanExecuteChanged
+    # 以下は、CanExecuteChangedイベントのハンドラーを格納するためのリストを作成しようとしていました。
+    # 詳細な説明：
+    # 1. [System.Collections.Generic.List[EventHandler]] は、EventHandler型のオブジェクトを格納できるジェネリックリストを定義しています。
+    # 2. $InternalCanExecuteChanged は、このリストを格納する変数名です。
+    # 3. [System.Collections.Generic.List[EventHandler]]::new() は、新しい空のリストを作成しています。
+    # 
+    # この行が実装されていれば、コマンドの実行可能状態が変更されたときに通知を受け取るハンドラーを
+    # 管理するためのリストを作成することができました。
+    # [System.Collections.Generic.List[EventHandler]]$InternalCanExecuteChanged = [System.Collections.Generic.List[EventHandler]]::new()
 
     # CanExecuteChangedイベントにハンドラーを追加するメソッド
     add_CanExecuteChanged([EventHandler] $value) {
         $this.psobject.InternalCanExecuteChanged = [Delegate]::Combine($this.psobject.InternalCanExecuteChanged, $value)
+        # [System.Windows.Input.CommandManager]::add_RequerySuggested($value) # これを使用して、すべてのボタンを監視および更新します。他のスレッド/ランスペースから更新する場合は、CommandManager.InvalidateRequerySuggested()を呼び出す必要があります。
+        # $this.psobject.InternalCanExecuteChanged.Add($value)
     }
 
     # CanExecuteChangedイベントからハンドラーを削除するメソッド
     remove_CanExecuteChanged([EventHandler] $value) {
         $this.psobject.InternalCanExecuteChanged = [Delegate]::Remove($this.psobject.InternalCanExecuteChanged, $value)
+        # [System.Windows.Input.CommandManager]::remove_RequerySuggested($value)
+        # $this.psobject.InternalCanExecuteChanged.Remove($value)
     }
 
     # コマンドが実行可能かどうかを判断するメソッド
@@ -306,6 +319,7 @@ class ActionCommand : ViewModelBase, System.Windows.Input.ICommand {
                 if ($this.psobject.ThreadManager) {
                     # ThreadManagerが設定されている場合は非同期で実行
                     $null = $this.psobject.ThreadManager.Async($this.psobject.Action, $this.psobject.InvokeCanExecuteChangedDelegate)
+                    # $this.psobject.ThreadManager.AsyncTask($this.psobject.Action, $this.psobject.InvokeCanExecuteChangedDelegate)   # NEW-UNBOUNDCLASSINSTANCE VIEWMODELが機能します - 別のランスペースで事前に実行されているディスパッチャーを使用します。
                     $this.Workers++
                 } else {
                     # ThreadManagerが設定されていない場合は同期的に実行
@@ -315,6 +329,7 @@ class ActionCommand : ViewModelBase, System.Windows.Input.ICommand {
                 # ActionObjectが設定されている場合の処理（現在は実装されていません）
                 if ($this.psobject.ThreadManager) {
                     throw '実装されていません'
+                    # $null = $this.psobject.ThreadManager.Async($this.psobject.ActionObject, $this.psobject.InvokeCanExecuteChangedDelegate)
                     $this.Workers++
                 } else {
                     $this.psobject.ActionObject.Invoke($CommandParameter)
@@ -324,29 +339,125 @@ class ActionCommand : ViewModelBase, System.Windows.Input.ICommand {
             Write-Error "ActionCommand.Executeの処理中にエラーが発生しました: $_"
         }
     }
+    # ICommand 実装の終了
 
-    # コンストラクタ（省略）
+    # デフォルトコンストラクタ
+    ActionCommand() {
+        $this.psobject.Init()  # 初期化メソッドを呼び出す
+    }
+
+    # Actionを受け取るコンストラクタ
+    ActionCommand([Action]$Action) {
+        $this.psobject.Action = $Action  # 引数で渡されたActionを設定
+    }
+
+    # オブジェクトを引数に取るActionを受け取るコンストラクタ
+    ActionCommand([Action[object]]$Action) {
+        $this.psobject.ActionObject = $Action  # オブジェクトを引数に取るActionを設定
+    }
+
+    # ActionとThreadManagerを受け取るコンストラクタ
+    ActionCommand([Action]$Action, $ThreadManager) {
+        $this.psobject.Init()  # 初期化
+        $this.psobject.Action = $Action  # Actionを設定
+        $this.psobject.ThreadManager = $ThreadManager  # ThreadManagerを設定
+    }
+
+    # オブジェクトを引数に取るActionとThreadManagerを受け取るコンストラクタ
+    ActionCommand([Action[object]]$Action, $ThreadManager) {
+        $this.psobject.Init()  # 初期化
+        $this.psobject.ActionObject = $Action  # オブジェクトを引数に取るActionを設定
+        $this.psobject.ThreadManager = $ThreadManager  # ThreadManagerを設定
+    }
+
+    # 初期化メソッド
+    Init() {
+        # CanExecuteChangedイベントを呼び出すためのデリゲートを作成
+        $this.psobject.InvokeCanExecuteChangedDelegate = $this.psobject.CreateDelegate($this.psobject.InvokeCanExecuteChanged)
+        
+        # Workersプロパティを動的に追加
+        # このプロパティは、並行して実行できるワーカーの数を制御します
+        $this | Add-Member -Name Workers -MemberType ScriptProperty -Value {
+            return $this.psobject.Workers  # 現在の値を返す
+        } -SecondValue {
+            param($value)
+            $this.psobject.Workers = $value  # 新しい値を設定
+            $this.psobject.RaisePropertyChanged('Workers')  # プロパティ変更を通知
+            $this.psobject.RaiseCanExecuteChanged()  # CanExecuteの状態が変更された可能性があることを通知
+        }
+
+        # Throttleプロパティを動的に追加
+        # このプロパティは、コマンドの実行頻度を制限するために使用されます
+        $this | Add-Member -Name Throttle -MemberType ScriptProperty -Value {
+            return $this.psobject.Throttle  # 現在の値を返す
+        } -SecondValue {
+            param($value)
+            $this.psobject.Throttle = $value  # 新しい値を設定
+            $this.psobject.RaisePropertyChanged('Throttle')  # プロパティ変更を通知
+            $this.psobject.RaiseCanExecuteChanged()  # CanExecuteの状態が変更された可能性があることを通知
+        }
+    }
 
     # CanExecuteChangedイベントを発生させるメソッド
+    # このメソッドは、コマンドの実行可能状態が変更されたときに呼び出されます
     [void]RaiseCanExecuteChanged() {
+        # InternalCanExecuteChangedイベントハンドラーを取得
         $eCanExecuteChanged = $this.psobject.InternalCanExecuteChanged
         if ($eCanExecuteChanged) {
+            # コマンドが実行可能な状態か、スロットリングが設定されている場合にイベントを発生させる
             if ($this.psobject.CanExecuteAction -or ($this.psobject.Throttle -gt 0)) {
+                # イベントハンドラーを呼び出し、空のEventArgsを渡す
                 $eCanExecuteChanged.Invoke($this, [System.EventArgs]::Empty)
             }
         }
     }
 
     # 非同期処理完了後にWorkers数を減らし、CanExecuteChangedを呼び出すメソッド
+    # このメソッドは、非同期処理が完了したときにUIスレッドで実行されます
     [void]InvokeCanExecuteChanged() {
         $ActionCommand = $this
+        # UIスレッドでWorkers数を減らし、CanExecuteChangedイベントを発生させる
         $this.psobject.Dispatcher.Invoke(9,[Action[object]]{
             param($ActionCommand)
+            # Workers数を1減らす
             $ActionCommand.Workers--
+            # 注意: ここでCanExecuteChangedイベントを明示的に発生させていないが、
+            # Workersプロパティの変更によって間接的に発生する可能性がある
         }, $ActionCommand)
     }
 
-    # その他のプロパティとメソッド（省略）
+    # クラスのプロパティとフィールドの定義
+
+    $Action                  # 引数を取らないアクションを格納
+    $ActionObject            # オブジェクトを引数に取るアクションを格納
+    $CanExecuteAction        # コマンドが実行可能かどうかを判断するための条件を格納
+    $ThreadManager           # スレッド管理オブジェクトを格納
+    $Workers = 0             # 現在実行中のワーカー数を追跡（初期値は0）
+    $Throttle = 0            # コマンド実行の制限値（初期値は0、制限なし）
+    $InvokeCanExecuteChangedDelegate  # CanExecuteChangedイベントを呼び出すためのデリゲート
+    $Dispatcher = [System.Windows.Threading.Dispatcher]::CurrentDispatcher  # 現在のUIスレッドのDispatcherを取得
+
+    # デリゲートを作成するメソッド
+    # このメソッドは、PowerShellのメソッドを.NETのデリゲートに変換します
+    [Delegate]CreateDelegate([System.Management.Automation.PSMethod]$Method) {
+        # メソッドの情報を取得
+        $ReflectionMethod = $this.psobject.GetType().GetMethod($Method.Name)
+        
+        # メソッドのパラメータ型を取得
+        $ParameterTypes = [System.Linq.Enumerable]::Select($ReflectionMethod.GetParameters(), [func[object,object]]{$args[0].parametertype})
+        
+        # パラメータ型と戻り値の型を結合
+        $ConcatMethodTypes = $ParameterTypes + $ReflectionMethod.ReturnType
+        
+        # 適切なデリゲート型を取得
+        $DelegateType = [System.Linq.Expressions.Expression]::GetDelegateType($ConcatMethodTypes)
+        
+        # デリゲートを作成
+        $Delegate = [delegate]::CreateDelegate($DelegateType, $this, $ReflectionMethod.Name)
+        
+        # 作成したデリゲートを返す
+        return $Delegate
+    }
 }
 
 
@@ -403,7 +514,46 @@ class ThreadManager : System.IDisposable {
     # PowerShellインスタンスを実行するためのRunspacePool
     $RunspacePool
 
-    # コンストラクタ（省略）
+    # 関数名のリストを受け取るコンストラクタ
+    ThreadManager($FunctionNames) {
+        $this.Init($FunctionNames)  # 初期化メソッドを呼び出す
+    }
+
+    # デフォルトコンストラクタ
+    ThreadManager() {
+        $this.Init($null)  # 関数名なしで初期化メソッドを呼び出す
+    }
+
+    # 初期化メソッド（非公開）
+    hidden Init($FunctionNames) {
+        # デフォルトの初期セッション状態を作成
+        $State = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
+        
+        # 共有変数をセッション状態に追加
+        $RunspaceVariable = New-Object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'SharedPoolVars', $this.SharedPoolVars, $null
+        $State.Variables.Add($RunspaceVariable)
+
+        # 指定された関数をセッション状態に追加
+        foreach ($FunctionName in $FunctionNames) {
+            # 関数定義を取得
+            $FunctionDefinition = Get-Content Function:\$FunctionName -ErrorAction 'Stop'
+            # セッション状態に関数を追加
+            $SessionStateFunction = New-Object System.Management.Automation.Runspaces.SessionStateFunctionEntry -ArgumentList $FunctionName, $FunctionDefinition
+            $State.Commands.Add($SessionStateFunction)
+        }
+
+        # RunspacePoolを作成
+        # 最小1、最大はプロセッサ数+1のスレッドを使用
+        $this.RunspacePool = [RunspaceFactory]::CreateRunspacePool(1, $([int]$env:NUMBER_OF_PROCESSORS + 1), $State, (Get-Host))
+        
+        # RunspacePoolの設定
+        $this.RunspacePool.ApartmentState = 'STA'  # シングルスレッドアパートメントモードを設定
+        $this.RunspacePool.ThreadOptions = 'ReuseThread'  # スレッドの再利用を設定
+        $this.RunspacePool.CleanupInterval = [timespan]::FromMinutes(2)  # クリーンアップ間隔を2分に設定
+        
+        # RunspacePoolを開く
+        $this.RunspacePool.Open()  # TODO: 初期化メソッドに移動するか、RunspacePoolをクラス外の変数にする
+    }
 
     # 非同期処理を開始するメソッド
     [object]Async([scriptblock]$scriptblock) {
@@ -459,6 +609,9 @@ class ThreadManager : System.IDisposable {
 
         # タスクの作成
         $TaskFactory = [System.Threading.Tasks.TaskFactory]::new([System.Threading.Tasks.TaskScheduler]::Default)
+        # 完了時に自動的に EndInvoke を非同期で呼び出します。
+        # そしてタスクを返します。
+        # 専用のランスペースを立ち上げてクリーンアップする必要はありません。
         $Task = $TaskFactory.FromAsync($Handle, $EndInvokeDelegate)
         $null = $Task.ContinueWith($this.DisposeTaskDelegate, $Powershell)
 
@@ -467,8 +620,37 @@ class ThreadManager : System.IDisposable {
 
     # タスク完了時にPowerShellインスタンスを破棄するメソッド
     DisposeTask([System.Threading.Tasks.Task]$Task, [object]$Powershell) {
+        # $Task.Result
         $Powershell.Dispose()
     }
 
-    # その他のヘルパーメソッド（省略）
+    # CreateDelegateメソッドのオーバーロード（引数が1つのバージョン）
+    [Delegate]CreateDelegate([System.Management.Automation.PSMethod]$Method) {
+        # 自身（$this）をターゲットとして、2つの引数を取るバージョンのCreateDelegateを呼び出す
+        return $this.CreateDelegate($Method, $this)
+    }
+
+    # CreateDelegateメソッドのオーバーロード（引数が2つのバージョン）
+    [Delegate]CreateDelegate([System.Management.Automation.PSMethod]$Method, $Target) {
+        # リフレクションを使用してメソッド情報を取得
+        $ReflectionMethod = $Target.GetType().GetMethod($Method.Name)
+        
+        # メソッドのパラメータ型を取得
+        # LINQのSelectメソッドを使用して、各パラメータの型を抽出
+        $ParameterTypes = [System.Linq.Enumerable]::Select($ReflectionMethod.GetParameters(), [func[object,object]]{$args[0].parametertype})
+        
+        # パラメータ型と戻り値の型を結合
+        $ConcatMethodTypes = $ParameterTypes + $ReflectionMethod.ReturnType
+        
+        # 適切なデリゲート型を取得
+        # 結合したメソッド型情報を使用して、適切なデリゲート型を生成
+        $DelegateType = [System.Linq.Expressions.Expression]::GetDelegateType($ConcatMethodTypes)
+        
+        # デリゲートを作成
+        # 指定されたターゲット、メソッド名、デリゲート型を使用してデリゲートを生成
+        $Delegate = [delegate]::CreateDelegate($DelegateType, $Target, $ReflectionMethod.Name)
+        
+        # 作成したデリゲートを返す
+        return $Delegate
+    }
 }

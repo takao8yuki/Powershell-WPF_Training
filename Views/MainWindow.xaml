@@ -34,11 +34,14 @@
         </Grid.RowDefinitions>
 
         <!-- メニューバー -->
-        <Menu Grid.Row="0" Grid.ColumnSpan="4">
-            <MenuItem Header="_Async">
-                <!-- ここにメニュー項目を追加できます -->
-            </MenuItem>
-        </Menu>
+        <!-- <DockPanel Grid.Row="0" Grid.ColumnSpan="4"> -->
+            <Menu Grid.Row="0" Grid.ColumnSpan="4">
+                <MenuItem Header="_Async">
+                    <!-- ここにメニュー項目を追加できます -->
+                    <!-- <MenuItem Header="A_ddTen" Command="{Binding AddTenSlowlyCommand}" /> -->
+                </MenuItem>
+            </Menu>
+        <!-- </DockPanel> -->
 
         <!-- SharedResourceの表示 -->
         <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="SharedResource" Style="{StaticResource TextBlockShowCase}" />

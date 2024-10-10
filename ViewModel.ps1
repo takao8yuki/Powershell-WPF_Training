@@ -39,6 +39,7 @@ https://docs.microsoft.com/ja-jp/archive/msdn-magazine/2009/february/patterns-wp
 class MyViewModel : ViewModelBase {
     # UIスレッドで使用するオブジェクト
     # 共有リソース（複数のスレッドからアクセスされる値）
+    # $Dispatcher# = [System.Windows.Threading.Dispatcher]::CurrentDispatcher # New-UnboundClassInstanceによって作成された場合、そのスレッドはランスペースがなくなったため停止します。
     $SharedResource = 0
     # 共有リソースへのアクセスを制御するためのロックオブジェクト
     hidden $SharedResourceLock = [object]::new()
@@ -48,16 +49,38 @@ class MyViewModel : ViewModelBase {
     hidden $JobsLock = [object]::new()
 
     # 計算サービス（時間のかかる処理をシミュレートするためのクラス）
-    $CalculationService = [CalculationService]::new()
+    $CalculationService = [CalculationService]::new() # また、そのメソッドへの複数の呼び出しを可能にするために、バインドされていないクラスとして作成された。
 
-    # 各メソッドに対応するデリゲート（メソッドを表すオブジェクト）
+    # ViewModelクラスのプロパティ定義
+
+    # デリゲート：メソッドを表すオブジェクト
+    # これらは、メソッドを変数として扱い、後で実行できるようにするために使用されます
+
+    # AddTenSlowlyメソッドに対応するデリゲート
+    # このデリゲートは、数値を10ずつゆっくりと増加させるメソッドを表します
     $AddTenSlowlyDelegate
+
+    # ExternalMethodメソッドに対応するデリゲート
+    # このデリゲートは、外部で定義されたメソッドを表します
     $ExternalMethodDelegate
+
+    # CmdletInMethodメソッドに対応するデリゲート
+    # このデリゲートは、PowerShellのCmdletを内部で使用するメソッドを表します
     $CmdletInMethodDelegate
 
-    # 各メソッドに対応するコマンド（ボタンクリックなどのアクションと関連付けるためのオブジェクト）
+    # コマンド：ユーザーインターフェイスのアクション（例：ボタンクリック）と関連付けるためのオブジェクト
+    # これらは、WPFのICommandインターフェースを実装しており、UIとViewModelを結びつけます
+
+    # AddTenSlowlyメソッドに対応するコマンド
+    # このコマンドがトリガーされると、AddTenSlowlyメソッドが実行されます
     $AddTenSlowlyCommand
+
+    # ExternalMethodメソッドに対応するコマンド
+    # このコマンドがトリガーされると、ExternalMethodが実行されます
     $ExternalMethodCommand
+
+    # CmdletInMethodメソッドに対応するコマンド
+    # このコマンドがトリガーされると、CmdletInMethodが実行されます
     $CmdletInMethodCommand
 
     # コンストラクタ（クラスのインスタンスが作成されるときに呼び出されるメソッド）
@@ -77,6 +100,11 @@ class MyViewModel : ViewModelBase {
 
     # ボタンを作成するメソッド
     CreateButtons([ThreadManager]$ThreadManager) {
+        # ボタンは、別のランスペースからRaiseCanExecuteChangedを呼び出すためにディスパッチャーが必要です。
+        # ボタンはNew-UnboundClassInstanceを使用してコンストラクタで作成することはできません。関連するスレッドがシャットダウンされ、ディスパッチャーが機能しないためです。
+        # MyViewModelはボタンに依存していません。それはビューの問題です。そのメソッドはボタンなしで呼び出すことができます！
+        # $this.psobject.Dispatcher = $Dispatcher
+
         # 各メソッドに対応するデリゲートとコマンドを作成
         $this.psobject.AddTenSlowlyDelegate = $this.psobject.CreateDelegate($this.psobject.AddTenSlowly)
         $this.psobject.AddTenSlowlyCommand = [ActionCommand]::new($this.psobject.AddTenSlowlyDelegate, $ThreadManager)
@@ -115,7 +143,7 @@ class MyViewModel : ViewModelBase {
                 Start-Sleep -Milliseconds (Get-Random -Minimum 50 -Maximum 400)
             }
         } catch {
-            Write-Verbose "おっと: $($Error)" -Verbose
+            Write-Verbose "エラー: $($Error)" -Verbose
         } finally {
             [System.Threading.Monitor]::Exit($this.psobject.SharedResourceLock)
             Write-Verbose "ロックを解放しました $(Get-Date)" -Verbose
@@ -136,7 +164,7 @@ class MyViewModel : ViewModelBase {
             Write-Verbose "ロックを取得しました $(Get-Date)" -Verbose
             $this.SharedResource += $NewNumber
         } catch {
-            Write-Verbose "おっと: $($Error)" -Verbose
+            Write-Verbose "エラー: $($Error)" -Verbose
         } finally {
             [System.Threading.Monitor]::Exit($this.psobject.SharedResourceLock)
             Write-Verbose "ロックを解放しました $(Get-Date)" -Verbose
@@ -157,7 +185,7 @@ class MyViewModel : ViewModelBase {
             Write-Verbose "ロックを取得しました $(Get-Date)" -Verbose
             $this.SharedResource += $NewNumber
         } catch {
-            Write-Verbose "おっと: $($Error)" -Verbose
+            Write-Verbose "エラー: $($Error)" -Verbose
         } finally {
             [System.Threading.Monitor]::Exit($this.psobject.SharedResourceLock)
             Write-Verbose "ロックを解放しました $(Get-Date)" -Verbose
