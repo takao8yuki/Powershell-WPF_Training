@@ -1,55 +1,56 @@
+<?xml version="1.0" encoding="Shift_JIS"?>
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:;assembly=PowerShell Class Assembly">
 
-    <!-- ã‚«ã‚¹ã‚¿ãƒ ã‚³ãƒ³ãƒãƒ¼ã‚¿ãƒ¼ã®å®šç¾© -->
-    <!-- RightMarginConverterã¯ã€å³ãƒžãƒ¼ã‚¸ãƒ³ã‚’å‹•çš„ã«è¨ˆç®—ã™ã‚‹ãŸã‚ã®ã‚«ã‚¹ã‚¿ãƒ ã‚³ãƒ³ãƒãƒ¼ã‚¿ãƒ¼ -->
+    <!-- ƒJƒXƒ^ƒ€ƒRƒ“ƒo[ƒ^[‚Ì’è‹` -->
+    <!-- RightMarginConverter‚ÍA‰Eƒ}[ƒWƒ“‚ð“®“I‚ÉŒvŽZ‚·‚é‚½‚ß‚ÌƒJƒXƒ^ƒ€ƒRƒ“ƒo[ƒ^[ -->
     <local:RightMarginConverter x:Key="RightMarginConverter" />
 
-    <!-- åŸºæœ¬çš„ãªè‰²ã®å®šç¾© -->
-    <!-- ã“ã‚Œã‚‰ã®è‰²ã¯ã€ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³å…¨ä½“ã§ä¸€è²«ã—ãŸãƒ‡ã‚¶ã‚¤ãƒ³ã‚’ç¶­æŒã™ã‚‹ãŸã‚ã«ä½¿ç”¨ã•ã‚Œã¾ã™ -->
-    <Color x:Key="ForegroundColor">#FF212121</Color>  <!-- æš—ã‚ã®ã‚°ãƒ¬ãƒ¼ -->
-    <Color x:Key="ControlBorderColor">#ACACAC</Color>  <!-- è–„ã„ã‚°ãƒ¬ãƒ¼ -->
+    <!-- Šî–{“I‚ÈF‚Ì’è‹` -->
+    <!-- ‚±‚ê‚ç‚ÌF‚ÍAƒAƒvƒŠƒP[ƒVƒ‡ƒ“‘S‘Ì‚ÅˆêŠÑ‚µ‚½ƒfƒUƒCƒ“‚ðˆÛŽ‚·‚é‚½‚ß‚ÉŽg—p‚³‚ê‚Ü‚· -->
+    <Color x:Key="ForegroundColor">#FF212121</Color>  <!-- ˆÃ‚ß‚ÌƒOƒŒ[ -->
+    <Color x:Key="ControlBorderColor">#ACACAC</Color>  <!-- ”–‚¢ƒOƒŒ[ -->
     <SolidColorBrush x:Key="ForegroundBrush" Color="{StaticResource ForegroundColor}"/>
 
-    <!-- ãƒ†ã‚­ã‚¹ãƒˆãƒ–ãƒ­ãƒƒã‚¯ã®ã‚¹ã‚¿ã‚¤ãƒ«å®šç¾© -->
-    <!-- ã“ã‚Œã‚‰ã®ã‚¹ã‚¿ã‚¤ãƒ«ã¯ã€ç•°ãªã‚‹ç›®çš„ã®ãƒ†ã‚­ã‚¹ãƒˆãƒ–ãƒ­ãƒƒã‚¯ã«é©ç”¨ã§ãã¾ã™ -->
+    <!-- ƒeƒLƒXƒgƒuƒƒbƒN‚ÌƒXƒ^ƒCƒ‹’è‹` -->
+    <!-- ‚±‚ê‚ç‚ÌƒXƒ^ƒCƒ‹‚ÍAˆÙ‚È‚é–Ú“I‚ÌƒeƒLƒXƒgƒuƒƒbƒN‚É“K—p‚Å‚«‚Ü‚· -->
 
-    <!-- ã‚·ãƒ§ãƒ¼ã‚±ãƒ¼ã‚¹ç”¨ã®ãƒ†ã‚­ã‚¹ãƒˆãƒ–ãƒ­ãƒƒã‚¯ã‚¹ã‚¿ã‚¤ãƒ«ï¼šä¸­å¤®æƒãˆã§ç¸¦æ–¹å‘ã«ä¼¸ç¸® -->
+    <!-- ƒVƒ‡[ƒP[ƒX—p‚ÌƒeƒLƒXƒgƒuƒƒbƒNƒXƒ^ƒCƒ‹F’†‰›‘µ‚¦‚Åc•ûŒü‚ÉLk -->
     <Style x:Key="TextBlockShowCase" TargetType="TextBlock">
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="VerticalAlignment" Value="Stretch" />
     </Style>
 
-    <!-- ãƒ©ãƒ™ãƒ«ç”¨ã®ãƒ†ã‚­ã‚¹ãƒˆãƒ–ãƒ­ãƒƒã‚¯ã‚¹ã‚¿ã‚¤ãƒ«ï¼šå³æƒãˆã§ç¸¦æ–¹å‘ã«ä¼¸ç¸® -->
+    <!-- ƒ‰ƒxƒ‹—p‚ÌƒeƒLƒXƒgƒuƒƒbƒNƒXƒ^ƒCƒ‹F‰E‘µ‚¦‚Åc•ûŒü‚ÉLk -->
     <Style x:Key="TextBlockLabel" TargetType="TextBlock">
         <Setter Property="HorizontalAlignment" Value="Right" />
         <Setter Property="VerticalAlignment" Value="Stretch" />
     </Style>
 
-    <!-- ãƒ‡ãƒ¼ã‚¿è¡¨ç¤ºç”¨ã®ãƒ†ã‚­ã‚¹ãƒˆãƒ–ãƒ­ãƒƒã‚¯ã‚¹ã‚¿ã‚¤ãƒ«ï¼šå·¦æƒãˆã§ç¸¦æ–¹å‘ã«ä¼¸ç¸®ã€å·¦ãƒžãƒ¼ã‚¸ãƒ³ã‚ã‚Š -->
+    <!-- ƒf[ƒ^•\Ž¦—p‚ÌƒeƒLƒXƒgƒuƒƒbƒNƒXƒ^ƒCƒ‹F¶‘µ‚¦‚Åc•ûŒü‚ÉLkA¶ƒ}[ƒWƒ“‚ ‚è -->
     <Style x:Key="TextBlockData" TargetType="TextBlock">
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="VerticalAlignment" Value="Stretch" />
         <Setter Property="Margin" Value="10,0,0,5"/>
     </Style>
 
-    <!-- ãƒœã‚¿ãƒ³ã®ã‚¹ã‚¿ã‚¤ãƒ«å®šç¾© -->
-    <!-- ãƒœã‚¿ãƒ³ã®å„çŠ¶æ…‹ï¼ˆé€šå¸¸ã€ãƒžã‚¦ã‚¹ã‚ªãƒ¼ãƒãƒ¼ã€æŠ¼ä¸‹ã€ç„¡åŠ¹ï¼‰ã«å¯¾ã™ã‚‹è‰²ã®å®šç¾© -->
-    <SolidColorBrush x:Key="Button.MouseOver.Background" Color="#E1EFFA"/>  <!-- è–„ã„é’ -->
-    <SolidColorBrush x:Key="Button.MouseOver.Border" Color="#3B85C9"/>  <!-- æ¿ƒã„é’ -->
+    <!-- ƒ{ƒ^ƒ“‚ÌƒXƒ^ƒCƒ‹’è‹` -->
+    <!-- ƒ{ƒ^ƒ“‚ÌŠeó‘Ôi’ÊíAƒ}ƒEƒXƒI[ƒo[A‰Ÿ‰ºA–³Œøj‚É‘Î‚·‚éF‚Ì’è‹` -->
+    <SolidColorBrush x:Key="Button.MouseOver.Background" Color="#E1EFFA"/>  <!-- ”–‚¢Â -->
+    <SolidColorBrush x:Key="Button.MouseOver.Border" Color="#3B85C9"/>  <!-- ”Z‚¢Â -->
     <SolidColorBrush x:Key="ButtonForeground" Color="{StaticResource ForegroundColor}"/>
-    <SolidColorBrush x:Key="Button.Background" Color="#FFFFFF"/>  <!-- ç™½ -->
+    <SolidColorBrush x:Key="Button.Background" Color="#FFFFFF"/>  <!-- ”’ -->
     <SolidColorBrush x:Key="ButtonBorder" Color="{StaticResource ControlBorderColor}"/>
-    <SolidColorBrush x:Key="Button.IsDefault.Border" Color="#3B85C9"/>  <!-- æ¿ƒã„é’ -->
-    <SolidColorBrush x:Key="PressedButtonBackground" Color="#EEEEEE"/>  <!-- è–„ã„ã‚°ãƒ¬ãƒ¼ -->
-    <SolidColorBrush x:Key="DisabledButtonBackground" Color="#EEEEEE"/>  <!-- è–„ã„ã‚°ãƒ¬ãƒ¼ -->
-    <SolidColorBrush x:Key="DisabledButtonForeground" Color="#AAAAAA"/>  <!-- ä¸­é–“ã®ã‚°ãƒ¬ãƒ¼ -->
-    <SolidColorBrush x:Key="DisabledButtonBorder" Color="#CCCCCC"/>  <!-- ã‚„ã‚„è–„ã„ã‚°ãƒ¬ãƒ¼ -->
+    <SolidColorBrush x:Key="Button.IsDefault.Border" Color="#3B85C9"/>  <!-- ”Z‚¢Â -->
+    <SolidColorBrush x:Key="PressedButtonBackground" Color="#EEEEEE"/>  <!-- ”–‚¢ƒOƒŒ[ -->
+    <SolidColorBrush x:Key="DisabledButtonBackground" Color="#EEEEEE"/>  <!-- ”–‚¢ƒOƒŒ[ -->
+    <SolidColorBrush x:Key="DisabledButtonForeground" Color="#AAAAAA"/>  <!-- ’†ŠÔ‚ÌƒOƒŒ[ -->
+    <SolidColorBrush x:Key="DisabledButtonBorder" Color="#CCCCCC"/>  <!-- ‚â‚â”–‚¢ƒOƒŒ[ -->
 
-    <!-- ãƒœã‚¿ãƒ³ãŒãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã•ã‚ŒãŸã¨ãã®è¦–è¦šçš„ãªã‚¹ã‚¿ã‚¤ãƒ« -->
-    <!-- ã“ã®ã‚¹ã‚¿ã‚¤ãƒ«ã¯ã€ãƒœã‚¿ãƒ³ãŒã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’å—ã‘ãŸã¨ãã«è¡¨ç¤ºã•ã‚Œã‚‹ç‚¹ç·šã®æž ã‚’å®šç¾©ã—ã¾ã™ -->
+    <!-- ƒ{ƒ^ƒ“‚ªƒtƒH[ƒJƒX‚³‚ê‚½‚Æ‚«‚ÌŽ‹Šo“I‚ÈƒXƒ^ƒCƒ‹ -->
+    <!-- ‚±‚ÌƒXƒ^ƒCƒ‹‚ÍAƒ{ƒ^ƒ“‚ªƒL[ƒ{[ƒhƒtƒH[ƒJƒX‚ðŽó‚¯‚½‚Æ‚«‚É•\Ž¦‚³‚ê‚é“_ü‚Ì˜g‚ð’è‹`‚µ‚Ü‚· -->
     <Style x:Key="ButtonFocusVisual">
         <Setter Property="Control.Template">
             <Setter.Value>
@@ -63,10 +64,10 @@
         </Setter>
     </Style>
 
-    <!-- ãƒœã‚¿ãƒ³ã®åŸºæœ¬ã‚¹ã‚¿ã‚¤ãƒ«å®šç¾© -->
-    <!-- ã“ã®ã‚¹ã‚¿ã‚¤ãƒ«ã¯ã€ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³å…¨ä½“ã§ä½¿ç”¨ã•ã‚Œã‚‹æ¨™æº–çš„ãªãƒœã‚¿ãƒ³ã®å¤–è¦³ã¨å‹•ä½œã‚’å®šç¾©ã—ã¾ã™ -->
+    <!-- ƒ{ƒ^ƒ“‚ÌŠî–{ƒXƒ^ƒCƒ‹’è‹` -->
+    <!-- ‚±‚ÌƒXƒ^ƒCƒ‹‚ÍAƒAƒvƒŠƒP[ƒVƒ‡ƒ“‘S‘Ì‚ÅŽg—p‚³‚ê‚é•W€“I‚Èƒ{ƒ^ƒ“‚ÌŠOŠÏ‚Æ“®ì‚ð’è‹`‚µ‚Ü‚· -->
     <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-        <!-- ãƒœã‚¿ãƒ³ã®å„ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®è¨­å®š -->
+        <!-- ƒ{ƒ^ƒ“‚ÌŠeƒvƒƒpƒeƒB‚ÌÝ’è -->
         <Setter Property="FocusVisualStyle" Value="{StaticResource ButtonFocusVisual}"/>
         <Setter Property="Background" Value="{StaticResource Button.Background}"/>
         <Setter Property="BorderBrush" Value="{StaticResource ButtonBorder}"/>
@@ -75,7 +76,7 @@
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="Padding" Value="1"/>
-        <!-- ãƒœã‚¿ãƒ³ã®ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆå®šç¾© -->
+        <!-- ƒ{ƒ^ƒ“‚Ìƒeƒ“ƒvƒŒ[ƒg’è‹` -->
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate x:Name="ButtonTemplate" TargetType="Button">
@@ -90,23 +91,23 @@
                             SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                             VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                     </Border>
-                    <!-- ãƒœã‚¿ãƒ³ã®å„çŠ¶æ…‹ã«å¯¾ã™ã‚‹ãƒˆãƒªã‚¬ãƒ¼å®šç¾© -->
+                    <!-- ƒ{ƒ^ƒ“‚ÌŠeó‘Ô‚É‘Î‚·‚éƒgƒŠƒK[’è‹` -->
                     <ControlTemplate.Triggers>
-                        <!-- ãƒžã‚¦ã‚¹ã‚ªãƒ¼ãƒãƒ¼æ™‚ã®ã‚¹ã‚¿ã‚¤ãƒ«å¤‰æ›´ -->
+                        <!-- ƒ}ƒEƒXƒI[ƒo[Žž‚ÌƒXƒ^ƒCƒ‹•ÏX -->
                         <Trigger Property="IsMouseOver" Value="true">
                             <Setter Property="BorderBrush" Value="{StaticResource Button.MouseOver.Border}"/>
                             <Setter Property="Background" Value="{StaticResource Button.MouseOver.Background}"/>
                         </Trigger>
-                        <!-- ãƒœã‚¿ãƒ³æŠ¼ä¸‹æ™‚ã®ã‚¹ã‚¿ã‚¤ãƒ«å¤‰æ›´ -->
+                        <!-- ƒ{ƒ^ƒ“‰Ÿ‰ºŽž‚ÌƒXƒ^ƒCƒ‹•ÏX -->
                         <Trigger Property="IsPressed" Value="true">
                             <Setter Property="Background" Value="{StaticResource PressedButtonBackground}"/>
                             <Setter Property="Foreground" Value="{StaticResource ButtonForeground}"/>
                         </Trigger>
-                        <!-- ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒœã‚¿ãƒ³ï¼ˆEnterã‚­ãƒ¼ã§å®Ÿè¡Œã•ã‚Œã‚‹ãƒœã‚¿ãƒ³ï¼‰ã®ã‚¹ã‚¿ã‚¤ãƒ« -->
+                        <!-- ƒfƒtƒHƒ‹ƒgƒ{ƒ^ƒ“iEnterƒL[‚ÅŽÀs‚³‚ê‚éƒ{ƒ^ƒ“j‚ÌƒXƒ^ƒCƒ‹ -->
                         <Trigger Property="IsDefault" Value="true">
                             <Setter Property="BorderBrush" Value="{StaticResource Button.IsDefault.Border}"/>
                         </Trigger>
-                        <!-- ãƒœã‚¿ãƒ³ãŒç„¡åŠ¹åŒ–ã•ã‚Œã¦ã„ã‚‹å ´åˆã®ã‚¹ã‚¿ã‚¤ãƒ« -->
+                        <!-- ƒ{ƒ^ƒ“‚ª–³Œø‰»‚³‚ê‚Ä‚¢‚éê‡‚ÌƒXƒ^ƒCƒ‹ -->
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter Property="Foreground" Value="{StaticResource DisabledButtonForeground}"/>
                             <Setter Property="Background" Value="{StaticResource DisabledButtonBackground}"/>
@@ -118,8 +119,8 @@
         </Setter>
     </Style>
 
-    <!-- DataGridCellã®ã‚¹ã‚¿ã‚¤ãƒ«å®šç¾© -->
-    <!-- ã“ã®ã‚¹ã‚¿ã‚¤ãƒ«ã¯ã€DataGridã®ã‚»ãƒ«ã®å¤–è¦³ã‚’å®šç¾©ã—ã¾ã™ -->
+    <!-- DataGridCell‚ÌƒXƒ^ƒCƒ‹’è‹` -->
+    <!-- ‚±‚ÌƒXƒ^ƒCƒ‹‚ÍADataGrid‚ÌƒZƒ‹‚ÌŠOŠÏ‚ð’è‹`‚µ‚Ü‚· -->
     <Style x:Key="DefaultDataGridCellStyle" TargetType="DataGridCell">
         <Setter Property="MinHeight" Value="25" />
         <Setter Property="Margin" Value="2,0,0,0" />
@@ -134,8 +135,8 @@
         </Setter>
     </Style>
 
-    <!-- ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®ã‚¹ã‚¿ã‚¤ãƒ«å®šç¾©ï¼ˆã‚³ãƒ¡ãƒ³ãƒˆã‚¢ã‚¦ãƒˆã•ã‚Œã¦ã„ã¾ã™ï¼‰ -->
-    <!-- ã“ã®ã‚¹ã‚¿ã‚¤ãƒ«ã¯ç¾åœ¨ä½¿ç”¨ã•ã‚Œã¦ã„ã¾ã›ã‚“ãŒã€å°†æ¥çš„ã«ä½¿ç”¨ã™ã‚‹å¯èƒ½æ€§ãŒã‚ã‚‹ãŸã‚ä¿æŒã•ã‚Œã¦ã„ã¾ã™ -->
+    <!-- ƒƒjƒ…[‚ÌƒXƒ^ƒCƒ‹’è‹`iƒRƒƒ“ƒgƒAƒEƒg‚³‚ê‚Ä‚¢‚Ü‚·j -->
+    <!-- ‚±‚ÌƒXƒ^ƒCƒ‹‚ÍŒ»ÝŽg—p‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ‚ªA«—ˆ“I‚ÉŽg—p‚·‚é‰Â”\«‚ª‚ ‚é‚½‚ß•ÛŽ‚³‚ê‚Ä‚¢‚Ü‚· -->
     <!-- <Style x:Key="DefaultMenuStyle" TargetType="MenuItem">
         <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="Background" Value="#00FFFFFF" />
@@ -164,8 +165,8 @@
         </Setter>
     </Style> -->
 
-    <!-- ã‚µãƒ–ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆå®šç¾© -->
-    <!-- ã“ã®ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã¯ã€ãƒ¡ãƒ‹ãƒ¥ãƒ¼é …ç›®ã®ã‚µãƒ–ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®å¤–è¦³ã¨å‹•ä½œã‚’å®šç¾©ã—ã¾ã™ -->
+    <!-- ƒTƒuƒƒjƒ…[‚Ìƒeƒ“ƒvƒŒ[ƒg’è‹` -->
+    <!-- ‚±‚Ìƒeƒ“ƒvƒŒ[ƒg‚ÍAƒƒjƒ…[€–Ú‚ÌƒTƒuƒƒjƒ…[‚ÌŠOŠÏ‚Æ“®ì‚ð’è‹`‚µ‚Ü‚· -->
     <ControlTemplate x:Key="Menu_SubMenu_Template"
                      TargetType="{x:Type MenuItem}">
 
@@ -245,16 +246,16 @@
         </ControlTemplate.Triggers>
     </ControlTemplate>
 
-    <!-- ã‚¿ã‚¤ãƒˆãƒ«ãƒãƒ¼ãƒœã‚¿ãƒ³ã®ã‚¢ã‚¤ã‚³ãƒ³å®šç¾© -->
-    <!-- ã“ã‚Œã‚‰ã®StreamGeometryã¯ã€ã‚¿ã‚¤ãƒˆãƒ«ãƒãƒ¼ã®ãƒœã‚¿ãƒ³ï¼ˆæœ€å°åŒ–ã€æœ€å¤§åŒ–ã€é–‰ã˜ã‚‹ãªã©ï¼‰ã®ã‚¢ã‚¤ã‚³ãƒ³ã‚’å®šç¾©ã—ã¾ã™ -->
+    <!-- ƒ^ƒCƒgƒ‹ƒo[ƒ{ƒ^ƒ“‚ÌƒAƒCƒRƒ“’è‹` -->
+    <!-- ‚±‚ê‚ç‚ÌStreamGeometry‚ÍAƒ^ƒCƒgƒ‹ƒo[‚Ìƒ{ƒ^ƒ“iÅ¬‰»AÅ‘å‰»A•Â‚¶‚é‚È‚Çj‚ÌƒAƒCƒRƒ“‚ð’è‹`‚µ‚Ü‚· -->
     <StreamGeometry x:Key="BurgerMenu">M190.154-298.154v-28.923h579.692v28.923H190.154Zm0-167.692v-28.923h579.692v28.923H190.154Zm0-167.692v-28.924h579.692v28.924H190.154Z</StreamGeometry>
     <StreamGeometry x:Key="ChromeClose">M 11.416016 10 L 20 18.583984 L 18.583984 20 L 10 11.416016 L 1.416016 20 L 0 18.583984 L 8.583984 10 L 0 1.416016 L 1.416016 0 L 10 8.583984 L 18.583984 0 L 20 1.416016 Z</StreamGeometry>
     <StreamGeometry x:Key="ChromeMinimize">M 20 8 L 20 10 L 0 10 L 0 8 Z</StreamGeometry>
     <StreamGeometry x:Key="ChromeMaximize">M 20 0 L 20 20 L 0 20 L 0 0 Z M 18 2 L 2 2 L 2 18 L 18 18 Z</StreamGeometry>
     <StreamGeometry x:Key="ChromeRestore">M 20 16 L 16 16 L 16 20 L 0 20 L 0 4 L 4 4 L 4 0 L 20 0 Z M 14 6 L 2 6 L 2 18 L 14 18 Z M 18 2 L 6 2 L 6 4 L 16 4 L 16 14 L 18 14 Z</StreamGeometry>
 
-    <!-- ã‚¿ã‚¤ãƒˆãƒ«ãƒãƒ¼ãƒœã‚¿ãƒ³ã®åŸºæœ¬ã‚¹ã‚¿ã‚¤ãƒ«å®šç¾© -->
-    <!-- ã“ã®ã‚¹ã‚¿ã‚¤ãƒ«ã¯ã€ã‚¿ã‚¤ãƒˆãƒ«ãƒãƒ¼ã®ãƒœã‚¿ãƒ³ï¼ˆæœ€å°åŒ–ã€æœ€å¤§åŒ–ã€é–‰ã˜ã‚‹ãªã©ï¼‰ã®åŸºæœ¬çš„ãªå¤–è¦³ã¨å‹•ä½œã‚’å®šç¾©ã—ã¾ã™ -->
+    <!-- ƒ^ƒCƒgƒ‹ƒo[ƒ{ƒ^ƒ“‚ÌŠî–{ƒXƒ^ƒCƒ‹’è‹` -->
+    <!-- ‚±‚ÌƒXƒ^ƒCƒ‹‚ÍAƒ^ƒCƒgƒ‹ƒo[‚Ìƒ{ƒ^ƒ“iÅ¬‰»AÅ‘å‰»A•Â‚¶‚é‚È‚Çj‚ÌŠî–{“I‚ÈŠOŠÏ‚Æ“®ì‚ð’è‹`‚µ‚Ü‚· -->
     <Style x:Key="TitleBarButton" TargetType="Button">
         <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
         <Setter Property="Background" Value="Transparent" />
@@ -263,7 +264,7 @@
         <Setter Property="Width" Value="46" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="BorderThickness" Value="0" />
-        <!-- ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®çŠ¶æ…‹ã«å¿œã˜ã¦ãƒžãƒ¼ã‚¸ãƒ³ã‚’å¤‰æ›´ã™ã‚‹ãƒˆãƒªã‚¬ãƒ¼ï¼ˆç¾åœ¨ã¯ã‚³ãƒ¡ãƒ³ãƒˆã‚¢ã‚¦ãƒˆï¼‰ -->
+        <!-- ƒEƒBƒ“ƒhƒE‚Ìó‘Ô‚É‰ž‚¶‚Äƒ}[ƒWƒ“‚ð•ÏX‚·‚éƒgƒŠƒK[iŒ»Ý‚ÍƒRƒƒ“ƒgƒAƒEƒgj -->
         <!-- <Style.Triggers>
             <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType=Window}}"
                         Value="Maximized">
@@ -276,16 +277,16 @@
         </Style.Triggers> -->
     </Style>
 
-    <!-- å¾©å…ƒãƒœã‚¿ãƒ³ã®ã‚¹ã‚¿ã‚¤ãƒ«å®šç¾© -->
-    <!-- ã“ã®ã‚¹ã‚¿ã‚¤ãƒ«ã¯ã€ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’å…ƒã®ã‚µã‚¤ã‚ºã«æˆ»ã™ãƒœã‚¿ãƒ³ã®å¤–è¦³ã¨å‹•ä½œã‚’å®šç¾©ã—ã¾ã™ -->
+    <!-- •œŒ³ƒ{ƒ^ƒ“‚ÌƒXƒ^ƒCƒ‹’è‹` -->
+    <!-- ‚±‚ÌƒXƒ^ƒCƒ‹‚ÍAƒEƒBƒ“ƒhƒE‚ðŒ³‚ÌƒTƒCƒY‚É–ß‚·ƒ{ƒ^ƒ“‚ÌŠOŠÏ‚Æ“®ì‚ð’è‹`‚µ‚Ü‚· -->
     <Style x:Key="TitleBarButtonRestore" TargetType="Button" BasedOn="{StaticResource TitleBarButton}">
         <Style.Triggers>
-            <!-- ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒæœ€å¤§åŒ–ã•ã‚Œã¦ã„ã‚‹ã¨ãã«è¡¨ç¤º -->
+            <!-- ƒEƒBƒ“ƒhƒE‚ªÅ‘å‰»‚³‚ê‚Ä‚¢‚é‚Æ‚«‚É•\Ž¦ -->
             <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType=Window}}"
                         Value="Maximized">
                 <Setter Property="Visibility" Value="Visible"/>
             </DataTrigger>
-            <!-- ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒé€šå¸¸ã‚µã‚¤ã‚ºã®ã¨ãã«éžè¡¨ç¤º -->
+            <!-- ƒEƒBƒ“ƒhƒE‚ª’ÊíƒTƒCƒY‚Ì‚Æ‚«‚É”ñ•\Ž¦ -->
             <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType=Window}}"
                         Value="Normal">
                 <Setter Property="Visibility" Value="Collapsed"/>
@@ -293,16 +294,16 @@
         </Style.Triggers>
     </Style>
 
-    <!-- æœ€å¤§åŒ–ãƒœã‚¿ãƒ³ã®ã‚¹ã‚¿ã‚¤ãƒ«å®šç¾© -->
-    <!-- ã“ã®ã‚¹ã‚¿ã‚¤ãƒ«ã¯ã€ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’æœ€å¤§åŒ–ã™ã‚‹ãƒœã‚¿ãƒ³ã®å¤–è¦³ã¨å‹•ä½œã‚’å®šç¾©ã—ã¾ã™ -->
+    <!-- Å‘å‰»ƒ{ƒ^ƒ“‚ÌƒXƒ^ƒCƒ‹’è‹` -->
+    <!-- ‚±‚ÌƒXƒ^ƒCƒ‹‚ÍAƒEƒBƒ“ƒhƒE‚ðÅ‘å‰»‚·‚éƒ{ƒ^ƒ“‚ÌŠOŠÏ‚Æ“®ì‚ð’è‹`‚µ‚Ü‚· -->
     <Style x:Key="TitleBarButtonMaximize" TargetType="Button" BasedOn="{StaticResource TitleBarButton}">
         <Style.Triggers>
-            <!-- ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒæœ€å¤§åŒ–ã•ã‚Œã¦ã„ã‚‹ã¨ãã«éžè¡¨ç¤º -->
+            <!-- ƒEƒBƒ“ƒhƒE‚ªÅ‘å‰»‚³‚ê‚Ä‚¢‚é‚Æ‚«‚É”ñ•\Ž¦ -->
             <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType=Window}}"
                         Value="Maximized">
                 <Setter Property="Visibility" Value="Collapsed"/>
             </DataTrigger>
-            <!-- ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒé€šå¸¸ã‚µã‚¤ã‚ºã®ã¨ãã«è¡¨ç¤º -->
+            <!-- ƒEƒBƒ“ƒhƒE‚ª’ÊíƒTƒCƒY‚Ì‚Æ‚«‚É•\Ž¦ -->
             <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType=Window}}"
                         Value="Normal">
                 <Setter Property="Visibility" Value="Visible"/>

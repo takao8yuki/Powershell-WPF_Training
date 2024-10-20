@@ -9,17 +9,17 @@ $ThreadManager = [ThreadManager]::new('Get-Million')
 $MyViewModel = New-UnboundClassInstance MyViewModel
 $MyViewModel.psobject.CreateButtons($ThreadManager)
 
-# MyViewModel.Jobsã‚³ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã®åŒæœŸã‚’æœ‰åŠ¹ã«ã—ã¾ã™ã€‚ã“ã‚Œã«ã‚ˆã‚Šã€è¤‡æ•°ã®ã‚¹ãƒ¬ãƒƒãƒ‰ã‹ã‚‰å®‰å…¨ã«ã‚¢ã‚¯ã‚»ã‚¹ã§ãã‚‹ã‚ˆã†ã«ãªã‚Šã¾ã™ã€‚
+# MyViewModel.JobsƒRƒŒƒNƒVƒ‡ƒ“‚Ì“¯Šú‚ð—LŒø‚É‚µ‚Ü‚·B‚±‚ê‚É‚æ‚èA•¡”‚ÌƒXƒŒƒbƒh‚©‚çˆÀ‘S‚ÉƒAƒNƒZƒX‚Å‚«‚é‚æ‚¤‚É‚È‚è‚Ü‚·B
 [System.Windows.Data.BindingOperations]::EnableCollectionSynchronization($MyViewModel.psobject.Jobs, $MyViewModel.psobject.JobsLock)
 
-# MainWindow.xamlã‚’ä½¿ç”¨ã™ã‚‹å ´åˆã¯ã“ã¡ã‚‰ã®ã‚³ãƒ¡ãƒ³ãƒˆã‚’è§£é™¤ã—ã¦ãã ã•ã„
+# MainWindow.xaml‚ðŽg—p‚·‚éê‡‚Í‚±‚¿‚ç‚ÌƒRƒƒ“ƒg‚ð‰ðœ‚µ‚Ä‚­‚¾‚³‚¢
 # $wpf = New-WPFObject -Path "$PSScriptRoot\Views\MainWindow.xaml" -BaseUri "$PSScriptRoot\"
 
-# PartialWindow.xamlã‚’ä½¿ç”¨
+# PartialWindow.xaml‚ðŽg—p
 $wpf = New-WPFObject -Path "$PSScriptRoot\Views\PartialWindow.xaml" -BaseUri "$PSScriptRoot\"
 $wpf.DataContext = $MyViewModel
 
-# ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒé–‰ã˜ã‚‰ã‚Œã‚‹ã¨ãã®ã‚¤ãƒ™ãƒ³ãƒˆãƒãƒ³ãƒ‰ãƒ©
+# ƒEƒBƒ“ƒhƒE‚ª•Â‚¶‚ç‚ê‚é‚Æ‚«‚ÌƒCƒxƒ“ƒgƒnƒ“ƒhƒ‰
 # $wpf.add_Closing({
 #     param([System.ComponentModel.CancelEventHandler]$Handler)
 #     $ThreadManager.Dispose()
@@ -27,5 +27,5 @@ $wpf.DataContext = $MyViewModel
 
 $wpf.ShowDialog()
 
-# ã‚¸ãƒ§ãƒ–ã®çµæžœã‚’è¡¨å½¢å¼ã§è¡¨ç¤º
+# ƒWƒ‡ƒu‚ÌŒ‹‰Ê‚ð•\Œ`Ž®‚Å•\Ž¦
 $MyViewModel.psobject.Jobs | Format-Table

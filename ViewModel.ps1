@@ -5,110 +5,110 @@ using Assembly WindowsBase
 
 <#
 .SYNOPSIS
-WPFã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®ãƒ‡ãƒ¼ã‚¿ã¨å‹•ä½œã‚’ç®¡ç†ã™ã‚‹ViewModelã‚¯ãƒ©ã‚¹
+WPFƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚Ìƒf[ƒ^‚Æ“®ì‚ğŠÇ—‚·‚éViewModelƒNƒ‰ƒX
 
 .DESCRIPTION
-ã“ã®MyViewModelã‚¯ãƒ©ã‚¹ã¯ã€WPFã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®MVVMï¼ˆModel-View-ViewModelï¼‰ãƒ‘ã‚¿ãƒ¼ãƒ³ã«ãŠã‘ã‚‹
-ViewModelã®å½¹å‰²ã‚’æœãŸã—ã¾ã™ã€‚ä¸»ãªæ©Ÿèƒ½ã¯ä»¥ä¸‹ã®é€šã‚Šã§ã™ï¼š
+‚±‚ÌMyViewModelƒNƒ‰ƒX‚ÍAWPFƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌMVVMiModel-View-ViewModeljƒpƒ^[ƒ“‚É‚¨‚¯‚é
+ViewModel‚Ì–ğŠ„‚ğ‰Ê‚½‚µ‚Ü‚·Bå‚È‹@”\‚ÍˆÈ‰º‚Ì’Ê‚è‚Å‚·F
 
-1. UIã«è¡¨ç¤ºã™ã‚‹ãƒ‡ãƒ¼ã‚¿ã®ç®¡ç†
-2. ãƒ¦ãƒ¼ã‚¶ãƒ¼ã®æ“ä½œï¼ˆãƒœã‚¿ãƒ³ã‚¯ãƒªãƒƒã‚¯ãªã©ï¼‰ã«å¯¾ã™ã‚‹å‡¦ç†ã®å®Ÿè¡Œ
-3. è¤‡æ•°ã®ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’ä½¿ç”¨ã—ãŸéåŒæœŸå‡¦ç†ã®ç®¡ç†
-4. UIã¨ã®ãƒ‡ãƒ¼ã‚¿ãƒã‚¤ãƒ³ãƒ‡ã‚£ãƒ³ã‚°ï¼ˆè¡¨ç¤ºã®è‡ªå‹•æ›´æ–°ï¼‰ã®å®Ÿç¾
+1. UI‚É•\¦‚·‚éƒf[ƒ^‚ÌŠÇ—
+2. ƒ†[ƒU[‚Ì‘€ìiƒ{ƒ^ƒ“ƒNƒŠƒbƒN‚È‚Çj‚É‘Î‚·‚éˆ—‚ÌÀs
+3. •¡”‚ÌƒXƒŒƒbƒh‚ğg—p‚µ‚½”ñ“¯Šúˆ—‚ÌŠÇ—
+4. UI‚Æ‚Ìƒf[ƒ^ƒoƒCƒ“ƒfƒBƒ“ƒOi•\¦‚Ì©“®XVj‚ÌÀŒ»
 
 .NOTES
-ã“ã®ã‚¯ãƒ©ã‚¹ã‚’ä½¿ç”¨ã™ã‚‹éš›ã®æ³¨æ„ç‚¹ï¼š
-- PowerShell 5.1ã§ã¯ã€New-UnboundClassInstanceã‚’ä½¿ç”¨ã—ã¦ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹åŒ–ã™ã‚‹å¿…è¦ãŒã‚ã‚Šã¾ã™ã€‚
-  ã“ã‚Œã¯ã€è¤‡æ•°ã®ã‚¹ãƒ¬ãƒƒãƒ‰ã§åŒæ™‚ã«å‡¦ç†ã‚’è¡Œã†ãŸã‚ã«å¿…è¦ã§ã™ã€‚
-- PowerShell 7ä»¥é™ã§ã¯ã€ä»£ã‚ã‚Šã«NoRunspaceAffinityå±æ€§ã‚’ä½¿ç”¨ã§ãã¾ã™ã€‚
+‚±‚ÌƒNƒ‰ƒX‚ğg—p‚·‚éÛ‚Ì’ˆÓ“_F
+- PowerShell 5.1‚Å‚ÍANew-UnboundClassInstance‚ğg—p‚µ‚ÄƒCƒ“ƒXƒ^ƒ“ƒX‰»‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B
+  ‚±‚ê‚ÍA•¡”‚ÌƒXƒŒƒbƒh‚Å“¯‚Éˆ—‚ğs‚¤‚½‚ß‚É•K—v‚Å‚·B
+- PowerShell 7ˆÈ~‚Å‚ÍA‘ã‚í‚è‚ÉNoRunspaceAffinity‘®«‚ğg—p‚Å‚«‚Ü‚·B
 
 .EXAMPLE
-# ViewModelã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹åŒ–ï¼ˆPowerShell 5.1ã®å ´åˆï¼‰
+# ViewModel‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‰»iPowerShell 5.1‚Ìê‡j
 $viewModel = New-UnboundClassInstance -Type ([MyViewModel])
 
-# ãƒœã‚¿ãƒ³ã®ä½œæˆï¼ˆã‚¹ãƒ¬ãƒƒãƒ‰ç®¡ç†ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æ¸¡ã™ï¼‰
+# ƒ{ƒ^ƒ“‚Ìì¬iƒXƒŒƒbƒhŠÇ—ƒIƒuƒWƒFƒNƒg‚ğ“n‚·j
 $viewModel.CreateButtons($threadManager)
 
-# ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®å€¤ã‚’å–å¾—
+# ƒvƒƒpƒeƒB‚Ì’l‚ğæ“¾
 $currentValue = $viewModel.SharedResource
 
 .LINK
-MVVM ãƒ‘ã‚¿ãƒ¼ãƒ³ã«ã¤ã„ã¦ã®è©³ç´°ï¼š
+MVVM ƒpƒ^[ƒ“‚É‚Â‚¢‚Ä‚ÌÚ×F
 https://docs.microsoft.com/ja-jp/archive/msdn-magazine/2009/february/patterns-wpf-apps-with-the-model-view-viewmodel-design-pattern
 #>
 class MyViewModel : ViewModelBase {
-    # UIã‚¹ãƒ¬ãƒƒãƒ‰ã§ä½¿ç”¨ã™ã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
-    # å…±æœ‰ãƒªã‚½ãƒ¼ã‚¹ï¼ˆè¤‡æ•°ã®ã‚¹ãƒ¬ãƒƒãƒ‰ã‹ã‚‰ã‚¢ã‚¯ã‚»ã‚¹ã•ã‚Œã‚‹å€¤ï¼‰
-    # $Dispatcher# = [System.Windows.Threading.Dispatcher]::CurrentDispatcher # New-UnboundClassInstanceã«ã‚ˆã£ã¦ä½œæˆã•ã‚ŒãŸå ´åˆã€ãã®ã‚¹ãƒ¬ãƒƒãƒ‰ã¯ãƒ©ãƒ³ã‚¹ãƒšãƒ¼ã‚¹ãŒãªããªã£ãŸãŸã‚åœæ­¢ã—ã¾ã™ã€‚
+    # UIƒXƒŒƒbƒh‚Åg—p‚·‚éƒIƒuƒWƒFƒNƒg
+    # ‹¤—LƒŠƒ\[ƒXi•¡”‚ÌƒXƒŒƒbƒh‚©‚çƒAƒNƒZƒX‚³‚ê‚é’lj
+    # $Dispatcher# = [System.Windows.Threading.Dispatcher]::CurrentDispatcher # New-UnboundClassInstance‚É‚æ‚Á‚Äì¬‚³‚ê‚½ê‡A‚»‚ÌƒXƒŒƒbƒh‚Íƒ‰ƒ“ƒXƒy[ƒX‚ª‚È‚­‚È‚Á‚½‚½‚ß’â~‚µ‚Ü‚·B
     $SharedResource = 0
-    # å…±æœ‰ãƒªã‚½ãƒ¼ã‚¹ã¸ã®ã‚¢ã‚¯ã‚»ã‚¹ã‚’åˆ¶å¾¡ã™ã‚‹ãŸã‚ã®ãƒ­ãƒƒã‚¯ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+    # ‹¤—LƒŠƒ\[ƒX‚Ö‚ÌƒAƒNƒZƒX‚ğ§Œä‚·‚é‚½‚ß‚ÌƒƒbƒNƒIƒuƒWƒFƒNƒg
     hidden $SharedResourceLock = [object]::new()
-    # å®Ÿè¡Œä¸­ã®ã‚¸ãƒ§ãƒ–ï¼ˆå‡¦ç†ï¼‰ã®ãƒªã‚¹ãƒˆ
+    # Às’†‚ÌƒWƒ‡ƒuiˆ—j‚ÌƒŠƒXƒg
     $Jobs = [System.Collections.ObjectModel.ObservableCollection[Object]]::new()
-    # ã‚¸ãƒ§ãƒ–ãƒªã‚¹ãƒˆã¸ã®ã‚¢ã‚¯ã‚»ã‚¹ã‚’åˆ¶å¾¡ã™ã‚‹ãŸã‚ã®ãƒ­ãƒƒã‚¯ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+    # ƒWƒ‡ƒuƒŠƒXƒg‚Ö‚ÌƒAƒNƒZƒX‚ğ§Œä‚·‚é‚½‚ß‚ÌƒƒbƒNƒIƒuƒWƒFƒNƒg
     hidden $JobsLock = [object]::new()
 
-    # è¨ˆç®—ã‚µãƒ¼ãƒ“ã‚¹ï¼ˆæ™‚é–“ã®ã‹ã‹ã‚‹å‡¦ç†ã‚’ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ãƒˆã™ã‚‹ãŸã‚ã®ã‚¯ãƒ©ã‚¹ï¼‰
-    $CalculationService = [CalculationService]::new() # ã¾ãŸã€ãã®ãƒ¡ã‚½ãƒƒãƒ‰ã¸ã®è¤‡æ•°ã®å‘¼ã³å‡ºã—ã‚’å¯èƒ½ã«ã™ã‚‹ãŸã‚ã«ã€ãƒã‚¤ãƒ³ãƒ‰ã•ã‚Œã¦ã„ãªã„ã‚¯ãƒ©ã‚¹ã¨ã—ã¦ä½œæˆã•ã‚ŒãŸã€‚
+    # ŒvZƒT[ƒrƒXiŠÔ‚Ì‚©‚©‚éˆ—‚ğƒVƒ~ƒ…ƒŒ[ƒg‚·‚é‚½‚ß‚ÌƒNƒ‰ƒXj
+    $CalculationService = [CalculationService]::new() # ‚Ü‚½A‚»‚Ìƒƒ\ƒbƒh‚Ö‚Ì•¡”‚ÌŒÄ‚Ño‚µ‚ğ‰Â”\‚É‚·‚é‚½‚ß‚ÉAƒoƒCƒ“ƒh‚³‚ê‚Ä‚¢‚È‚¢ƒNƒ‰ƒX‚Æ‚µ‚Äì¬‚³‚ê‚½B
 
-    # ViewModelã‚¯ãƒ©ã‚¹ã®ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£å®šç¾©
+    # ViewModelƒNƒ‰ƒX‚ÌƒvƒƒpƒeƒB’è‹`
 
-    # ãƒ‡ãƒªã‚²ãƒ¼ãƒˆï¼šãƒ¡ã‚½ãƒƒãƒ‰ã‚’è¡¨ã™ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
-    # ã“ã‚Œã‚‰ã¯ã€ãƒ¡ã‚½ãƒƒãƒ‰ã‚’å¤‰æ•°ã¨ã—ã¦æ‰±ã„ã€å¾Œã§å®Ÿè¡Œã§ãã‚‹ã‚ˆã†ã«ã™ã‚‹ãŸã‚ã«ä½¿ç”¨ã•ã‚Œã¾ã™
+    # ƒfƒŠƒQ[ƒgFƒƒ\ƒbƒh‚ğ•\‚·ƒIƒuƒWƒFƒNƒg
+    # ‚±‚ê‚ç‚ÍAƒƒ\ƒbƒh‚ğ•Ï”‚Æ‚µ‚Äˆµ‚¢AŒã‚ÅÀs‚Å‚«‚é‚æ‚¤‚É‚·‚é‚½‚ß‚Ég—p‚³‚ê‚Ü‚·
 
-    # AddTenSlowlyãƒ¡ã‚½ãƒƒãƒ‰ã«å¯¾å¿œã™ã‚‹ãƒ‡ãƒªã‚²ãƒ¼ãƒˆ
-    # ã“ã®ãƒ‡ãƒªã‚²ãƒ¼ãƒˆã¯ã€æ•°å€¤ã‚’10ãšã¤ã‚†ã£ãã‚Šã¨å¢—åŠ ã•ã›ã‚‹ãƒ¡ã‚½ãƒƒãƒ‰ã‚’è¡¨ã—ã¾ã™
+    # AddTenSlowlyƒƒ\ƒbƒh‚É‘Î‰‚·‚éƒfƒŠƒQ[ƒg
+    # ‚±‚ÌƒfƒŠƒQ[ƒg‚ÍA”’l‚ğ10‚¸‚Â‚ä‚Á‚­‚è‚Æ‘‰Á‚³‚¹‚éƒƒ\ƒbƒh‚ğ•\‚µ‚Ü‚·
     $AddTenSlowlyDelegate
 
-    # ExternalMethodãƒ¡ã‚½ãƒƒãƒ‰ã«å¯¾å¿œã™ã‚‹ãƒ‡ãƒªã‚²ãƒ¼ãƒˆ
-    # ã“ã®ãƒ‡ãƒªã‚²ãƒ¼ãƒˆã¯ã€å¤–éƒ¨ã§å®šç¾©ã•ã‚ŒãŸãƒ¡ã‚½ãƒƒãƒ‰ã‚’è¡¨ã—ã¾ã™
+    # ExternalMethodƒƒ\ƒbƒh‚É‘Î‰‚·‚éƒfƒŠƒQ[ƒg
+    # ‚±‚ÌƒfƒŠƒQ[ƒg‚ÍAŠO•”‚Å’è‹`‚³‚ê‚½ƒƒ\ƒbƒh‚ğ•\‚µ‚Ü‚·
     $ExternalMethodDelegate
 
-    # CmdletInMethodãƒ¡ã‚½ãƒƒãƒ‰ã«å¯¾å¿œã™ã‚‹ãƒ‡ãƒªã‚²ãƒ¼ãƒˆ
-    # ã“ã®ãƒ‡ãƒªã‚²ãƒ¼ãƒˆã¯ã€PowerShellã®Cmdletã‚’å†…éƒ¨ã§ä½¿ç”¨ã™ã‚‹ãƒ¡ã‚½ãƒƒãƒ‰ã‚’è¡¨ã—ã¾ã™
+    # CmdletInMethodƒƒ\ƒbƒh‚É‘Î‰‚·‚éƒfƒŠƒQ[ƒg
+    # ‚±‚ÌƒfƒŠƒQ[ƒg‚ÍAPowerShell‚ÌCmdlet‚ğ“à•”‚Åg—p‚·‚éƒƒ\ƒbƒh‚ğ•\‚µ‚Ü‚·
     $CmdletInMethodDelegate
 
-    # ã‚³ãƒãƒ³ãƒ‰ï¼šãƒ¦ãƒ¼ã‚¶ãƒ¼ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®ã‚¢ã‚¯ã‚·ãƒ§ãƒ³ï¼ˆä¾‹ï¼šãƒœã‚¿ãƒ³ã‚¯ãƒªãƒƒã‚¯ï¼‰ã¨é–¢é€£ä»˜ã‘ã‚‹ãŸã‚ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
-    # ã“ã‚Œã‚‰ã¯ã€WPFã®ICommandã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹ã‚’å®Ÿè£…ã—ã¦ãŠã‚Šã€UIã¨ViewModelã‚’çµã³ã¤ã‘ã¾ã™
+    # ƒRƒ}ƒ“ƒhFƒ†[ƒU[ƒCƒ“ƒ^[ƒtƒFƒCƒX‚ÌƒAƒNƒVƒ‡ƒ“i—áFƒ{ƒ^ƒ“ƒNƒŠƒbƒNj‚ÆŠÖ˜A•t‚¯‚é‚½‚ß‚ÌƒIƒuƒWƒFƒNƒg
+    # ‚±‚ê‚ç‚ÍAWPF‚ÌICommandƒCƒ“ƒ^[ƒtƒF[ƒX‚ğÀ‘•‚µ‚Ä‚¨‚èAUI‚ÆViewModel‚ğŒ‹‚Ñ‚Â‚¯‚Ü‚·
 
-    # AddTenSlowlyãƒ¡ã‚½ãƒƒãƒ‰ã«å¯¾å¿œã™ã‚‹ã‚³ãƒãƒ³ãƒ‰
-    # ã“ã®ã‚³ãƒãƒ³ãƒ‰ãŒãƒˆãƒªã‚¬ãƒ¼ã•ã‚Œã‚‹ã¨ã€AddTenSlowlyãƒ¡ã‚½ãƒƒãƒ‰ãŒå®Ÿè¡Œã•ã‚Œã¾ã™
+    # AddTenSlowlyƒƒ\ƒbƒh‚É‘Î‰‚·‚éƒRƒ}ƒ“ƒh
+    # ‚±‚ÌƒRƒ}ƒ“ƒh‚ªƒgƒŠƒK[‚³‚ê‚é‚ÆAAddTenSlowlyƒƒ\ƒbƒh‚ªÀs‚³‚ê‚Ü‚·
     $AddTenSlowlyCommand
 
-    # ExternalMethodãƒ¡ã‚½ãƒƒãƒ‰ã«å¯¾å¿œã™ã‚‹ã‚³ãƒãƒ³ãƒ‰
-    # ã“ã®ã‚³ãƒãƒ³ãƒ‰ãŒãƒˆãƒªã‚¬ãƒ¼ã•ã‚Œã‚‹ã¨ã€ExternalMethodãŒå®Ÿè¡Œã•ã‚Œã¾ã™
+    # ExternalMethodƒƒ\ƒbƒh‚É‘Î‰‚·‚éƒRƒ}ƒ“ƒh
+    # ‚±‚ÌƒRƒ}ƒ“ƒh‚ªƒgƒŠƒK[‚³‚ê‚é‚ÆAExternalMethod‚ªÀs‚³‚ê‚Ü‚·
     $ExternalMethodCommand
 
-    # CmdletInMethodãƒ¡ã‚½ãƒƒãƒ‰ã«å¯¾å¿œã™ã‚‹ã‚³ãƒãƒ³ãƒ‰
-    # ã“ã®ã‚³ãƒãƒ³ãƒ‰ãŒãƒˆãƒªã‚¬ãƒ¼ã•ã‚Œã‚‹ã¨ã€CmdletInMethodãŒå®Ÿè¡Œã•ã‚Œã¾ã™
+    # CmdletInMethodƒƒ\ƒbƒh‚É‘Î‰‚·‚éƒRƒ}ƒ“ƒh
+    # ‚±‚ÌƒRƒ}ƒ“ƒh‚ªƒgƒŠƒK[‚³‚ê‚é‚ÆACmdletInMethod‚ªÀs‚³‚ê‚Ü‚·
     $CmdletInMethodCommand
 
-    # ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼ˆã‚¯ãƒ©ã‚¹ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãŒä½œæˆã•ã‚Œã‚‹ã¨ãã«å‘¼ã³å‡ºã•ã‚Œã‚‹ãƒ¡ã‚½ãƒƒãƒ‰ï¼‰
+    # ƒRƒ“ƒXƒgƒ‰ƒNƒ^iƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ªì¬‚³‚ê‚é‚Æ‚«‚ÉŒÄ‚Ño‚³‚ê‚éƒƒ\ƒbƒhj
     MyViewModel() {
-        # SharedResourceãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®å®šç¾©
-        # ã“ã®ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ãŒå¤‰æ›´ã•ã‚ŒãŸã¨ãã«ã€è‡ªå‹•çš„ã«UIã®è¡¨ç¤ºã‚’æ›´æ–°ã™ã‚‹ãŸã‚ã®è¨­å®š
+        # SharedResourceƒvƒƒpƒeƒB‚Ì’è‹`
+        # ‚±‚ÌƒvƒƒpƒeƒB‚ª•ÏX‚³‚ê‚½‚Æ‚«‚ÉA©“®“I‚ÉUI‚Ì•\¦‚ğXV‚·‚é‚½‚ß‚Ìİ’è
         $this | Add-Member -Name SharedResource -MemberType ScriptProperty -Value {
 			return $this.psobject.SharedResource
 		} -SecondValue {
 			param($value)
 			$this.psobject.SharedResource = $value
-			# ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ãŒå¤‰æ›´ã•ã‚ŒãŸã“ã¨ã‚’UIã«é€šçŸ¥
+			# ƒvƒƒpƒeƒB‚ª•ÏX‚³‚ê‚½‚±‚Æ‚ğUI‚É’Ê’m
 			$this.psobject.RaisePropertyChanged('SharedResource')
-            Write-Verbose "SharedResourceãŒ$valueã«è¨­å®šã•ã‚Œã¾ã—ãŸ" -Verbose
+            Write-Verbose "SharedResource‚ª$value‚Éİ’è‚³‚ê‚Ü‚µ‚½" -Verbose
 		}
     }
 
-    # ãƒœã‚¿ãƒ³ã‚’ä½œæˆã™ã‚‹ãƒ¡ã‚½ãƒƒãƒ‰
+    # ƒ{ƒ^ƒ“‚ğì¬‚·‚éƒƒ\ƒbƒh
     CreateButtons([ThreadManager]$ThreadManager) {
-        # ãƒœã‚¿ãƒ³ã¯ã€åˆ¥ã®ãƒ©ãƒ³ã‚¹ãƒšãƒ¼ã‚¹ã‹ã‚‰RaiseCanExecuteChangedã‚’å‘¼ã³å‡ºã™ãŸã‚ã«ãƒ‡ã‚£ã‚¹ãƒ‘ãƒƒãƒãƒ£ãƒ¼ãŒå¿…è¦ã§ã™ã€‚
-        # ãƒœã‚¿ãƒ³ã¯New-UnboundClassInstanceã‚’ä½¿ç”¨ã—ã¦ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã§ä½œæˆã™ã‚‹ã“ã¨ã¯ã§ãã¾ã›ã‚“ã€‚é–¢é€£ã™ã‚‹ã‚¹ãƒ¬ãƒƒãƒ‰ãŒã‚·ãƒ£ãƒƒãƒˆãƒ€ã‚¦ãƒ³ã•ã‚Œã€ãƒ‡ã‚£ã‚¹ãƒ‘ãƒƒãƒãƒ£ãƒ¼ãŒæ©Ÿèƒ½ã—ãªã„ãŸã‚ã§ã™ã€‚
-        # MyViewModelã¯ãƒœã‚¿ãƒ³ã«ä¾å­˜ã—ã¦ã„ã¾ã›ã‚“ã€‚ãã‚Œã¯ãƒ“ãƒ¥ãƒ¼ã®å•é¡Œã§ã™ã€‚ãã®ãƒ¡ã‚½ãƒƒãƒ‰ã¯ãƒœã‚¿ãƒ³ãªã—ã§å‘¼ã³å‡ºã™ã“ã¨ãŒã§ãã¾ã™ï¼
+        # ƒ{ƒ^ƒ“‚ÍA•Ê‚Ìƒ‰ƒ“ƒXƒy[ƒX‚©‚çRaiseCanExecuteChanged‚ğŒÄ‚Ño‚·‚½‚ß‚ÉƒfƒBƒXƒpƒbƒ`ƒƒ[‚ª•K—v‚Å‚·B
+        # ƒ{ƒ^ƒ“‚ÍNew-UnboundClassInstance‚ğg—p‚µ‚ÄƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Åì¬‚·‚é‚±‚Æ‚Í‚Å‚«‚Ü‚¹‚ñBŠÖ˜A‚·‚éƒXƒŒƒbƒh‚ªƒVƒƒƒbƒgƒ_ƒEƒ“‚³‚êAƒfƒBƒXƒpƒbƒ`ƒƒ[‚ª‹@”\‚µ‚È‚¢‚½‚ß‚Å‚·B
+        # MyViewModel‚Íƒ{ƒ^ƒ“‚ÉˆË‘¶‚µ‚Ä‚¢‚Ü‚¹‚ñB‚»‚ê‚Íƒrƒ…[‚Ì–â‘è‚Å‚·B‚»‚Ìƒƒ\ƒbƒh‚Íƒ{ƒ^ƒ“‚È‚µ‚ÅŒÄ‚Ño‚·‚±‚Æ‚ª‚Å‚«‚Ü‚·I
         # $this.psobject.Dispatcher = $Dispatcher
 
-        # å„ãƒ¡ã‚½ãƒƒãƒ‰ã«å¯¾å¿œã™ã‚‹ãƒ‡ãƒªã‚²ãƒ¼ãƒˆã¨ã‚³ãƒãƒ³ãƒ‰ã‚’ä½œæˆ
+        # Šeƒƒ\ƒbƒh‚É‘Î‰‚·‚éƒfƒŠƒQ[ƒg‚ÆƒRƒ}ƒ“ƒh‚ğì¬
         $this.psobject.AddTenSlowlyDelegate = $this.psobject.CreateDelegate($this.psobject.AddTenSlowly)
         $this.psobject.AddTenSlowlyCommand = [ActionCommand]::new($this.psobject.AddTenSlowlyDelegate, $ThreadManager)
-        # åŒæ™‚ã«å®Ÿè¡Œã§ãã‚‹å‡¦ç†ã®æ•°ã‚’3ã«åˆ¶é™
+        # “¯‚ÉÀs‚Å‚«‚éˆ—‚Ì”‚ğ3‚É§ŒÀ
         $this.psobject.AddTenSlowlyCommand.psobject.Throttle = 3
 
         $this.psobject.ExternalMethodDelegate = $this.psobject.CreateDelegate($this.psobject.ExternalMethod)
@@ -120,7 +120,7 @@ class MyViewModel : ViewModelBase {
         $this.psobject.CmdletInMethodCommand.psobject.Throttle = 6
     }
 
-    # pwsh 7+ã§ã¯ä¸è¦
+    # pwsh 7+‚Å‚Í•s—v
     [Delegate]CreateDelegate([System.Management.Automation.PSMethod]$Method) {
         $reflectionMethod = $this.psobject.GetType().GetMethod($Method.Name)
         $parameterTypes = [System.Linq.Enumerable]::Select($reflectionMethod.GetParameters(), [func[object,object]]{$args[0].parametertype})
@@ -132,21 +132,21 @@ class MyViewModel : ViewModelBase {
 
     AddTenSlowly() {
         $DataRow = [PSCustomObject]@{Id = [runspace]::DefaultRunspace.Id; Type = 'Start'; Time = Get-Date; Snapshot = $this.psobject.SharedResource; Method = 'AddTenSlowly'}
-        $this.psobject.Jobs.Add($DataRow) # UIã‚¹ãƒ¬ãƒƒãƒ‰ã§ä»¥ä¸‹ã‚’æœ‰åŠ¹ã«ã™ã‚‹ã“ã¨ã§å¯èƒ½ã«ãªã‚Šã¾ã™ï¼: [System.Windows.Data.BindingOperations]::EnableCollectionSynchronization($MyViewModel.psobject.Jobs, $MyViewModel.psobject.JobsLock)=
+        $this.psobject.Jobs.Add($DataRow) # UIƒXƒŒƒbƒh‚ÅˆÈ‰º‚ğ—LŒø‚É‚·‚é‚±‚Æ‚Å‰Â”\‚É‚È‚è‚Ü‚·I: [System.Windows.Data.BindingOperations]::EnableCollectionSynchronization($MyViewModel.psobject.Jobs, $MyViewModel.psobject.JobsLock)=
 
         [System.Threading.Monitor]::Enter($this.psobject.SharedResourceLock)
         try {
-            Write-Verbose "ãƒ­ãƒƒã‚¯ã‚’å–å¾—ã—ã¾ã—ãŸ $(Get-Date)" -Verbose
-            # ã“ã®æ™‚ç‚¹ã§è¤‡æ•°ã®ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ãƒˆã—ã¾ã™ã€‚10å€‹ã™ã¹ã¦ãŒè¿½åŠ ã•ã‚Œã‚‹ã“ã¨ã‚’ä¿è¨¼ã™ã‚‹ãŸã‚ã«ãƒ­ãƒƒã‚¯ãŒå¿…è¦ã§ã™ã€‚
+            Write-Verbose "ƒƒbƒN‚ğæ“¾‚µ‚Ü‚µ‚½ $(Get-Date)" -Verbose
+            # ‚±‚Ì“_‚Å•¡”‚ÌƒXƒŒƒbƒh‚ğƒVƒ~ƒ…ƒŒ[ƒg‚µ‚Ü‚·B10ŒÂ‚·‚×‚Ä‚ª’Ç‰Á‚³‚ê‚é‚±‚Æ‚ğ•ÛØ‚·‚é‚½‚ß‚ÉƒƒbƒN‚ª•K—v‚Å‚·B
             1..10 | ForEach-Object {
                 $this.SharedResource++
                 Start-Sleep -Milliseconds (Get-Random -Minimum 50 -Maximum 400)
             }
         } catch {
-            Write-Verbose "ã‚¨ãƒ©ãƒ¼: $($Error)" -Verbose
+            Write-Verbose "ƒGƒ‰[: $($Error)" -Verbose
         } finally {
             [System.Threading.Monitor]::Exit($this.psobject.SharedResourceLock)
-            Write-Verbose "ãƒ­ãƒƒã‚¯ã‚’è§£æ”¾ã—ã¾ã—ãŸ $(Get-Date)" -Verbose
+            Write-Verbose "ƒƒbƒN‚ğ‰ğ•ú‚µ‚Ü‚µ‚½ $(Get-Date)" -Verbose
         }
 
         $DataRow = [PSCustomObject]@{Id = [runspace]::DefaultRunspace.Id; Type = 'End'; Time = Get-Date; Snapshot = $this.psobject.SharedResource; Method = 'AddTenSlowly'}
@@ -161,13 +161,13 @@ class MyViewModel : ViewModelBase {
 
         [System.Threading.Monitor]::Enter($this.psobject.SharedResourceLock)
         try {
-            Write-Verbose "ãƒ­ãƒƒã‚¯ã‚’å–å¾—ã—ã¾ã—ãŸ $(Get-Date)" -Verbose
+            Write-Verbose "ƒƒbƒN‚ğæ“¾‚µ‚Ü‚µ‚½ $(Get-Date)" -Verbose
             $this.SharedResource += $NewNumber
         } catch {
-            Write-Verbose "ã‚¨ãƒ©ãƒ¼: $($Error)" -Verbose
+            Write-Verbose "ƒGƒ‰[: $($Error)" -Verbose
         } finally {
             [System.Threading.Monitor]::Exit($this.psobject.SharedResourceLock)
-            Write-Verbose "ãƒ­ãƒƒã‚¯ã‚’è§£æ”¾ã—ã¾ã—ãŸ $(Get-Date)" -Verbose
+            Write-Verbose "ƒƒbƒN‚ğ‰ğ•ú‚µ‚Ü‚µ‚½ $(Get-Date)" -Verbose
         }
 
         $DataRow = [PSCustomObject]@{Id = [runspace]::DefaultRunspace.Id; Type = 'End'; Time = Get-Date; Snapshot = $this.psobject.SharedResource; Method = 'ExternalMethod'}
@@ -182,13 +182,13 @@ class MyViewModel : ViewModelBase {
 
         [System.Threading.Monitor]::Enter($this.psobject.SharedResourceLock)
         try {
-            Write-Verbose "ãƒ­ãƒƒã‚¯ã‚’å–å¾—ã—ã¾ã—ãŸ $(Get-Date)" -Verbose
+            Write-Verbose "ƒƒbƒN‚ğæ“¾‚µ‚Ü‚µ‚½ $(Get-Date)" -Verbose
             $this.SharedResource += $NewNumber
         } catch {
-            Write-Verbose "ã‚¨ãƒ©ãƒ¼: $($Error)" -Verbose
+            Write-Verbose "ƒGƒ‰[: $($Error)" -Verbose
         } finally {
             [System.Threading.Monitor]::Exit($this.psobject.SharedResourceLock)
-            Write-Verbose "ãƒ­ãƒƒã‚¯ã‚’è§£æ”¾ã—ã¾ã—ãŸ $(Get-Date)" -Verbose
+            Write-Verbose "ƒƒbƒN‚ğ‰ğ•ú‚µ‚Ü‚µ‚½ $(Get-Date)" -Verbose
         }
 
         $DataRow = [PSCustomObject]@{Id = [runspace]::DefaultRunspace.Id; Type = 'End'; Time = Get-Date; Snapshot = $this.psobject.SharedResource; Method = 'Cmdlet'}
@@ -198,27 +198,27 @@ class MyViewModel : ViewModelBase {
 
 <#
 .SYNOPSIS
-è¨ˆç®—ã‚µãƒ¼ãƒ“ã‚¹ã‚’æä¾›ã™ã‚‹ã‚¯ãƒ©ã‚¹
+ŒvZƒT[ƒrƒX‚ğ’ñ‹Ÿ‚·‚éƒNƒ‰ƒX
 
 .DESCRIPTION
-ã“ã®ã‚¯ãƒ©ã‚¹ã¯ã€æ™‚é–“ã®ã‹ã‹ã‚‹è¨ˆç®—å‡¦ç†ã‚’ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ãƒˆã—ã¾ã™ã€‚
-éåŒæœŸå‡¦ç†ã®ãƒ†ã‚¹ãƒˆã«ä½¿ç”¨ã•ã‚Œã¾ã™ã€‚
+‚±‚ÌƒNƒ‰ƒX‚ÍAŠÔ‚Ì‚©‚©‚éŒvZˆ—‚ğƒVƒ~ƒ…ƒŒ[ƒg‚µ‚Ü‚·B
+”ñ“¯Šúˆ—‚ÌƒeƒXƒg‚Ég—p‚³‚ê‚Ü‚·B
 
 .EXAMPLE
 $calculationService = [CalculationService]::new()
 $result = $calculationService.GetThousandDelegate.Invoke(10)
 
 .NOTES
-ã“ã®ã‚¯ãƒ©ã‚¹ã‚‚ã‚¢ãƒ³ãƒã‚¦ãƒ³ãƒ‰ã‚¯ãƒ©ã‚¹ã¨ã—ã¦ä½¿ç”¨ã™ã‚‹ã“ã¨ã‚’æƒ³å®šã—ã¦ã„ã¾ã™ã€‚
+‚±‚ÌƒNƒ‰ƒX‚àƒAƒ“ƒoƒEƒ“ƒhƒNƒ‰ƒX‚Æ‚µ‚Äg—p‚·‚é‚±‚Æ‚ğ‘z’è‚µ‚Ä‚¢‚Ü‚·B
 #>
 class CalculationService {
     $GetThousandDelegate = $this.CreateDelegate($this.GetThousand)
     CalculationService() {}
 
     [int]GetThousand($Seed) {
-        # ã‚¯ãƒ©ã‚¹ãŒã‚¢ãƒ³ãƒã‚¦ãƒ³ãƒ‰ã§ãªã„å ´åˆã€éåŒæœŸãƒœã‚¿ãƒ³ã§å‘¼ã³å‡ºã•ã‚ŒãŸå ´åˆã«ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã®ä½¿ç”¨ã¯ä¸å¯èƒ½ã§ã™
-        # UIã‚¹ãƒ¬ãƒƒãƒ‰ã§ã‚­ãƒ¥ãƒ¼ã«å…¥ã‚Œã‚‰ã‚Œã€éåŒæœŸã§å‘¼ã³å‡ºã•ã‚Œã¾ã™
-        # ã‚¢ãƒ³ãƒã‚¦ãƒ³ãƒ‰ã§ãªã„å ´åˆã¯ãƒ‡ãƒªã‚²ãƒ¼ãƒˆã‚’å‘¼ã³å‡ºã™å¿…è¦ãŒã‚ã‚Šã¾ã™
+        # ƒNƒ‰ƒX‚ªƒAƒ“ƒoƒEƒ“ƒh‚Å‚È‚¢ê‡A”ñ“¯Šúƒ{ƒ^ƒ“‚ÅŒÄ‚Ño‚³‚ê‚½ê‡‚ÉƒpƒCƒvƒ‰ƒCƒ“‚Ìg—p‚Í•s‰Â”\‚Å‚·
+        # UIƒXƒŒƒbƒh‚ÅƒLƒ…[‚É“ü‚ê‚ç‚êA”ñ“¯Šú‚ÅŒÄ‚Ño‚³‚ê‚Ü‚·
+        # ƒAƒ“ƒoƒEƒ“ƒh‚Å‚È‚¢ê‡‚ÍƒfƒŠƒQ[ƒg‚ğŒÄ‚Ño‚·•K—v‚ª‚ ‚è‚Ü‚·
 
         # 1..10 | ForEach-Object {
         #     Start-Sleep -Milliseconds (Get-Random -SetSeed $Seed -Minimum 50 -Maximum 400)
@@ -243,20 +243,20 @@ class CalculationService {
 
 <#
 .SYNOPSIS
-100ä¸‡ã‚’è¿”ã™é–¢æ•°
+100–œ‚ğ•Ô‚·ŠÖ”
 
 .DESCRIPTION
-ã“ã®é–¢æ•°ã¯ã€æŒ‡å®šã•ã‚ŒãŸã‚·ãƒ¼ãƒ‰å€¤ã‚’ä½¿ç”¨ã—ã¦ãƒ©ãƒ³ãƒ€ãƒ ãªé…å»¶ã‚’ç™ºç”Ÿã•ã›ãŸå¾Œã€
-100ä¸‡ã‚’è¿”ã—ã¾ã™ã€‚éåŒæœŸå‡¦ç†ã®ãƒ†ã‚¹ãƒˆã«ä½¿ç”¨ã•ã‚Œã¾ã™ã€‚
+‚±‚ÌŠÖ”‚ÍAw’è‚³‚ê‚½ƒV[ƒh’l‚ğg—p‚µ‚Äƒ‰ƒ“ƒ_ƒ€‚È’x‰„‚ğ”­¶‚³‚¹‚½ŒãA
+100–œ‚ğ•Ô‚µ‚Ü‚·B”ñ“¯Šúˆ—‚ÌƒeƒXƒg‚Ég—p‚³‚ê‚Ü‚·B
 
 .PARAMETER Seed
-ãƒ©ãƒ³ãƒ€ãƒ ãªé…å»¶ã‚’ç”Ÿæˆã™ã‚‹ãŸã‚ã®ã‚·ãƒ¼ãƒ‰å€¤
+ƒ‰ƒ“ƒ_ƒ€‚È’x‰„‚ğ¶¬‚·‚é‚½‚ß‚ÌƒV[ƒh’l
 
 .EXAMPLE
 $result = Get-Million -Seed 42
 
 .NOTES
-ã“ã®é–¢æ•°ã¯ã€éåŒæœŸå‡¦ç†ã®ã‚·ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã«ä½¿ç”¨ã•ã‚Œã¾ã™ã€‚
+‚±‚ÌŠÖ”‚ÍA”ñ“¯Šúˆ—‚ÌƒVƒ~ƒ…ƒŒ[ƒVƒ‡ƒ“‚Ég—p‚³‚ê‚Ü‚·B
 #>
 function Get-Million {
     [CmdletBinding()]
@@ -275,121 +275,121 @@ function Get-Million {
 
 <#
 .SYNOPSIS
-WPFã§å³ãƒãƒ¼ã‚¸ãƒ³ã‚’å‹•çš„ã«è¨­å®šã™ã‚‹ãŸã‚ã®å€¤ã‚³ãƒ³ãƒãƒ¼ã‚¿ãƒ¼
+WPF‚Å‰Eƒ}[ƒWƒ“‚ğ“®“I‚Éİ’è‚·‚é‚½‚ß‚Ì’lƒRƒ“ƒo[ƒ^[
 
 .DESCRIPTION
-ã“ã®RightMarginConverterã‚¯ãƒ©ã‚¹ã¯ã€WPFï¼ˆWindows Presentation Foundationï¼‰ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã§
-ä½¿ç”¨ã•ã‚Œã‚‹ç‰¹æ®Šãªã‚¯ãƒ©ã‚¹ã§ã™ã€‚ä¸»ãªå½¹å‰²ã¯ã€æ•°å€¤ã‚’å—ã‘å–ã‚Šã€ãã®å€¤ã‚’ä½¿ã£ã¦
-UIã‚¨ãƒ¬ãƒ¡ãƒ³ãƒˆã®å³å´ã®ãƒãƒ¼ã‚¸ãƒ³ï¼ˆä½™ç™½ï¼‰ã‚’è¨­å®šã™ã‚‹ã“ã¨ã§ã™ã€‚
+‚±‚ÌRightMarginConverterƒNƒ‰ƒX‚ÍAWPFiWindows Presentation FoundationjƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚Å
+g—p‚³‚ê‚é“Áê‚ÈƒNƒ‰ƒX‚Å‚·Bå‚È–ğŠ„‚ÍA”’l‚ğó‚¯æ‚èA‚»‚Ì’l‚ğg‚Á‚Ä
+UIƒGƒŒƒƒ“ƒg‚Ì‰E‘¤‚Ìƒ}[ƒWƒ“i—]”’j‚ğİ’è‚·‚é‚±‚Æ‚Å‚·B
 
-ã“ã®ã‚¯ãƒ©ã‚¹ã®ä¸»ãªç‰¹å¾´ï¼š
-1. System.Windows.Data.IValueConverterã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹ã‚’å®Ÿè£…ã—ã¦ã„ã¾ã™ã€‚
-   ã“ã‚Œã¯ã€WPFã®ãƒ‡ãƒ¼ã‚¿ãƒã‚¤ãƒ³ãƒ‡ã‚£ãƒ³ã‚°ã‚·ã‚¹ãƒ†ãƒ ãŒã“ã®ã‚¯ãƒ©ã‚¹ã‚’ä½¿ç”¨ã§ãã‚‹ã‚ˆã†ã«ã™ã‚‹ãŸã‚ã§ã™ã€‚
-2. æ•°å€¤ã‚’å—ã‘å–ã‚Šã€ãã‚Œã‚’System.Windows.Thicknessã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«å¤‰æ›ã—ã¾ã™ã€‚
-   Thicknessã¯ã€WPFã§UIã‚¨ãƒ¬ãƒ¡ãƒ³ãƒˆã®ä½™ç™½ã‚’è¡¨ã™ãŸã‚ã«ä½¿ç”¨ã•ã‚Œã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã§ã™ã€‚
-3. å…¥åŠ›ãŒæ­£ã®æ•°å€¤ã®å ´åˆã€ãã®å€¤ã‚’å³ãƒãƒ¼ã‚¸ãƒ³ã¨ã—ã¦è¨­å®šã—ã¾ã™ã€‚
-4. ãã‚Œä»¥å¤–ã®å ´åˆã¯ã€ã™ã¹ã¦ã®ãƒãƒ¼ã‚¸ãƒ³ã‚’0ã«è¨­å®šã—ã¾ã™ã€‚
+‚±‚ÌƒNƒ‰ƒX‚Ìå‚È“Á’¥F
+1. System.Windows.Data.IValueConverterƒCƒ“ƒ^[ƒtƒF[ƒX‚ğÀ‘•‚µ‚Ä‚¢‚Ü‚·B
+   ‚±‚ê‚ÍAWPF‚Ìƒf[ƒ^ƒoƒCƒ“ƒfƒBƒ“ƒOƒVƒXƒeƒ€‚ª‚±‚ÌƒNƒ‰ƒX‚ğg—p‚Å‚«‚é‚æ‚¤‚É‚·‚é‚½‚ß‚Å‚·B
+2. ”’l‚ğó‚¯æ‚èA‚»‚ê‚ğSystem.Windows.ThicknessƒIƒuƒWƒFƒNƒg‚É•ÏŠ·‚µ‚Ü‚·B
+   Thickness‚ÍAWPF‚ÅUIƒGƒŒƒƒ“ƒg‚Ì—]”’‚ğ•\‚·‚½‚ß‚Ég—p‚³‚ê‚éƒIƒuƒWƒFƒNƒg‚Å‚·B
+3. “ü—Í‚ª³‚Ì”’l‚Ìê‡A‚»‚Ì’l‚ğ‰Eƒ}[ƒWƒ“‚Æ‚µ‚Äİ’è‚µ‚Ü‚·B
+4. ‚»‚êˆÈŠO‚Ìê‡‚ÍA‚·‚×‚Ä‚Ìƒ}[ƒWƒ“‚ğ0‚Éİ’è‚µ‚Ü‚·B
 
 .EXAMPLE
-# XAMLã§ã®ä½¿ç”¨ä¾‹ï¼š
-<TextBlock Text="ã‚µãƒ³ãƒ—ãƒ«ãƒ†ã‚­ã‚¹ãƒˆ">
+# XAML‚Å‚Ìg—p—áF
+<TextBlock Text="ƒTƒ“ƒvƒ‹ƒeƒLƒXƒg">
     <TextBlock.Margin>
         <Binding Path="SomeValue" Converter="{StaticResource RightMarginConverter}"/>
     </TextBlock.Margin>
 </TextBlock>
 
-# ã“ã®ä¾‹ã§ã¯ã€'SomeValue'ã¨ã„ã†ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®å€¤ãŒã€
-# RightMarginConverterã‚’é€šã˜ã¦TextBlockã®å³ãƒãƒ¼ã‚¸ãƒ³ã«è¨­å®šã•ã‚Œã¾ã™ã€‚
+# ‚±‚Ì—á‚Å‚ÍA'SomeValue'‚Æ‚¢‚¤ƒvƒƒpƒeƒB‚Ì’l‚ªA
+# RightMarginConverter‚ğ’Ê‚¶‚ÄTextBlock‚Ì‰Eƒ}[ƒWƒ“‚Éİ’è‚³‚ê‚Ü‚·B
 
 .NOTES
-ã“ã®ã‚¯ãƒ©ã‚¹ã‚’ä½¿ç”¨ã™ã‚‹ã«ã¯ã€ã¾ãšXAMLã§ãƒªã‚½ãƒ¼ã‚¹ã¨ã—ã¦å®šç¾©ã™ã‚‹å¿…è¦ãŒã‚ã‚Šã¾ã™ã€‚
-ä¾‹ï¼š
+‚±‚ÌƒNƒ‰ƒX‚ğg—p‚·‚é‚É‚ÍA‚Ü‚¸XAML‚ÅƒŠƒ\[ƒX‚Æ‚µ‚Ä’è‹`‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B
+—áF
 <Window.Resources>
     <local:RightMarginConverter x:Key="RightMarginConverter"/>
 </Window.Resources>
 
-ãã®å¾Œã€ä¸Šè¨˜ã®.EXAMPLEã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®ã‚ˆã†ã«ã€Bindingã§ä½¿ç”¨ã§ãã¾ã™ã€‚
+‚»‚ÌŒãAã‹L‚Ì.EXAMPLEƒZƒNƒVƒ‡ƒ“‚Ì‚æ‚¤‚ÉABinding‚Åg—p‚Å‚«‚Ü‚·B
 #>
 class RightMarginConverter : System.Windows.Data.IValueConverter {
-    # ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼šã“ã®ã‚¯ãƒ©ã‚¹ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãŒä½œæˆã•ã‚Œã‚‹ã¨ãã«å‘¼ã³å‡ºã•ã‚Œã‚‹ãƒ¡ã‚½ãƒƒãƒ‰
-    # ä»Šå›ã¯ç‰¹ã«ä½•ã‚‚è¡Œã‚ãªã„ã®ã§ç©ºã®ã¾ã¾ã§ã™
+    # ƒRƒ“ƒXƒgƒ‰ƒNƒ^F‚±‚ÌƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ªì¬‚³‚ê‚é‚Æ‚«‚ÉŒÄ‚Ño‚³‚ê‚éƒƒ\ƒbƒh
+    # ¡‰ñ‚Í“Á‚É‰½‚às‚í‚È‚¢‚Ì‚Å‹ó‚Ì‚Ü‚Ü‚Å‚·
     RightMarginConverter() {}
 
-    # Convert ãƒ¡ã‚½ãƒƒãƒ‰ï¼šå€¤ã‚’å¤‰æ›ã™ã‚‹ãŸã‚ã®ä¸»è¦ãªãƒ¡ã‚½ãƒƒãƒ‰
-    # WPFã®ãƒã‚¤ãƒ³ãƒ‡ã‚£ãƒ³ã‚°ã‚·ã‚¹ãƒ†ãƒ ãŒã‚½ãƒ¼ã‚¹ï¼ˆä¾‹ï¼šViewModelï¼‰ã‹ã‚‰ã‚¿ãƒ¼ã‚²ãƒƒãƒˆï¼ˆä¾‹ï¼šUIè¦ç´ ï¼‰ã«
-    # å€¤ã‚’æ¸¡ã™éš›ã«ã€ã“ã®æ–¹æ³•ãŒå‘¼ã³å‡ºã•ã‚Œã¾ã™
+    # Convert ƒƒ\ƒbƒhF’l‚ğ•ÏŠ·‚·‚é‚½‚ß‚Ìå—v‚Èƒƒ\ƒbƒh
+    # WPF‚ÌƒoƒCƒ“ƒfƒBƒ“ƒOƒVƒXƒeƒ€‚ªƒ\[ƒXi—áFViewModelj‚©‚çƒ^[ƒQƒbƒgi—áFUI—v‘fj‚É
+    # ’l‚ğ“n‚·Û‚ÉA‚±‚Ì•û–@‚ªŒÄ‚Ño‚³‚ê‚Ü‚·
     [object]Convert([object]$value, [Type]$targetType, [object]$parameter, [CultureInfo]$culture) {
-        # å…¥åŠ›å€¤ãŒæ•°å€¤ï¼ˆdoubleå‹ï¼‰ã§ã€ã‹ã¤0ã‚ˆã‚Šå¤§ãã„å ´åˆ
+        # “ü—Í’l‚ª”’lidoubleŒ^j‚ÅA‚©‚Â0‚æ‚è‘å‚«‚¢ê‡
         if ($value -is [double] -and $value -gt 0) {
-            # å…¥åŠ›å€¤ã‚’ãƒ­ã‚°ã«å‡ºåŠ›ï¼ˆãƒ‡ãƒãƒƒã‚°ç”¨ï¼‰
+            # “ü—Í’l‚ğƒƒO‚Éo—ÍiƒfƒoƒbƒO—pj
             Write-Verbose $value -Verbose
-            # æ–°ã—ã„Thicknessã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä½œæˆ
-            # å¼•æ•°ã¯ (å·¦, ä¸Š, å³, ä¸‹) ã®ãƒãƒ¼ã‚¸ãƒ³ã‚’è¡¨ã—ã¾ã™
-            # ã“ã“ã§ã¯å³ãƒãƒ¼ã‚¸ãƒ³ã®ã¿ã«å…¥åŠ›å€¤ã‚’è¨­å®šã—ã€ä»–ã¯0ã«ã—ã¦ã„ã¾ã™
+            # V‚µ‚¢ThicknessƒIƒuƒWƒFƒNƒg‚ğì¬
+            # ˆø”‚Í (¶, ã, ‰E, ‰º) ‚Ìƒ}[ƒWƒ“‚ğ•\‚µ‚Ü‚·
+            # ‚±‚±‚Å‚Í‰Eƒ}[ƒWƒ“‚Ì‚İ‚É“ü—Í’l‚ğİ’è‚µA‘¼‚Í0‚É‚µ‚Ä‚¢‚Ü‚·
             return [System.Windows.Thickness]::new(0, 0, $value, 0)
         }
-        # å…¥åŠ›å€¤ãŒæ•°å€¤ã§ãªã„ã‹ã€0ä»¥ä¸‹ã®å ´åˆ
-        Write-Verbose 'ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ 0,0,0,0 ã‚’è¿”ã—ã¾ã™' -Verbose
-        # ã™ã¹ã¦ã®ãƒãƒ¼ã‚¸ãƒ³ã‚’0ã«è¨­å®šã—ãŸThicknessã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’è¿”ã—ã¾ã™
+        # “ü—Í’l‚ª”’l‚Å‚È‚¢‚©A0ˆÈ‰º‚Ìê‡
+        Write-Verbose 'ƒfƒtƒHƒ‹ƒg 0,0,0,0 ‚ğ•Ô‚µ‚Ü‚·' -Verbose
+        # ‚·‚×‚Ä‚Ìƒ}[ƒWƒ“‚ğ0‚Éİ’è‚µ‚½ThicknessƒIƒuƒWƒFƒNƒg‚ğ•Ô‚µ‚Ü‚·
         return [System.Windows.Thickness]::new(0, 0, 0, 0)
     }
 
-    # ConvertBack ãƒ¡ã‚½ãƒƒãƒ‰ï¼šé€†æ–¹å‘ã®å¤‰æ›ã‚’è¡Œã†ãŸã‚ã®ãƒ¡ã‚½ãƒƒãƒ‰
-    # é€šå¸¸ã€UIã‹ã‚‰ViewModelã«å€¤ã‚’æˆ»ã™éš›ã«ä½¿ç”¨ã•ã‚Œã¾ã™ãŒã€
-    # ã“ã®å ´åˆã¯å®Ÿè£…ã•ã‚Œã¦ã„ãªã„ã®ã§ä¾‹å¤–ã‚’ã‚¹ãƒ­ãƒ¼ã—ã¾ã™
+    # ConvertBack ƒƒ\ƒbƒhF‹t•ûŒü‚Ì•ÏŠ·‚ğs‚¤‚½‚ß‚Ìƒƒ\ƒbƒh
+    # ’ÊíAUI‚©‚çViewModel‚É’l‚ğ–ß‚·Û‚Ég—p‚³‚ê‚Ü‚·‚ªA
+    # ‚±‚Ìê‡‚ÍÀ‘•‚³‚ê‚Ä‚¢‚È‚¢‚Ì‚Å—áŠO‚ğƒXƒ[‚µ‚Ü‚·
     [object]ConvertBack([object]$value, [Type]$targetType, [object]$parameter, [CultureInfo] $culture) {
-        throw 'é€†æ–¹å‘ã®å¤‰æ›ï¼ˆUIã‹ã‚‰ViewModelã¸ï¼‰ã¯å®Ÿè£…ã•ã‚Œã¦ã„ã¾ã›ã‚“'
+        throw '‹t•ûŒü‚Ì•ÏŠ·iUI‚©‚çViewModel‚Öj‚ÍÀ‘•‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ'
     }
 }
 
 <#
 .SYNOPSIS
-ã‚«ã‚¹ã‚¿ãƒ æ©Ÿèƒ½ã‚’æŒã¤WPFã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹
+ƒJƒXƒ^ƒ€‹@”\‚ğ‚ÂWPFƒEƒBƒ“ƒhƒEƒNƒ‰ƒX
 
 .DESCRIPTION
-ã“ã®PartialWindowã‚¯ãƒ©ã‚¹ã¯ã€æ¨™æº–ã®WPFã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ï¼ˆSystem.Windows.Windowï¼‰ã‚’æ‹¡å¼µã—ã€
-ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®åŸºæœ¬çš„ãªæ“ä½œï¼ˆæœ€å°åŒ–ã€æœ€å¤§åŒ–ã€é–‰ã˜ã‚‹ãªã©ï¼‰ã‚’ã‚«ã‚¹ã‚¿ãƒã‚¤ã‚ºã—ã¾ã™ã€‚
-ã“ã‚Œã«ã‚ˆã‚Šã€ç‹¬è‡ªã®ãƒ‡ã‚¶ã‚¤ãƒ³ã‚„å‹•ä½œã‚’æŒã¤ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ä½œæˆã™ã‚‹ã“ã¨ãŒã§ãã¾ã™ã€‚
+‚±‚ÌPartialWindowƒNƒ‰ƒX‚ÍA•W€‚ÌWPFƒEƒBƒ“ƒhƒEiSystem.Windows.Windowj‚ğŠg’£‚µA
+ƒEƒBƒ“ƒhƒE‚ÌŠî–{“I‚È‘€ìiÅ¬‰»AÅ‘å‰»A•Â‚¶‚é‚È‚Çj‚ğƒJƒXƒ^ƒ}ƒCƒY‚µ‚Ü‚·B
+‚±‚ê‚É‚æ‚èA“Æ©‚ÌƒfƒUƒCƒ“‚â“®ì‚ğ‚ÂƒEƒBƒ“ƒhƒE‚ğì¬‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚·B
 
-ä¸»ãªç‰¹å¾´ï¼š
-1. ã‚·ã‚¹ãƒ†ãƒ ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®è¡¨ç¤º
-2. ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®æœ€å°åŒ–
-3. ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®æœ€å¤§åŒ–
-4. ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®å…ƒã®ã‚µã‚¤ã‚ºã¸ã®å¾©å…ƒ
-5. ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’é–‰ã˜ã‚‹
+å‚È“Á’¥F
+1. ƒVƒXƒeƒ€ƒƒjƒ…[‚Ì•\¦
+2. ƒEƒBƒ“ƒhƒE‚ÌÅ¬‰»
+3. ƒEƒBƒ“ƒhƒE‚ÌÅ‘å‰»
+4. ƒEƒBƒ“ƒhƒE‚ÌŒ³‚ÌƒTƒCƒY‚Ö‚Ì•œŒ³
+5. ƒEƒBƒ“ƒhƒE‚ğ•Â‚¶‚é
 
-ã“ã‚Œã‚‰ã®æ“ä½œã¯ã€é€šå¸¸ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®æ¨™æº–çš„ãªå‹•ä½œã‚’ã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ãƒˆã—ã¦ã„ã¾ã™ãŒã€
-ã‚«ã‚¹ã‚¿ãƒ ãƒ‡ã‚¶ã‚¤ãƒ³ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã§ã‚‚æ­£ã—ãæ©Ÿèƒ½ã™ã‚‹ã‚ˆã†ã«å®Ÿè£…ã•ã‚Œã¦ã„ã¾ã™ã€‚
+‚±‚ê‚ç‚Ì‘€ì‚ÍA’Êí‚ÌƒEƒBƒ“ƒhƒE‚Ì•W€“I‚È“®ì‚ğƒGƒ~ƒ…ƒŒ[ƒg‚µ‚Ä‚¢‚Ü‚·‚ªA
+ƒJƒXƒ^ƒ€ƒfƒUƒCƒ“‚ÌƒEƒBƒ“ƒhƒE‚Å‚à³‚µ‚­‹@”\‚·‚é‚æ‚¤‚ÉÀ‘•‚³‚ê‚Ä‚¢‚Ü‚·B
 
 .EXAMPLE
-# PartialWindowã‚¯ãƒ©ã‚¹ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä½œæˆ
+# PartialWindowƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğì¬
 $window = [PartialWindow]::new()
 
-# ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’è¡¨ç¤º
+# ƒEƒBƒ“ƒhƒE‚ğ•\¦
 $window.Show()
 
 .NOTES
-ã“ã®ã‚¯ãƒ©ã‚¹ã¯ã€é€šå¸¸ã€ã‚«ã‚¹ã‚¿ãƒ ãƒ‡ã‚¶ã‚¤ãƒ³ã®XAMLãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã¨çµ„ã¿åˆã‚ã›ã¦ä½¿ç”¨ã—ã¾ã™ã€‚
-ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã§ã¯ã€ã“ã‚Œã‚‰ã®ã‚³ãƒãƒ³ãƒ‰ã‚’å‘¼ã³å‡ºã™ãƒœã‚¿ãƒ³ã‚„ãã®ä»–ã®ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã‚’å®šç¾©ã—ã¾ã™ã€‚
+‚±‚ÌƒNƒ‰ƒX‚ÍA’ÊíAƒJƒXƒ^ƒ€ƒfƒUƒCƒ“‚ÌXAMLƒeƒ“ƒvƒŒ[ƒg‚Æ‘g‚İ‡‚í‚¹‚Äg—p‚µ‚Ü‚·B
+ƒeƒ“ƒvƒŒ[ƒg‚Å‚ÍA‚±‚ê‚ç‚ÌƒRƒ}ƒ“ƒh‚ğŒÄ‚Ño‚·ƒ{ƒ^ƒ“‚â‚»‚Ì‘¼‚ÌƒRƒ“ƒgƒ[ƒ‹‚ğ’è‹`‚µ‚Ü‚·B
 #>
 class PartialWindow : System.Windows.Window {
-    # ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼šã‚¯ãƒ©ã‚¹ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãŒä½œæˆã•ã‚Œã‚‹ã¨ãã«å‘¼ã³å‡ºã•ã‚Œã‚‹ãƒ¡ã‚½ãƒƒãƒ‰
+    # ƒRƒ“ƒXƒgƒ‰ƒNƒ^FƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ªì¬‚³‚ê‚é‚Æ‚«‚ÉŒÄ‚Ño‚³‚ê‚éƒƒ\ƒbƒh
     PartialWindow() {
-        # ã‚·ã‚¹ãƒ†ãƒ ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’è¡¨ç¤ºã™ã‚‹ã‚³ãƒãƒ³ãƒ‰ã®ãƒã‚¤ãƒ³ãƒ‡ã‚£ãƒ³ã‚°ã‚’è¿½åŠ 
+        # ƒVƒXƒeƒ€ƒƒjƒ…[‚ğ•\¦‚·‚éƒRƒ}ƒ“ƒh‚ÌƒoƒCƒ“ƒfƒBƒ“ƒO‚ğ’Ç‰Á
         $this.CommandBindings.Add([System.Windows.Input.CommandBinding]::new(
-            # ã‚·ã‚¹ãƒ†ãƒ ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’è¡¨ç¤ºã™ã‚‹ã‚³ãƒãƒ³ãƒ‰
+            # ƒVƒXƒeƒ€ƒƒjƒ…[‚ğ•\¦‚·‚éƒRƒ}ƒ“ƒh
             [System.Windows.SystemCommands]::ShowSystemMenuCommand, 
-            # ã‚³ãƒãƒ³ãƒ‰ãŒå®Ÿè¡Œã•ã‚ŒãŸã¨ãã®å‡¦ç†
+            # ƒRƒ}ƒ“ƒh‚ªÀs‚³‚ê‚½‚Æ‚«‚Ìˆ—
             {
                 param($CommandParameter)
-                # ãƒã‚¦ã‚¹ã®ç¾åœ¨ä½ç½®ã‚’å–å¾—ã—ã€ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™ã«å¤‰æ›
+                # ƒ}ƒEƒX‚ÌŒ»İˆÊ’u‚ğæ“¾‚µAƒXƒNƒŠ[ƒ“À•W‚É•ÏŠ·
                 $Point = $CommandParameter.PointToScreen([System.Windows.Input.Mouse]::GetPosition($CommandParameter))
-                # ã‚·ã‚¹ãƒ†ãƒ ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’è¡¨ç¤º
+                # ƒVƒXƒeƒ€ƒƒjƒ…[‚ğ•\¦
                 [System.Windows.SystemCommands]::ShowSystemMenu($CommandParameter,$Point)
             }
         ))
 
-        # ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’æœ€å°åŒ–ã™ã‚‹ã‚³ãƒãƒ³ãƒ‰ã®ãƒã‚¤ãƒ³ãƒ‡ã‚£ãƒ³ã‚°ã‚’è¿½åŠ 
+        # ƒEƒBƒ“ƒhƒE‚ğÅ¬‰»‚·‚éƒRƒ}ƒ“ƒh‚ÌƒoƒCƒ“ƒfƒBƒ“ƒO‚ğ’Ç‰Á
         $this.CommandBindings.Add([System.Windows.Input.CommandBinding]::new(
             [System.Windows.SystemCommands]::MinimizeWindowCommand, 
             {
@@ -398,7 +398,7 @@ class PartialWindow : System.Windows.Window {
             }
         ))
 
-        # ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’æœ€å¤§åŒ–ã™ã‚‹ã‚³ãƒãƒ³ãƒ‰ã®ãƒã‚¤ãƒ³ãƒ‡ã‚£ãƒ³ã‚°ã‚’è¿½åŠ 
+        # ƒEƒBƒ“ƒhƒE‚ğÅ‘å‰»‚·‚éƒRƒ}ƒ“ƒh‚ÌƒoƒCƒ“ƒfƒBƒ“ƒO‚ğ’Ç‰Á
         $this.CommandBindings.Add([System.Windows.Input.CommandBinding]::new(
             [System.Windows.SystemCommands]::MaximizeWindowCommand, 
             {
@@ -407,7 +407,7 @@ class PartialWindow : System.Windows.Window {
             }
         ))
 
-        # ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’å…ƒã®ã‚µã‚¤ã‚ºã«æˆ»ã™ã‚³ãƒãƒ³ãƒ‰ã®ãƒã‚¤ãƒ³ãƒ‡ã‚£ãƒ³ã‚°ã‚’è¿½åŠ 
+        # ƒEƒBƒ“ƒhƒE‚ğŒ³‚ÌƒTƒCƒY‚É–ß‚·ƒRƒ}ƒ“ƒh‚ÌƒoƒCƒ“ƒfƒBƒ“ƒO‚ğ’Ç‰Á
         $this.CommandBindings.Add([System.Windows.Input.CommandBinding]::new(
             [System.Windows.SystemCommands]::RestoreWindowCommand, 
             {
@@ -416,7 +416,7 @@ class PartialWindow : System.Windows.Window {
             }
         ))
 
-        # ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’é–‰ã˜ã‚‹ã‚³ãƒãƒ³ãƒ‰ã®ãƒã‚¤ãƒ³ãƒ‡ã‚£ãƒ³ã‚°ã‚’è¿½åŠ 
+        # ƒEƒBƒ“ƒhƒE‚ğ•Â‚¶‚éƒRƒ}ƒ“ƒh‚ÌƒoƒCƒ“ƒfƒBƒ“ƒO‚ğ’Ç‰Á
         $this.CommandBindings.Add([System.Windows.Input.CommandBinding]::new(
             [System.Windows.SystemCommands]::CloseWindowCommand, 
             {
@@ -425,7 +425,7 @@ class PartialWindow : System.Windows.Window {
             }
         ))
 
-        # ã‚«ã‚¹ã‚¿ãƒ ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆã®é©ç”¨ï¼ˆç¾åœ¨ã¯ã‚³ãƒ¡ãƒ³ãƒˆã‚¢ã‚¦ãƒˆã•ã‚Œã¦ã„ã¾ã™ï¼‰
+        # ƒJƒXƒ^ƒ€ƒEƒBƒ“ƒhƒEƒeƒ“ƒvƒŒ[ƒg‚Ì“K—piŒ»İ‚ÍƒRƒƒ“ƒgƒAƒEƒg‚³‚ê‚Ä‚¢‚Ü‚·j
         # $this.Template = New-WPFObject -Path "$PSScriptRoot\Views\PartialWindowTemplate.xaml" -BaseUri "$PSScriptRoot" -LocalNamespaceName 'local'
     }
 }

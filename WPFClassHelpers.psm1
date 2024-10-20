@@ -2,85 +2,84 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase -Err
 function New-WPFObject {
     <#
         .SYNOPSIS
-            æ–‡å­—åˆ—ã¾ãŸã¯ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰æŒ‡å®šã•ã‚ŒãŸXamlã‚’ä½¿ç”¨ã—ã¦WPFã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä½œæˆã—ã¾ã™ã€‚
-            xmlreaderã§ã¯ãªãå°‚ç”¨ã®WPF Xamlãƒªãƒ¼ãƒ€ãƒ¼ã‚’ä½¿ç”¨ã—ã¾ã™ã€‚
+            •¶š—ñ‚Ü‚½‚Íƒtƒ@ƒCƒ‹‚©‚çw’è‚³‚ê‚½Xaml‚ğg—p‚µ‚ÄWPFƒIƒuƒWƒFƒNƒg‚ğì¬‚µ‚Ü‚·B
+            xmlreader‚Å‚Í‚È‚­ê—p‚ÌWPF XamlƒŠ[ƒ_[‚ğg—p‚µ‚Ü‚·B
         .PARAMETER BaseUri
-            xamlãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ«ãƒ¼ãƒˆãƒ•ã‚©ãƒ«ãƒ€ã¸ã®ãƒ‘ã‚¹ã€‚ãƒ•ã‚©ãƒ«ãƒ€ã‚’æŒ‡ã™å ´åˆã¯å¿…ãšãƒãƒƒã‚¯ã‚¹ãƒ©ãƒƒã‚·ãƒ¥ '\' ã§çµ‚äº†ã™ã‚‹å¿…è¦ãŒã‚ã‚Šã¾ã™ã€‚
-            ã¾ãŸã¯ã€file.Xamlã¸ã®ãƒ‘ã‚¹ã€‚
-            æœªãƒ†ã‚¹ãƒˆã®ã‚¢ã‚¤ãƒ‡ã‚¢ - zipãƒ•ã‚¡ã‚¤ãƒ«ã‚’æŒ‡ã™ï¼Ÿ
-            xamlå†…ã§ç›¸å¯¾ã‚½ãƒ¼ã‚¹ã‚’è¨±å¯ã—ã¾ã™ã€‚ä¾‹ãˆã°ã€<ResourceDictionary Source="Common.Xaml" /> ã®ã‚ˆã†ã«Common.Xamlã‚’è¨±å¯ã—ã€C:\folder\Common.Xamlã®ãƒ•ãƒ«ãƒ‘ã‚¹ã‚’ãƒãƒ¼ãƒ‰ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°ã™ã‚‹ä»£ã‚ã‚Šã«ä½¿ç”¨ã§ãã¾ã™ã€‚
+            xamlƒtƒ@ƒCƒ‹‚Ìƒ‹[ƒgƒtƒHƒ‹ƒ_‚Ö‚ÌƒpƒXBƒtƒHƒ‹ƒ_‚ğw‚·ê‡‚Í•K‚¸ƒoƒbƒNƒXƒ‰ƒbƒVƒ… '\' ‚ÅI—¹‚·‚é•K—v‚ª‚ ‚è‚Ü‚·B
+            ‚Ü‚½‚ÍAfile.Xaml‚Ö‚ÌƒpƒXB
+            –¢ƒeƒXƒg‚ÌƒAƒCƒfƒA - zipƒtƒ@ƒCƒ‹‚ğw‚·H
+            xaml“à‚Å‘Š‘Îƒ\[ƒX‚ğ‹–‰Â‚µ‚Ü‚·B—á‚¦‚ÎA<ResourceDictionary Source="Common.Xaml" /> ‚Ì‚æ‚¤‚ÉCommon.Xaml‚ğ‹–‰Â‚µAC:\folder\Common.Xaml‚Ìƒtƒ‹ƒpƒX‚ğƒn[ƒhƒR[ƒfƒBƒ“ƒO‚·‚é‘ã‚í‚è‚Ég—p‚Å‚«‚Ü‚·B
         .EXAMPLE
             -BaseUri "$PSScriptRoot\"
             -BaseUri "C:\Test\Folder\"
     #>
     [CmdletBinding(DefaultParameterSetName = 'Path')]
     param (
-        # 'HereString' ã¨ 'HereStringDynamic' ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚»ãƒƒãƒˆã§ä½¿ç”¨ã•ã‚Œã‚‹ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
-        # ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã‹ã‚‰ç›´æ¥XAMLã®æ–‡å­—åˆ—ã‚’å—ã‘å–ã‚Šã¾ã™
-        # é–¢æ•°ã«æ¸¡ã•ã‚Œã‚‹æœ€åˆã®å¼•æ•°ã¨ã—ã¦ä½ç½®0ã«é…ç½®
+        # 'HereString' ‚Æ 'HereStringDynamic' ‚Ìƒpƒ‰ƒ[ƒ^ƒZƒbƒg‚Åg—p‚³‚ê‚éƒpƒ‰ƒ[ƒ^
+        # ƒpƒCƒvƒ‰ƒCƒ“‚©‚ç’¼ÚXAML‚Ì•¶š—ñ‚ğó‚¯æ‚è‚Ü‚·
+        # ŠÖ”‚É“n‚³‚ê‚éÅ‰‚Ìˆø”‚Æ‚µ‚ÄˆÊ’u0‚É”z’u
         [Parameter(Mandatory, ValueFromPipeline, Position = 0, ParameterSetName = 'HereString')]
         [Parameter(Mandatory, ValueFromPipeline, Position = 0, ParameterSetName = 'HereStringDynamic')]
         [string[]]$Xaml,
 
-        # 'Path' ã¨ 'PathDynamic' ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚»ãƒƒãƒˆã§ä½¿ç”¨ã•ã‚Œã‚‹ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
-        # ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹ã‚’ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã‹ã‚‰å—ã‘å–ã‚Šã¾ã™
-        # 'FullName' ã¨ã„ã†ã‚¨ã‚¤ãƒªã‚¢ã‚¹ã‚’æŒã¡ã¾ã™
-        # ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã‹ã‚‰ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£åã§å€¤ã‚’å—ã‘å–ã‚‹ã“ã¨ãŒã§ãã€ä½ç½®0ã«é…ç½®
-        # æŒ‡å®šã•ã‚ŒãŸãƒ‘ã‚¹ãŒå­˜åœ¨ã™ã‚‹ã‹ã‚’æ¤œè¨¼ã™ã‚‹ã‚¹ã‚¯ãƒªãƒ—ãƒˆã‚’ä½¿ç”¨
+        # 'Path' ‚Æ 'PathDynamic' ‚Ìƒpƒ‰ƒ[ƒ^ƒZƒbƒg‚Åg—p‚³‚ê‚éƒpƒ‰ƒ[ƒ^
+        # ƒtƒ@ƒCƒ‹‚ÌƒpƒX‚ğƒpƒCƒvƒ‰ƒCƒ“‚©‚çó‚¯æ‚è‚Ü‚·
+        # 'FullName' ‚Æ‚¢‚¤ƒGƒCƒŠƒAƒX‚ğ‚¿‚Ü‚·
+        # ƒpƒCƒvƒ‰ƒCƒ“‚©‚çƒvƒƒpƒeƒB–¼‚Å’l‚ğó‚¯æ‚é‚±‚Æ‚ª‚Å‚«AˆÊ’u0‚É”z’u
+        # w’è‚³‚ê‚½ƒpƒX‚ª‘¶İ‚·‚é‚©‚ğŒŸØ‚·‚éƒXƒNƒŠƒvƒg‚ğg—p
         [Alias('FullName')]
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, Position = 0, ParameterSetName = 'Path')]
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, Position = 0, ParameterSetName = 'PathDynamic')]
         [ValidateScript({ Test-Path $_ })]
         [string[]]$Path,
 
-        # 'HereStringDynamic' ã¨ 'PathDynamic' ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚»ãƒƒãƒˆã§ä½¿ç”¨ã•ã‚Œã‚‹ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
-        # XAMLãƒ•ã‚¤ãƒ«ã®åŸºåº•URIã‚’æŒ‡å®šã—ã¾ã™
+        # 'HereStringDynamic' ‚Æ 'PathDynamic' ‚Ìƒpƒ‰ƒ[ƒ^ƒZƒbƒg‚Åg—p‚³‚ê‚éƒpƒ‰ƒ[ƒ^
+        # XAMLƒtƒCƒ‹‚ÌŠî’êURI‚ğw’è‚µ‚Ü‚·
         [Parameter(Mandatory, ParameterSetName = 'HereStringDynamic')]
         [Parameter(Mandatory, ParameterSetName = 'PathDynamic')]
         [string]$BaseUri
     )
 
     begin {
-        # WPFã«å¿…è¦ãªã‚¢ã‚»ãƒ³ãƒ–ãƒªã‚’èª­ã¿è¾¼ã¿ã¾ã™
-        # ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ãŸå ´åˆã¯å³åº§ã«åœæ­¢ã—ã¾ã™
+        # WPF‚É•K—v‚ÈƒAƒZƒ“ƒuƒŠ‚ğ“Ç‚İ‚İ‚Ü‚·
+        # ƒGƒ‰[‚ª”­¶‚µ‚½ê‡‚Í‘¦À‚É’â~‚µ‚Ü‚·
         Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase -ErrorAction Stop
 
-        # BaseUriãŒæŒ‡å®šã•ã‚Œã¦ã„ã‚‹å ´åˆã€ãã®ãƒ‘ã‚¹ãŒå­˜åœ¨ã™ã‚‹ã‹ãƒã‚§ãƒƒã‚¯ã—ã¾ã™
-        # å­˜åœ¨ã—ãªã„å ´åˆã¯ã€DirectoryNotFoundExceptionã‚’ã‚¹ãƒ­ãƒ¼ã—ã¾ã™
+        # BaseUri‚ªw’è‚³‚ê‚Ä‚¢‚éê‡A‚»‚ÌƒpƒX‚ª‘¶İ‚·‚é‚©ƒ`ƒFƒbƒN‚µ‚Ü‚·
+        # ‘¶İ‚µ‚È‚¢ê‡‚ÍADirectoryNotFoundException‚ğƒXƒ[‚µ‚Ü‚·
         if (!(Test-Path $BaseUri)) {
-            [System.IO.DirectoryNotFoundException]::new("$($BaseUri) ã¯ç„¡åŠ¹ãªãƒ‘ã‚¹ã§ã™")
+            [System.IO.DirectoryNotFoundException]::new("$($BaseUri) ‚Í–³Œø‚ÈƒpƒX‚Å‚·")
         }
 
-        # BaseUriãŒãƒãƒƒã‚¯ã‚¹ãƒ©ãƒƒã‚·ãƒ¥ã§çµ‚ã‚ã£ã¦ã„ãªã„å ´åˆã€æœ«å°¾ã«ãƒãƒƒã‚¯ã‚¹ãƒ©ãƒƒã‚·ãƒ¥ã‚’è¿½åŠ ã—ã¾ã™
-        # ã“ã‚Œã«ã‚ˆã‚Šã€ç›¸å¯¾ãƒ‘ã‚¹ã®è§£æ±ºãŒæ­£ã—ãè¡Œã‚ã‚Œã‚‹ã‚ˆã†ã«ãªã‚Šã¾ã™
+        # BaseUri‚ªƒoƒbƒNƒXƒ‰ƒbƒVƒ…‚ÅI‚í‚Á‚Ä‚¢‚È‚¢ê‡A––”ö‚ÉƒoƒbƒNƒXƒ‰ƒbƒVƒ…‚ğ’Ç‰Á‚µ‚Ü‚·
+        # ‚±‚ê‚É‚æ‚èA‘Š‘ÎƒpƒX‚Ì‰ğŒˆ‚ª³‚µ‚­s‚í‚ê‚é‚æ‚¤‚É‚È‚è‚Ü‚·
         if (!$BaseUri.EndsWith('\')) { 
             $BaseUri = "$BaseUri\"
         }
     }
 
     process {
-        # ç¾åœ¨ä½¿ç”¨ä¸­ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚»ãƒƒãƒˆåã‚’ãƒ‡ãƒãƒƒã‚°å‡ºåŠ›ã—ã¾ã™
         Write-Debug $PSCmdlet.ParameterSetName
 
-        # XAMLã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã‚’å–å¾—ã—ã¾ã™
-        # 'Path'ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãŒæŒ‡å®šã•ã‚Œã¦ã„ã‚‹å ´åˆã¯ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰èª­ã¿è¾¼ã¿ã€ãã†ã§ãªã„å ´åˆã¯ç›´æ¥$Xamlã‚’ä½¿ç”¨ã—ã¾ã™
         $RawXaml = if ($PSBoundParameters.ContainsKey('Path')) { 
-            Get-Content -Path $Path 
+            # ƒtƒ@ƒCƒ‹‚ğ’¼ÚƒoƒCƒg‚Æ‚µ‚Ä“Ç‚İ‚İA‚»‚ÌŒãƒGƒ“ƒR[ƒfƒBƒ“ƒO‚ğw’è‚µ‚Ä•¶š—ñ‚É•ÏŠ·
+            $bytes = [System.IO.File]::ReadAllBytes($Path)
+            [System.Text.Encoding]::GetEncoding("shift_jis").GetString($bytes)
         } else { 
             $Xaml 
         }
 
-        # 'PathDynamic'ã¾ãŸã¯'HereStringDynamic'ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚»ãƒƒãƒˆãŒä½¿ç”¨ã•ã‚Œã¦ã„ã‚‹å ´åˆ
+        # 'PathDynamic'‚Ü‚½‚Í'HereStringDynamic'ƒpƒ‰ƒ[ƒ^ƒZƒbƒg‚ªg—p‚³‚ê‚Ä‚¢‚éê‡
         if ($PSCmdlet.ParameterSetName -in @('PathDynamic', 'HereStringDynamic')) {
-            # ParserContextã‚’ä½œæˆã—ã€BaseUriã‚’è¨­å®šã—ã¾ã™
-            # ã“ã‚Œã«ã‚ˆã‚Šã€XAMLãƒ•ã‚¡ã‚¤ãƒ«å†…ã®ç›¸å¯¾ãƒ‘ã‚¹ã‚’æ­£ã—ãè§£æ±ºã§ãã¾ã™
+            # ParserContext‚ğì¬‚µABaseUri‚ğİ’è‚µ‚Ü‚·
+            # ‚±‚ê‚É‚æ‚èAXAMLƒtƒ@ƒCƒ‹“à‚Ì‘Š‘ÎƒpƒX‚ğ³‚µ‚­‰ğŒˆ‚Å‚«‚Ü‚·
             $ParserContext = [System.Windows.Markup.ParserContext]::new()
             $ParserContext.BaseUri = [System.Uri]::new($BaseUri, [System.UriKind]::Absolute)
 
-            # ParserContextã‚’ä½¿ç”¨ã—ã¦XAMLã‚’è§£æã—ã€WPFã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä½œæˆã—ã¾ã™
+            # XamlReader.Parse‚ğg—p‚µ‚ÄXAML‚ğ‰ğÍ
             [System.Windows.Markup.XamlReader]::Parse($RawXaml, $ParserContext)
         } else {
-            # é€šå¸¸ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚»ãƒƒãƒˆã®å ´åˆã€ParserContextãªã—ã§XAMLã‚’è§£æã—ã¾ã™
+            # XamlReader.Parse‚ğg—p‚µ‚ÄXAML‚ğ‰ğÍiParserContext‚È‚µj
             [System.Windows.Markup.XamlReader]::Parse($RawXaml)
         }
     }
@@ -89,31 +88,31 @@ function New-WPFObject {
 function ConvertTo-Delegate {
     <#
     .SYNOPSIS
-    PowerShellã®ãƒ¡ã‚½ãƒƒãƒ‰ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’.NETã®ãƒ‡ãƒªã‚²ãƒ¼ãƒˆã«å¤‰æ›ã—ã¾ã™ã€‚
+    PowerShell‚Ìƒƒ\ƒbƒhƒIƒuƒWƒFƒNƒg‚ğ.NET‚ÌƒfƒŠƒQ[ƒg‚É•ÏŠ·‚µ‚Ü‚·B
 
     .DESCRIPTION
-    ã“ã®é–¢æ•°ã¯ã€PowerShellã®PSMethodã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å—ã‘å–ã‚Šã€ãã‚Œã‚’.NETã®ãƒ‡ãƒªã‚²ãƒ¼ãƒˆã«å¤‰æ›ã—ã¾ã™ã€‚
-    ã“ã‚Œã¯ã€PowerShellã®ãƒ¡ã‚½ãƒƒãƒ‰ã‚’.NETã®ã‚¤ãƒ™ãƒ³ãƒˆãƒãƒ³ãƒ‰ãƒ©ãƒ¼ã‚„ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã¨ã—ã¦ä½¿ç”¨ã™ã‚‹éš›ã«ç‰¹ã«æœ‰ç”¨ã§ã™ã€‚
+    ‚±‚ÌŠÖ”‚ÍAPowerShell‚ÌPSMethodƒIƒuƒWƒFƒNƒg‚ğó‚¯æ‚èA‚»‚ê‚ğ.NET‚ÌƒfƒŠƒQ[ƒg‚É•ÏŠ·‚µ‚Ü‚·B
+    ‚±‚ê‚ÍAPowerShell‚Ìƒƒ\ƒbƒh‚ğ.NET‚ÌƒCƒxƒ“ƒgƒnƒ“ƒhƒ‰[‚âƒR[ƒ‹ƒoƒbƒN‚Æ‚µ‚Äg—p‚·‚éÛ‚É“Á‚É—L—p‚Å‚·B
 
     .PARAMETER PSMethod
-    å¤‰æ›ã—ãŸã„PowerShellã®ãƒ¡ã‚½ãƒƒãƒ‰ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã€‚ã“ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã¯ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã‹ã‚‰ã®å…¥åŠ›ã‚’å—ã‘ä»˜ã‘ã¾ã™ã€‚
+    •ÏŠ·‚µ‚½‚¢PowerShell‚Ìƒƒ\ƒbƒhƒIƒuƒWƒFƒNƒgB‚±‚Ìƒpƒ‰ƒ[ƒ^‚ÍƒpƒCƒvƒ‰ƒCƒ“‚©‚ç‚Ì“ü—Í‚ğó‚¯•t‚¯‚Ü‚·B
 
     .PARAMETER Target
-    ãƒ‡ãƒªã‚²ãƒ¼ãƒˆã®ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¨ãªã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã€‚ã“ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒã€å¤‰æ›ã•ã‚Œã‚‹ãƒ¡ã‚½ãƒƒãƒ‰ã‚’æŒã£ã¦ã„ã¾ã™ã€‚
+    ƒfƒŠƒQ[ƒg‚Ìƒ^[ƒQƒbƒg‚Æ‚È‚éƒIƒuƒWƒFƒNƒgB‚±‚ÌƒIƒuƒWƒFƒNƒg‚ªA•ÏŠ·‚³‚ê‚éƒƒ\ƒbƒh‚ğ‚Á‚Ä‚¢‚Ü‚·B
 
     .PARAMETER IsPSObject
-    ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒPSObjectï¼ˆPowerShellã®ã‚«ã‚¹ã‚¿ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆï¼‰ã§ã‚ã‚‹ã“ã¨ã‚’ç¤ºã™ã‚¹ã‚¤ãƒƒãƒãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã€‚
+    ƒ^[ƒQƒbƒgƒIƒuƒWƒFƒNƒg‚ªPSObjectiPowerShell‚ÌƒJƒXƒ^ƒ€ƒIƒuƒWƒFƒNƒgj‚Å‚ ‚é‚±‚Æ‚ğ¦‚·ƒXƒCƒbƒ`ƒpƒ‰ƒ[ƒ^B
 
     .EXAMPLE
     $button.add_Click | ConvertTo-Delegate -Target $this
-    ã“ã®ä¾‹ã§ã¯ã€ãƒœã‚¿ãƒ³ã®Clickã‚¤ãƒ™ãƒ³ãƒˆãƒãƒ³ãƒ‰ãƒ©ãƒ¼ã‚’ç¾åœ¨ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ($this)ã®ãƒ¡ã‚½ãƒƒãƒ‰ã«å¤‰æ›ã—ã¦ã„ã¾ã™ã€‚
+    ‚±‚Ì—á‚Å‚ÍAƒ{ƒ^ƒ“‚ÌClickƒCƒxƒ“ƒgƒnƒ“ƒhƒ‰[‚ğŒ»İ‚ÌƒIƒuƒWƒFƒNƒg($this)‚Ìƒƒ\ƒbƒh‚É•ÏŠ·‚µ‚Ä‚¢‚Ü‚·B
 
     .EXAMPLE
     ConvertTo-Delegate -PSMethod $obj.SomeMethod -Target $obj -IsPSObject
-    ã“ã®ä¾‹ã§ã¯ã€PSObjectã®ç‰¹å®šã®ãƒ¡ã‚½ãƒƒãƒ‰ã‚’ãƒ‡ãƒªã‚²ãƒ¼ãƒˆã«å¤‰æ›ã—ã¦ã„ã¾ã™ã€‚
+    ‚±‚Ì—á‚Å‚ÍAPSObject‚Ì“Á’è‚Ìƒƒ\ƒbƒh‚ğƒfƒŠƒQ[ƒg‚É•ÏŠ·‚µ‚Ä‚¢‚Ü‚·B
 
     .NOTES
-    ã“ã®é–¢æ•°ã¯ã€WPFã‚„ãã®ä»–ã®.NETãƒ™ãƒ¼ã‚¹ã®GUIãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¯ãƒ¼ã‚¯ã¨PowerShellã‚’çµ±åˆã™ã‚‹éš›ã«ç‰¹ã«æœ‰ç”¨ã§ã™ã€‚
+    ‚±‚ÌŠÖ”‚ÍAWPF‚â‚»‚Ì‘¼‚Ì.NETƒx[ƒX‚ÌGUIƒtƒŒ[ƒ€ƒ[ƒN‚ÆPowerShell‚ğ“‡‚·‚éÛ‚É“Á‚É—L—p‚Å‚·B
 
     .LINK
     https://docs.microsoft.com/en-us/dotnet/api/system.delegate
@@ -121,59 +120,59 @@ function ConvertTo-Delegate {
     #>
     [CmdletBinding()]
     param (
-        # PowerShellã®ãƒ¡ã‚½ãƒƒãƒ‰ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å—ã‘å–ã‚Šã¾ã™
+        # PowerShell‚Ìƒƒ\ƒbƒhƒIƒuƒWƒFƒNƒg‚ğó‚¯æ‚è‚Ü‚·
         [Parameter(Mandatory, ValueFromPipeline, Position = 0)]
         [System.Management.Automation.PSMethod[]]$PSMethod,
 
-        # ãƒ‡ãƒªã‚²ãƒ¼ãƒˆã®ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¨ãªã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æŒ‡å®šã—ã¾ã™
+        # ƒfƒŠƒQ[ƒg‚Ìƒ^[ƒQƒbƒg‚Æ‚È‚éƒIƒuƒWƒFƒNƒg‚ğw’è‚µ‚Ü‚·
         [Parameter(Mandatory)]
         [object]$Target,
 
-        # ã‚¿ãƒ¼ã‚²ãƒƒãƒˆãŒPSObjectã‹ã©ã†ã‹ã‚’ç¤ºã™ã‚¹ã‚¤ãƒƒãƒãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
+        # ƒ^[ƒQƒbƒg‚ªPSObject‚©‚Ç‚¤‚©‚ğ¦‚·ƒXƒCƒbƒ`ƒpƒ‰ƒ[ƒ^
         [switch]
         $IsPSObject
     )
 
     process {
-        # ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ç¨®é¡ã«å¿œã˜ã¦ãƒªãƒ•ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ãƒ¡ã‚½ãƒƒãƒ‰ã‚’å–å¾—
+        # ƒ^[ƒQƒbƒgƒIƒuƒWƒFƒNƒg‚Ìí—Ş‚É‰‚¶‚ÄƒŠƒtƒŒƒNƒVƒ‡ƒ“ƒƒ\ƒbƒh‚ğæ“¾
         if ($IsPSObject) {
-            # PSObjectã®å ´åˆã€psobjectãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã‚’çµŒç”±ã—ã¦ãƒ¡ã‚½ãƒƒãƒ‰ã‚’å–å¾—
+            # PSObject‚Ìê‡ApsobjectƒvƒƒpƒeƒB‚ğŒo—R‚µ‚Äƒƒ\ƒbƒh‚ğæ“¾
             $ReflectionMethod = $Target.psobject.GetType().GetMethod($PSMethod.Name)
         } else {
-            # é€šå¸¸ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®å ´åˆã€ç›´æ¥GetTypeã‹ã‚‰ãƒ¡ã‚½ãƒƒãƒ‰ã‚’å–å¾—
+            # ’Êí‚ÌƒIƒuƒWƒFƒNƒg‚Ìê‡A’¼ÚGetType‚©‚çƒƒ\ƒbƒh‚ğæ“¾
             $ReflectionMethod = $Target.GetType().GetMethod($PSMethod.Name)
         }
 
-        # ãƒ¡ã‚½ãƒƒãƒ‰ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚¿ã‚¤ãƒ—ã‚’å–å¾—
+        # ƒƒ\ƒbƒh‚Ìƒpƒ‰ƒ[ƒ^ƒ^ƒCƒv‚ğæ“¾
         $ParameterTypes = [System.Linq.Enumerable]::Select($ReflectionMethod.GetParameters(), [func[object,object]]{ $args[0].ParameterType })
-        # ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚¿ã‚¤ãƒ—ã¨æˆ»ã‚Šå€¤ã®å‹ã‚’çµåˆ
+        # ƒpƒ‰ƒ[ƒ^ƒ^ƒCƒv‚Æ–ß‚è’l‚ÌŒ^‚ğŒ‹‡
         $ConcatMethodTypes = $ParameterTypes + $ReflectionMethod.ReturnType
 
-        # ãƒ¡ã‚½ãƒƒãƒ‰ãŒæˆ»ã‚Šå€¤ã‚’æŒãŸãªã„ï¼ˆvoidï¼‰ã‹ã©ã†ã‹ã‚’åˆ¤å®š
+        # ƒƒ\ƒbƒh‚ª–ß‚è’l‚ğ‚½‚È‚¢ivoidj‚©‚Ç‚¤‚©‚ğ”»’è
         $IsAction = $ReflectionMethod.ReturnType -eq [void]
         if ($IsAction) {
-            # voidã®å ´åˆã¯Actionãƒ‡ãƒªã‚²ãƒ¼ãƒˆã‚¿ã‚¤ãƒ—ã‚’å–å¾—
+            # void‚Ìê‡‚ÍActionƒfƒŠƒQ[ƒgƒ^ƒCƒv‚ğæ“¾
             $DelegateType = [System.Linq.Expressions.Expression]::GetActionType($ParameterTypes)
         } else {
-            # æˆ»ã‚Šå€¤ãŒã‚ã‚‹å ´åˆã¯Funcãƒ‡ãƒªã‚²ãƒ¼ãƒˆã‚¿ã‚¤ãƒ—ã‚’å–å¾—
+            # –ß‚è’l‚ª‚ ‚éê‡‚ÍFuncƒfƒŠƒQ[ƒgƒ^ƒCƒv‚ğæ“¾
             $DelegateType = [System.Linq.Expressions.Expression]::GetFuncType($ConcatMethodTypes)
         }
 
-        # æœ€çµ‚çš„ã«ãƒ‡ãƒªã‚²ãƒ¼ãƒˆã‚’ä½œæˆã—ã¦è¿”ã™
+        # ÅI“I‚ÉƒfƒŠƒQ[ƒg‚ğì¬‚µ‚Ä•Ô‚·
         [delegate]::CreateDelegate($DelegateType, $Target, $ReflectionMethod.Name)
     }
 }
 
 <#
 .SYNOPSIS
-WPFã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®ViewModelã®åŸºæœ¬ã‚¯ãƒ©ã‚¹ã‚’æä¾›ã—ã¾ã™ã€‚
+WPFƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌViewModel‚ÌŠî–{ƒNƒ‰ƒX‚ğ’ñ‹Ÿ‚µ‚Ü‚·B
 
 .DESCRIPTION
-ViewModelBaseã‚¯ãƒ©ã‚¹ã¯ã€WPFã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã§MVVMãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’å®Ÿè£…ã™ã‚‹éš›ã®åŸºç¤ã¨ãªã‚‹ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
-ã“ã®ã‚¯ãƒ©ã‚¹ã¯INotifyPropertyChangedã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹ã‚’å®Ÿè£…ã—ã¦ãŠã‚Šã€UIã¨ã®ãƒ‡ãƒ¼ã‚¿ãƒã‚¤ãƒ³ãƒ‡ã‚£ãƒ³ã‚°ã‚’å®¹æ˜“ã«ã—ã¾ã™ã€‚
+ViewModelBaseƒNƒ‰ƒX‚ÍAWPFƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÅMVVMƒpƒ^[ƒ“‚ğÀ‘•‚·‚éÛ‚ÌŠî‘b‚Æ‚È‚éƒNƒ‰ƒX‚Å‚·B
+‚±‚ÌƒNƒ‰ƒX‚ÍINotifyPropertyChangedƒCƒ“ƒ^[ƒtƒF[ƒX‚ğÀ‘•‚µ‚Ä‚¨‚èAUI‚Æ‚Ìƒf[ƒ^ƒoƒCƒ“ƒfƒBƒ“ƒO‚ğ—eˆÕ‚É‚µ‚Ü‚·B
 
 .NOTES
-ã“ã®ã‚¯ãƒ©ã‚¹ã‚’ç¶™æ‰¿ã—ã¦ã€å…·ä½“çš„ãªViewModelã‚¯ãƒ©ã‚¹ã‚’ä½œæˆã™ã‚‹ã“ã¨ãŒã§ãã¾ã™ã€‚
+‚±‚ÌƒNƒ‰ƒX‚ğŒp³‚µ‚ÄA‹ï‘Ì‚ÈViewModelƒNƒ‰ƒX‚ğì¬‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚·B
 
 .EXAMPLE
 class MyViewModel : ViewModelBase {
@@ -191,76 +190,76 @@ class MyViewModel : ViewModelBase {
 }
 
 $vm = [MyViewModel]::new()
-$vm.Name = "John"  # ã“ã‚Œã«ã‚ˆã‚ŠPropertyChangedã‚¤ãƒ™ãƒ³ãƒˆãŒç™ºç«ã—ã¾ã™
+$vm.Name = "John"  # ‚±‚ê‚É‚æ‚èPropertyChangedƒCƒxƒ“ƒg‚ª”­‰Î‚µ‚Ü‚·
 
 .LINK
 https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.inotifypropertychanged
 #>
 
 class ViewModelBase : PSCustomObject, System.ComponentModel.INotifyPropertyChanged {
-    # INotifyPropertyChanged ã®å®Ÿè£…
-    # ã“ã®ã‚¤ãƒ™ãƒ³ãƒˆã¯ã€ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®å€¤ãŒå¤‰æ›´ã•ã‚ŒãŸã¨ãã«é€šçŸ¥ã‚’å—ã‘ã‚‹ãŸã‚ã«ä½¿ç”¨ã•ã‚Œã¾ã™ã€‚
+    # INotifyPropertyChanged ‚ÌÀ‘•
+    # ‚±‚ÌƒCƒxƒ“ƒg‚ÍAƒvƒƒpƒeƒB‚Ì’l‚ª•ÏX‚³‚ê‚½‚Æ‚«‚É’Ê’m‚ğó‚¯‚é‚½‚ß‚Ég—p‚³‚ê‚Ü‚·B
     [ComponentModel.PropertyChangedEventHandler]$PropertyChanged
-    # ä»¥ä¸‹ã¯ã€ã‚³ãƒ¡ãƒ³ãƒˆã‚¢ã‚¦ãƒˆã•ã‚ŒãŸä¾‹ã§ã™ã€‚å¿…è¦ã«å¿œã˜ã¦ä½¿ç”¨ã—ã¦ãã ã•ã„ã€‚
+    # ˆÈ‰º‚ÍAƒRƒƒ“ƒgƒAƒEƒg‚³‚ê‚½—á‚Å‚·B•K—v‚É‰‚¶‚Äg—p‚µ‚Ä‚­‚¾‚³‚¢B
     # [System.Collections.Generic.List[object]]$PropertyChanged = [System.Collections.Generic.List[object]]::new()
 
-    # PropertyChanged ã‚¤ãƒ™ãƒ³ãƒˆã«ãƒãƒ³ãƒ‰ãƒ©ãƒ¼ã‚’è¿½åŠ ã™ã‚‹ãƒ¡ã‚½ãƒƒãƒ‰
+    # PropertyChanged ƒCƒxƒ“ƒg‚Éƒnƒ“ƒhƒ‰[‚ğ’Ç‰Á‚·‚éƒƒ\ƒbƒh
     add_PropertyChanged([System.ComponentModel.PropertyChangedEventHandler]$handler) {
-        # æ—¢å­˜ã®ãƒ‡ãƒªã‚²ãƒ¼ãƒˆã«æ–°ã—ã„ãƒãƒ³ãƒ‰ãƒ©ãƒ¼ã‚’çµåˆã—ã¾ã™ã€‚
+        # Šù‘¶‚ÌƒfƒŠƒQ[ƒg‚ÉV‚µ‚¢ƒnƒ“ƒhƒ‰[‚ğŒ‹‡‚µ‚Ü‚·B
         $this.psobject.PropertyChanged = [Delegate]::Combine($this.psobject.PropertyChanged, $handler)
-        # ä»¥ä¸‹ã¯ã€åˆ¥ã®æ–¹æ³•ã§ãƒãƒ³ãƒ‰ãƒ©ãƒ¼ã‚’è¿½åŠ ã™ã‚‹ä¾‹ã§ã™ã€‚å¿…è¦ã«å¿œã˜ã¦ä½¿ç”¨ã—ã¦ãã ã•ã„ã€‚
+        # ˆÈ‰º‚ÍA•Ê‚Ì•û–@‚Åƒnƒ“ƒhƒ‰[‚ğ’Ç‰Á‚·‚é—á‚Å‚·B•K—v‚É‰‚¶‚Äg—p‚µ‚Ä‚­‚¾‚³‚¢B
         # $this.psobject.PropertyChanged.Add($handler)
     }
 
-    # PropertyChanged ã‚¤ãƒ™ãƒ³ãƒˆã‹ã‚‰ãƒãƒ³ãƒ‰ãƒ©ãƒ¼ã‚’å‰Šé™¤ã™ã‚‹ãƒ¡ã‚½ãƒƒãƒ‰
+    # PropertyChanged ƒCƒxƒ“ƒg‚©‚çƒnƒ“ƒhƒ‰[‚ğíœ‚·‚éƒƒ\ƒbƒh
     remove_PropertyChanged([System.ComponentModel.PropertyChangedEventHandler]$handler) {
-        # æ—¢å­˜ã®ãƒ‡ãƒªã‚²ãƒ¼ãƒˆã‹ã‚‰æŒ‡å®šã•ã‚ŒãŸãƒãƒ³ãƒ‰ãƒ©ãƒ¼ã‚’å‰Šé™¤ã—ã¾ã™ã€‚
+        # Šù‘¶‚ÌƒfƒŠƒQ[ƒg‚©‚çw’è‚³‚ê‚½ƒnƒ“ƒhƒ‰[‚ğíœ‚µ‚Ü‚·B
         $this.psobject.PropertyChanged = [Delegate]::Remove($this.psobject.PropertyChanged, $handler)
-        # ä»¥ä¸‹ã¯ã€åˆ¥ã®æ–¹æ³•ã§ãƒãƒ³ãƒ‰ãƒ©ãƒ¼ã‚’å‰Šé™¤ã™ã‚‹ä¾‹ã§ã™ã€‚å¿…è¦ã«å¿œã˜ã¦ä½¿ç”¨ã—ã¦ãã ã•ã„ã€‚
+        # ˆÈ‰º‚ÍA•Ê‚Ì•û–@‚Åƒnƒ“ƒhƒ‰[‚ğíœ‚·‚é—á‚Å‚·B•K—v‚É‰‚¶‚Äg—p‚µ‚Ä‚­‚¾‚³‚¢B
         # $this.psobject.PropertyChanged.Remove($handler)
     }
 
-    # æŒ‡å®šã•ã‚ŒãŸãƒ—ãƒ­ãƒ‘ãƒ†ã‚£åã®å¤‰æ›´ã‚’é€šçŸ¥ã™ã‚‹ãƒ¡ã‚½ãƒƒãƒ‰
+    # w’è‚³‚ê‚½ƒvƒƒpƒeƒB–¼‚Ì•ÏX‚ğ’Ê’m‚·‚éƒƒ\ƒbƒh
     RaisePropertyChanged([string]$propname) {
-        # PropertyChanged ã‚¤ãƒ™ãƒ³ãƒˆã«ç™»éŒ²ã•ã‚ŒãŸãƒãƒ³ãƒ‰ãƒ©ãƒ¼ãŒå­˜åœ¨ã™ã‚‹å ´åˆ
+        # PropertyChanged ƒCƒxƒ“ƒg‚É“o˜^‚³‚ê‚½ƒnƒ“ƒhƒ‰[‚ª‘¶İ‚·‚éê‡
         if ($this.psobject.PropertyChanged) {
-            # ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£å¤‰æ›´ã‚¤ãƒ™ãƒ³ãƒˆã®å¼•æ•°ã‚’ä½œæˆã—ã¾ã™
+            # ƒvƒƒpƒeƒB•ÏXƒCƒxƒ“ƒg‚Ìˆø”‚ğì¬‚µ‚Ü‚·
             $evargs = [System.ComponentModel.PropertyChangedEventArgs]::new($propname)
-            # ã™ã¹ã¦ã®ç™»éŒ²ã•ã‚ŒãŸãƒãƒ³ãƒ‰ãƒ©ãƒ¼ã‚’å‘¼ã³å‡ºã—ã¾ã™
-            $this.psobject.PropertyChanged.Invoke($this, $evargs) # å…¨ã¦ã®ãƒ¡ãƒ³ãƒãƒ¼ã‚’å‘¼ã³å‡ºã—ã¾ã™
-            # ä»¥ä¸‹ã¯ã€ãƒ‡ãƒãƒƒã‚°ç”¨ã®å‡ºåŠ›ä¾‹ã§ã™ã€‚å¿…è¦ã«å¿œã˜ã¦æœ‰åŠ¹ã«ã—ã¦ãã ã•ã„ã€‚
+            # ‚·‚×‚Ä‚Ì“o˜^‚³‚ê‚½ƒnƒ“ƒhƒ‰[‚ğŒÄ‚Ño‚µ‚Ü‚·
+            $this.psobject.PropertyChanged.Invoke($this, $evargs) # ‘S‚Ä‚Ìƒƒ“ƒo[‚ğŒÄ‚Ño‚µ‚Ü‚·
+            # ˆÈ‰º‚ÍAƒfƒoƒbƒO—p‚Ìo—Í—á‚Å‚·B•K—v‚É‰‚¶‚Ä—LŒø‚É‚µ‚Ä‚­‚¾‚³‚¢B
             # Write-Verbose "RaisePropertyChanged $propname" -Verbose
         }
     }
-    # INotifyPropertyChanged ã®å®Ÿè£…çµ‚äº†
+    # INotifyPropertyChanged ‚ÌÀ‘•I—¹
 }
 
 <#
 .SYNOPSIS
-WPFã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã§ãƒœã‚¿ãƒ³ã‚¯ãƒªãƒƒã‚¯ãªã©ã®ãƒ¦ãƒ¼ã‚¶ãƒ¼ã‚¢ã‚¯ã‚·ãƒ§ãƒ³ã‚’å‡¦ç†ã™ã‚‹ãŸã‚ã®ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
+WPFƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚Åƒ{ƒ^ƒ“ƒNƒŠƒbƒN‚È‚Ç‚Ìƒ†[ƒU[ƒAƒNƒVƒ‡ƒ“‚ğˆ—‚·‚é‚½‚ß‚ÌƒNƒ‰ƒX‚Å‚·B
 
 .DESCRIPTION
-ActionCommandã‚¯ãƒ©ã‚¹ã¯ã€ãƒœã‚¿ãƒ³ã‚¯ãƒªãƒƒã‚¯ãªã©ã®ãƒ¦ãƒ¼ã‚¶ãƒ¼ã‚¢ã‚¯ã‚·ãƒ§ãƒ³ã‚’å‡¦ç†ã™ã‚‹ãŸã‚ã«ä½¿ç”¨ã•ã‚Œã¾ã™ã€‚
-ã“ã®ã‚¯ãƒ©ã‚¹ã¯ã€ä»¥ä¸‹ã®ä¸»è¦ãªæ©Ÿèƒ½ã‚’æä¾›ã—ã¾ã™ï¼š
-1. ã‚¢ã‚¯ã‚·ãƒ§ãƒ³ã®å®Ÿè¡Œï¼šãƒœã‚¿ãƒ³ãŒã‚¯ãƒªãƒƒã‚¯ã•ã‚ŒãŸã¨ãã«ç‰¹å®šã®å‡¦ç†ã‚’å®Ÿè¡Œã—ã¾ã™ã€‚
-2. å®Ÿè¡Œå¯èƒ½çŠ¶æ…‹ã®ç®¡ç†ï¼šãƒœã‚¿ãƒ³ã‚’æŠ¼ã›ã‚‹çŠ¶æ…‹ã‹ã©ã†ã‹ã‚’åˆ¶å¾¡ã—ã¾ã™ã€‚
-3. éåŒæœŸå‡¦ç†ï¼šUIãŒãƒ•ãƒªãƒ¼ã‚ºã—ãªã„ã‚ˆã†ã«ã€é•·æ™‚é–“ã®å‡¦ç†ã‚’åˆ¥ã‚¹ãƒ¬ãƒƒãƒ‰ã§å®Ÿè¡Œã—ã¾ã™ã€‚
-4. ã‚¹ãƒ­ãƒƒãƒˆãƒªãƒ³ã‚°ï¼šåŒæ™‚ã«å®Ÿè¡Œã§ãã‚‹å‡¦ç†ã®æ•°ã‚’åˆ¶é™ã—ã¾ã™ã€‚
+ActionCommandƒNƒ‰ƒX‚ÍAƒ{ƒ^ƒ“ƒNƒŠƒbƒN‚È‚Ç‚Ìƒ†[ƒU[ƒAƒNƒVƒ‡ƒ“‚ğˆ—‚·‚é‚½‚ß‚Ég—p‚³‚ê‚Ü‚·B
+‚±‚ÌƒNƒ‰ƒX‚ÍAˆÈ‰º‚Ìå—v‚È‹@”\‚ğ’ñ‹Ÿ‚µ‚Ü‚·F
+1. ƒAƒNƒVƒ‡ƒ“‚ÌÀsFƒ{ƒ^ƒ“‚ªƒNƒŠƒbƒN‚³‚ê‚½‚Æ‚«‚É“Á’è‚Ìˆ—‚ğÀs‚µ‚Ü‚·B
+2. Às‰Â”\ó‘Ô‚ÌŠÇ—Fƒ{ƒ^ƒ“‚ğ‰Ÿ‚¹‚éó‘Ô‚©‚Ç‚¤‚©‚ğ§Œä‚µ‚Ü‚·B
+3. ”ñ“¯Šúˆ—FUI‚ªƒtƒŠ[ƒY‚µ‚È‚¢‚æ‚¤‚ÉA’·ŠÔ‚Ìˆ—‚ğ•ÊƒXƒŒƒbƒh‚ÅÀs‚µ‚Ü‚·B
+4. ƒXƒƒbƒgƒŠƒ“ƒOF“¯‚ÉÀs‚Å‚«‚éˆ—‚Ì”‚ğ§ŒÀ‚µ‚Ü‚·B
 
 .NOTES
-ã“ã®ã‚¯ãƒ©ã‚¹ã¯ã€WPFã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®MVVMï¼ˆModel-View-ViewModelï¼‰ãƒ‘ã‚¿ãƒ¼ãƒ³ã§
-ã‚ˆãä½¿ç”¨ã•ã‚Œã¾ã™ã€‚ViewModelã®ä¸­ã§ã“ã®ã‚¯ãƒ©ã‚¹ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä½œæˆã—ã€
-XAMLã®Buttonã®Commandãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã«ãƒã‚¤ãƒ³ãƒ‰ã—ã¦ä½¿ç”¨ã—ã¾ã™ã€‚
+‚±ƒNƒ‰ƒX‚ÍAWPFƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌMVVMiModel-View-ViewModeljƒpƒ^[ƒ“‚Å
+‚æ‚­g—p‚³‚ê‚Ü‚·BViewModel‚Ì’†‚Å‚±‚ÌƒNƒ‰ƒX‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğì¬‚µA
+XAML‚ÌButton‚ÌCommandƒvƒƒpƒeƒB‚ÉƒoƒCƒ“ƒh‚µg—p‚µ‚Ü‚·B
 
 .EXAMPLE
-# ViewModelã‚¯ãƒ©ã‚¹ã§ã®ä½¿ç”¨ä¾‹
+# ViewModelƒNƒ‰ƒX‚Å‚Ìg—p—á
 class MyViewModel : ViewModelBase {
     MyViewModel() {
         $this | Add-Member -Name MyCommand -MemberType ScriptProperty -Value {
             if (-not $this.psobject.MyCommand) {
                 $this.psobject.MyCommand = [ActionCommand]::new({ 
-                    # ã“ã“ã«ãƒœã‚¿ãƒ³ã‚¯ãƒªãƒƒã‚¯æ™‚ã®å‡¦ç†ã‚’æ›¸ãã¾ã™
-                    Write-Host "ãƒœã‚¿ãƒ³ãŒã‚¯ãƒªãƒƒã‚¯ã•ã‚Œã¾ã—ãŸ" 
+                    # ‚±‚±‚Éƒ{ƒ^ƒ“ƒNƒŠƒbƒN‚Ìˆ—‚ğ‘‚«‚Ü‚·
+                    Write-Host "ƒ{ƒ^ƒ“‚ªƒNƒŠƒbƒN‚³‚ê‚Ü‚µ‚½" 
                 })
             }
             return $this.psobject.MyCommand
@@ -268,67 +267,67 @@ class MyViewModel : ViewModelBase {
     }
 }
 
-# XAMLã§ã®ä½¿ç”¨ä¾‹:
-# <Button Content="ã‚¯ãƒªãƒƒã‚¯ã—ã¦ã­" Command="{Binding MyCommand}" />
+# XAML‚Å‚Ìg—p—á:
+# <Button Content="ƒNƒŠƒbƒN‚µ‚Ä‚Ë" Command="{Binding MyCommand}" />
 
 .LINK
 https://docs.microsoft.com/ja-jp/dotnet/desktop/wpf/data/how-to-implement-icommand?view=netframeworkdesktop-4.8
 #>
 class ActionCommand : ViewModelBase, System.Windows.Input.ICommand {
-    # ICommandã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹ã®å®Ÿè£…
-    # ã“ã®ã‚¤ãƒ™ãƒ³ãƒˆã¯ã€ã‚³ãƒãƒ³ãƒ‰ã®å®Ÿè¡Œå¯èƒ½çŠ¶æ…‹ãŒå¤‰æ›´ã•ã‚ŒãŸã¨ãã«ç™ºç”Ÿã—ã¾ã™
+    # ICommandƒCƒ“ƒ^[ƒtƒF[ƒX‚ÌÀ‘•
+    # ‚±‚ÌƒCƒxƒ“ƒg‚ÍAƒRƒ}ƒ“ƒh‚ÌÀs‰Â”\ó‘Ô‚ª•ÏX‚³‚ê‚½‚Æ‚«‚É”­¶‚µ‚Ü‚·
     [System.EventHandler]$InternalCanExecuteChanged
-    # ä»¥ä¸‹ã¯ã€CanExecuteChangedã‚¤ãƒ™ãƒ³ãƒˆã®ãƒãƒ³ãƒ‰ãƒ©ãƒ¼ã‚’æ ¼ç´ã™ã‚‹ãŸã‚ã®ãƒªã‚¹ãƒˆã‚’ä½œæˆã—ã‚ˆã†ã¨ã—ã¦ã„ã¾ã—ãŸã€‚
-    # è©³ç´°ãªèª¬æ˜ï¼š
-    # 1. [System.Collections.Generic.List[EventHandler]] ã¯ã€EventHandlerå‹ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æ ¼ç´ã§ãã‚‹ã‚¸ã‚§ãƒãƒªãƒƒã‚¯ãƒªã‚¹ãƒˆã‚’å®šç¾©ã—ã¦ã„ã¾ã™ã€‚
-    # 2. $InternalCanExecuteChanged ã¯ã€ã“ã®ãƒªã‚¹ãƒˆã‚’æ ¼ç´ã™ã‚‹å¤‰æ•°åã§ã™ã€‚
-    # 3. [System.Collections.Generic.List[EventHandler]]::new() ã¯ã€æ–°ã—ã„ç©ºã®ãƒªã‚¹ãƒˆã‚’ä½œæˆã—ã¦ã„ã¾ã™ã€‚
+    # ˆÈ‰º‚ÍACanExecuteChangedƒCƒxƒ“ƒg‚Ìƒnƒ“ƒhƒ‰[‚ğŠi”[‚·‚é‚½‚ß‚ÌƒŠƒXƒg‚ğì¬‚µ‚æ‚¤‚Æ‚µ‚Ä‚¢‚Ü‚µ‚½B
+    # Ú×‚Èà–¾F
+    # 1. [System.Collections.Generic.List[EventHandler]] ‚ÍAEventHandlerŒ^‚ÌƒIƒuƒWƒFƒNƒg‚ğŠi”[‚Å‚«‚éƒWƒFƒlƒŠƒbƒNƒŠƒXƒg‚ğ’è‹`‚µ‚Ä‚¢‚Ü‚·B
+    # 2. $InternalCanExecuteChanged ‚ÍA‚±‚ÌƒŠƒXƒg‚ğŠi”[‚·‚é•Ï”–¼‚Å‚·B
+    # 3. [System.Collections.Generic.List[EventHandler]]::new() ‚ÍAV‚µ‚¢‹ó‚ÌƒŠƒXƒg‚ğì¬‚µ‚Ä‚¢‚Ü‚·B
     # 
-    # ã“ã®è¡ŒãŒå®Ÿè£…ã•ã‚Œã¦ã„ã‚Œã°ã€ã‚³ãƒãƒ³ãƒ‰ã®å®Ÿè¡Œå¯èƒ½çŠ¶æ…‹ãŒå¤‰æ›´ã•ã‚ŒãŸã¨ãã«é€šçŸ¥ã‚’å—ã‘å–ã‚‹ãƒãƒ³ãƒ‰ãƒ©ãƒ¼ã‚’
-    # ç®¡ç†ã™ã‚‹ãŸã‚ã®ãƒªã‚¹ãƒˆã‚’ä½œæˆã™ã‚‹ã“ã¨ãŒã§ãã¾ã—ãŸã€‚
+    # ‚±‚Ìs‚ªÀ‘•‚³‚ê‚Ä‚¢‚ê‚ÎAƒRƒ}ƒ“ƒh‚ÌÀs‰Â”\ó‘Ô‚ª•ÏX‚³‚ê‚½‚Æ‚«‚É’Ê’m‚ğó‚¯æ‚éƒnƒ“ƒhƒ‰[‚ğ
+    # ŠÇ—‚·‚é‚½‚ß‚ÌƒŠƒXƒg‚ğì¬‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚µ‚½B
     # [System.Collections.Generic.List[EventHandler]]$InternalCanExecuteChanged = [System.Collections.Generic.List[EventHandler]]::new()
 
-    # CanExecuteChangedã‚¤ãƒ™ãƒ³ãƒˆã«ãƒãƒ³ãƒ‰ãƒ©ãƒ¼ã‚’è¿½åŠ ã™ã‚‹ãƒ¡ã‚½ãƒƒãƒ‰
+    # CanExecuteChangedƒCƒxƒ“ƒg‚Éƒnƒ“ƒhƒ‰[‚ğ’Ç‰Á‚·‚éƒƒ\ƒbƒh
     add_CanExecuteChanged([EventHandler] $value) {
         $this.psobject.InternalCanExecuteChanged = [Delegate]::Combine($this.psobject.InternalCanExecuteChanged, $value)
-        # [System.Windows.Input.CommandManager]::add_RequerySuggested($value) # ã“ã‚Œã‚’ä½¿ç”¨ã—ã¦ã€ã™ã¹ã¦ã®ãƒœã‚¿ãƒ³ã‚’ç›£è¦–ãŠã‚ˆã³æ›´æ–°ã—ã¾ã™ã€‚ä»–ã®ã‚¹ãƒ¬ãƒƒãƒ‰/ãƒ©ãƒ³ã‚¹ãƒšãƒ¼ã‚¹ã‹ã‚‰æ›´æ–°ã™ã‚‹å ´åˆã¯ã€CommandManager.InvalidateRequerySuggested()ã‚’å‘¼ã³å‡ºã™å¿…è¦ãŒã‚ã‚Šã¾ã™ã€‚
+        # [System.Windows.Input.CommandManager]::add_RequerySuggested($value) # ‚±‚ê‚ğg—p‚µ‚ÄA‚·‚×‚Ä‚Ìƒ{ƒ^ƒ“‚ğŠÄ‹‚¨‚æ‚ÑXV‚µ‚Ü‚·B‘¼‚ÌƒXƒŒƒbƒh/ƒ‰ƒ“ƒXƒy[ƒX‚©‚çXV‚·‚éê‡‚ÍACommandManager.InvalidateRequerySuggested()‚ğŒÄ‚Ño‚·•K—v‚ª‚ ‚è‚Ü‚·B
         # $this.psobject.InternalCanExecuteChanged.Add($value)
     }
 
-    # CanExecuteChangedã‚¤ãƒ™ãƒ³ãƒˆã‹ã‚‰ãƒãƒ³ãƒ‰ãƒ©ãƒ¼ã‚’å‰Šé™¤ã™ã‚‹ãƒ¡ã‚½ãƒƒãƒ‰
+    # CanExecuteChangedƒCƒxƒ“ƒg‚©‚çƒnƒ“ƒhƒ‰[‚ğíœ‚·‚éƒƒ\ƒbƒh
     remove_CanExecuteChanged([EventHandler] $value) {
         $this.psobject.InternalCanExecuteChanged = [Delegate]::Remove($this.psobject.InternalCanExecuteChanged, $value)
         # [System.Windows.Input.CommandManager]::remove_RequerySuggested($value)
         # $this.psobject.InternalCanExecuteChanged.Remove($value)
     }
 
-    # ã‚³ãƒãƒ³ãƒ‰ãŒå®Ÿè¡Œå¯èƒ½ã‹ã©ã†ã‹ã‚’åˆ¤æ–­ã™ã‚‹ãƒ¡ã‚½ãƒƒãƒ‰
+    # ƒRƒ}ƒ“ƒh‚ªÀs‰Â”\‚©‚Ç‚¤‚©‚ğ”»’f‚·‚éƒƒ\ƒbƒh
     [bool]CanExecute([object]$CommandParameter) {
-        # ã‚¹ãƒ­ãƒƒãƒˆãƒªãƒ³ã‚°ãŒè¨­å®šã•ã‚Œã¦ã„ã‚‹å ´åˆã€ç¾åœ¨ã®å®Ÿè¡Œæ•°ãŒã‚¹ãƒ­ãƒƒãƒˆãƒªãƒ³ã‚°å€¤æœªæº€ãªã‚‰å®Ÿè¡Œå¯èƒ½
+        # ƒXƒƒbƒgƒŠƒ“ƒO‚ªİ’è‚³‚ê‚Ä‚¢‚éê‡AŒ»İ‚ÌÀs”‚ªƒXƒƒbƒgƒŠƒ“ƒO’l–¢–‚È‚çÀs‰Â”\
         if ($this.psobject.Throttle -gt 0) { return ($this.psobject.Workers -lt $this.psobject.Throttle) }
-        # CanExecuteActionãŒè¨­å®šã•ã‚Œã¦ã„ã‚‹å ´åˆã¯ãã‚Œã‚’å‘¼ã³å‡ºã™
+        # CanExecuteAction‚ªİ’è‚³‚ê‚Ä‚¢‚éê‡‚Í‚»‚ê‚ğŒÄ‚Ño‚·
         if ($this.psobject.CanExecuteAction) { return $this.psobject.CanExecuteAction.Invoke() }
-        # ãã‚Œä»¥å¤–ã®å ´åˆã¯å¸¸ã«å®Ÿè¡Œå¯èƒ½
+        # ‚»‚êˆÈŠO‚Ìê‡‚Íí‚ÉÀs‰Â”\
         return $true
     }
 
-    # ã‚³ãƒãƒ³ãƒ‰ã‚’å®Ÿè¡Œã™ã‚‹ãƒ¡ã‚½ãƒƒãƒ‰
+    # ƒRƒ}ƒ“ƒh‚ğÀs‚·‚éƒƒ\ƒbƒh
     [void]Execute([object]$CommandParameter) {
         try {
             if ($this.psobject.Action) {
                 if ($this.psobject.ThreadManager) {
-                    # ThreadManagerãŒè¨­å®šã•ã‚Œã¦ã„ã‚‹å ´åˆã¯éåŒæœŸã§å®Ÿè¡Œ
+                    # ThreadManager‚ªİ’è‚³‚ê‚Ä‚¢‚éê‡‚Í”ñ“¯Šú‚ÅÀs
                     $null = $this.psobject.ThreadManager.Async($this.psobject.Action, $this.psobject.InvokeCanExecuteChangedDelegate)
-                    # $this.psobject.ThreadManager.AsyncTask($this.psobject.Action, $this.psobject.InvokeCanExecuteChangedDelegate)   # NEW-UNBOUNDCLASSINSTANCE VIEWMODELãŒæ©Ÿèƒ½ã—ã¾ã™ - åˆ¥ã®ãƒ©ãƒ³ã‚¹ãƒšãƒ¼ã‚¹ã§äº‹å‰ã«å®Ÿè¡Œã•ã‚Œã¦ã„ã‚‹ãƒ‡ã‚£ã‚¹ãƒ‘ãƒƒãƒãƒ£ãƒ¼ã‚’ä½¿ç”¨ã—ã¾ã™ã€‚
+                    # $this.psobject.ThreadManager.AsyncTask($this.psobject.Action, $this.psobject.InvokeCanExecuteChangedDelegate)   # NEW-UNBOUNDCLASSINSTANCE VIEWMODEL‚ª‹@”\‚µ‚Ü‚· - •Ê‚Ìƒ‰ƒ“ƒXƒy[ƒX‚Å–‘O‚ÉÀs‚³‚ê‚Ä‚¢‚éƒfƒBƒXƒpƒbƒ`ƒƒ[‚ğg—p‚µ‚Ü‚·B
                     $this.Workers++
                 } else {
-                    # ThreadManagerãŒè¨­å®šã•ã‚Œã¦ã„ãªã„å ´åˆã¯åŒæœŸçš„ã«å®Ÿè¡Œ
+                    # ThreadManager‚ªİ’è‚³‚ê‚Ä‚¢‚È‚¢ê‡‚Í“¯Šú“I‚ÉÀs
                     $this.psobject.Action.Invoke()
                 }
             } else {
-                # ActionObjectãŒè¨­å®šã•ã‚Œã¦ã„ã‚‹å ´åˆã®å‡¦ç†ï¼ˆç¾åœ¨ã¯å®Ÿè£…ã•ã‚Œã¦ã„ã¾ã›ã‚“ï¼‰
+                # ActionObject‚ªİ’è‚³‚ê‚Ä‚¢‚éê‡‚Ìˆ—iŒ»İ‚ÍÀ‘•‚³‚ê‚Ä‚¢‚Ü‚¹‚ñj
                 if ($this.psobject.ThreadManager) {
-                    throw 'å®Ÿè£…ã•ã‚Œã¦ã„ã¾ã›ã‚“'
+                    throw 'À‘•‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ'
                     # $null = $this.psobject.ThreadManager.Async($this.psobject.ActionObject, $this.psobject.InvokeCanExecuteChangedDelegate)
                     $this.Workers++
                 } else {
@@ -336,126 +335,126 @@ class ActionCommand : ViewModelBase, System.Windows.Input.ICommand {
                 }
             }
         } catch {
-            Write-Error "ActionCommand.Executeã®å‡¦ç†ä¸­ã«ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ã¾ã—ãŸ: $_"
+            Write-Error "ActionCommand.Execute‚Ìˆ—’†‚ÉƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½: $_"
         }
     }
-    # ICommand å®Ÿè£…ã®çµ‚äº†
+    # ICommand À‘•‚ÌI—¹
 
-    # ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+    # ƒfƒtƒHƒ‹ƒgƒRƒ“ƒXƒgƒ‰ƒNƒ^
     ActionCommand() {
-        $this.psobject.Init()  # åˆæœŸåŒ–ãƒ¡ã‚½ãƒƒãƒ‰ã‚’å‘¼ã³å‡ºã™
+        $this.psobject.Init()  # ‰Šú‰»ƒƒ\ƒbƒh‚ğŒÄ‚Ño‚·
     }
 
-    # Actionã‚’å—ã‘å–ã‚‹ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+    # Action‚ğó‚¯æ‚éƒRƒ“ƒXƒgƒ‰ƒNƒ^
     ActionCommand([Action]$Action) {
-        $this.psobject.Action = $Action  # å¼•æ•°ã§æ¸¡ã•ã‚ŒãŸActionã‚’è¨­å®š
+        $this.psobject.Action = $Action  # ˆø”‚Å“n‚³‚ê‚½Action‚ğİ’è
     }
 
-    # ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å¼•æ•°ã«å–ã‚‹Actionã‚’å—ã‘å–ã‚‹ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+    # ƒIƒuƒWƒFƒNƒg‚ğˆø”‚Éæ‚éAction‚ğó‚¯æ‚éƒRƒ“ƒXƒgƒ‰ƒNƒ^
     ActionCommand([Action[object]]$Action) {
-        $this.psobject.ActionObject = $Action  # ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å¼•æ•°ã«å–ã‚‹Actionã‚’è¨­å®š
+        $this.psobject.ActionObject = $Action  # ƒIƒuƒWƒFƒNƒg‚ğˆø”‚Éæ‚éAction‚ğİ’è
     }
 
-    # Actionã¨ThreadManagerã‚’å—ã‘å–ã‚‹ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+    # Action‚ÆThreadManager‚ğó‚¯æ‚éƒRƒ“ƒXƒgƒ‰ƒNƒ^
     ActionCommand([Action]$Action, $ThreadManager) {
-        $this.psobject.Init()  # åˆæœŸåŒ–
-        $this.psobject.Action = $Action  # Actionã‚’è¨­å®š
-        $this.psobject.ThreadManager = $ThreadManager  # ThreadManagerã‚’è¨­å®š
+        $this.psobject.Init()  # ‰Šú‰»
+        $this.psobject.Action = $Action  # Action‚ğİ’è
+        $this.psobject.ThreadManager = $ThreadManager  # ThreadManager‚ğİ’è
     }
 
-    # ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å¼•æ•°ã«å–ã‚‹Actionã¨ThreadManagerã‚’å—ã‘å–ã‚‹ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+    # ƒIƒuƒWƒFƒNƒg‚ğˆø”‚Éæ‚éAction‚ÆThreadManager‚ğó‚¯æ‚éƒRƒ“ƒXƒgƒ‰ƒNƒ^
     ActionCommand([Action[object]]$Action, $ThreadManager) {
-        $this.psobject.Init()  # åˆæœŸåŒ–
-        $this.psobject.ActionObject = $Action  # ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å¼•æ•°ã«å–ã‚‹Actionã‚’è¨­å®š
-        $this.psobject.ThreadManager = $ThreadManager  # ThreadManagerã‚’è¨­å®š
+        $this.psobject.Init()  # ‰Šú‰»
+        $this.psobject.ActionObject = $Action  # ƒIƒuƒWƒFƒNƒg‚ğˆø”‚Éæ‚éAction‚ğİ’è
+        $this.psobject.ThreadManager = $ThreadManager  # ThreadManager‚ğİ’è
     }
 
-    # åˆæœŸåŒ–ãƒ¡ã‚½ãƒƒãƒ‰
+    # ‰Šú‰»ƒƒ\ƒbƒh
     Init() {
-        # CanExecuteChangedã‚¤ãƒ™ãƒ³ãƒˆã‚’å‘¼ã³å‡ºã™ãŸã‚ã®ãƒ‡ãƒªã‚²ãƒ¼ãƒˆã‚’ä½œæˆ
+        # CanExecuteChangedƒCƒxƒ“ƒg‚ğŒÄ‚Ño‚·‚½‚ß‚ÌƒfƒŠƒQ[ƒg‚ğì¬
         $this.psobject.InvokeCanExecuteChangedDelegate = $this.psobject.CreateDelegate($this.psobject.InvokeCanExecuteChanged)
         
-        # Workersãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã‚’å‹•çš„ã«è¿½åŠ 
-        # ã“ã®ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã¯ã€ä¸¦è¡Œã—ã¦å®Ÿè¡Œã§ãã‚‹ãƒ¯ãƒ¼ã‚«ãƒ¼ã®æ•°ã‚’åˆ¶å¾¡ã—ã¾ã™
+        # WorkersƒvƒƒpƒeƒB‚ğ“®“I‚É’Ç‰Á
+        # ‚±‚ÌƒvƒƒpƒeƒB‚ÍA•Às‚µ‚ÄÀs‚Å‚«‚éƒ[ƒJ[‚Ì”‚ğ§Œä‚µ‚Ü‚·
         $this | Add-Member -Name Workers -MemberType ScriptProperty -Value {
-            return $this.psobject.Workers  # ç¾åœ¨ã®å€¤ã‚’è¿”ã™
+            return $this.psobject.Workers  # Œ»İ‚Ì’l‚ğ•Ô‚·
         } -SecondValue {
             param($value)
-            $this.psobject.Workers = $value  # æ–°ã—ã„å€¤ã‚’è¨­å®š
-            $this.psobject.RaisePropertyChanged('Workers')  # ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£å¤‰æ›´ã‚’é€šçŸ¥
-            $this.psobject.RaiseCanExecuteChanged()  # CanExecuteã®çŠ¶æ…‹ãŒå¤‰æ›´ã•ã‚ŒãŸå¯èƒ½æ€§ãŒã‚ã‚‹ã“ã¨ã‚’é€šçŸ¥
+            $this.psobject.Workers = $value  # V‚µ‚¢’l‚ğİ’è
+            $this.psobject.RaisePropertyChanged('Workers')  # ƒvƒƒpƒeƒB•ÏX‚ğ’Ê’m
+            $this.psobject.RaiseCanExecuteChanged()  # CanExecute‚Ìó‘Ô‚ª•ÏX‚³‚ê‚½‰Â”\«‚ª‚ ‚é‚±‚Æ‚ğ’Ê’m
         }
 
-        # Throttleãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã‚’å‹•çš„ã«è¿½åŠ 
-        # ã“ã®ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã¯ã€ã‚³ãƒãƒ³ãƒ‰ã®å®Ÿè¡Œé »åº¦ã‚’åˆ¶é™ã™ã‚‹ãŸã‚ã«ä½¿ç”¨ã•ã‚Œã¾ã™
+        # ThrottleƒvƒƒpƒeƒB‚ğ“®“I‚É’Ç‰Á
+        # ‚±‚ÌƒvƒƒpƒeƒB‚ÍAƒRƒ}ƒ“ƒh‚ÌÀs•p“x‚ğ§ŒÀ‚·‚é‚½‚ß‚Ég—p‚³‚ê‚Ü‚·
         $this | Add-Member -Name Throttle -MemberType ScriptProperty -Value {
-            return $this.psobject.Throttle  # ç¾åœ¨ã®å€¤ã‚’è¿”ã™
+            return $this.psobject.Throttle  # Œ»İ‚Ì’l‚ğ•Ô‚·
         } -SecondValue {
             param($value)
-            $this.psobject.Throttle = $value  # æ–°ã—ã„å€¤ã‚’è¨­å®š
-            $this.psobject.RaisePropertyChanged('Throttle')  # ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£å¤‰æ›´ã‚’é€šçŸ¥
-            $this.psobject.RaiseCanExecuteChanged()  # CanExecuteã®çŠ¶æ…‹ãŒå¤‰æ›´ã•ã‚ŒãŸå¯èƒ½æ€§ãŒã‚ã‚‹ã“ã¨ã‚’é€šçŸ¥
+            $this.psobject.Throttle = $value  # V‚µ‚¢’l‚ğİ’è
+            $this.psobject.RaisePropertyChanged('Throttle')  # ƒvƒƒpƒeƒB•ÏX‚ğ’Ê’m
+            $this.psobject.RaiseCanExecuteChanged()  # CanExecute‚Ìó‘Ô‚ª•ÏX‚³‚ê‚½‰Â”\«‚ª‚ ‚é‚±‚Æ‚ğ’Ê’m
         }
     }
 
-    # CanExecuteChangedã‚¤ãƒ™ãƒ³ãƒˆã‚’ç™ºç”Ÿã•ã›ã‚‹ãƒ¡ã‚½ãƒƒãƒ‰
-    # ã“ã®ãƒ¡ã‚½ãƒƒãƒ‰ã¯ã€ã‚³ãƒãƒ³ãƒ‰ã®å®Ÿè¡Œå¯èƒ½çŠ¶æ…‹ãŒå¤‰æ›´ã•ã‚ŒãŸã¨ãã«å‘¼ã³å‡ºã•ã‚Œã¾ã™
+    # CanExecuteChangedƒCƒxƒ“ƒg‚ğ”­¶‚³‚¹‚éƒƒ\ƒbƒh
+    # ‚±‚Ìƒƒ\ƒbƒh‚ÍAƒRƒ}ƒ“ƒh‚ÌÀs‰Â”\ó‘Ô‚ª•ÏX‚³‚ê‚½‚Æ‚«‚ÉŒÄ‚Ño‚³‚ê‚Ü‚·
     [void]RaiseCanExecuteChanged() {
-        # InternalCanExecuteChangedã‚¤ãƒ™ãƒ³ãƒˆãƒãƒ³ãƒ‰ãƒ©ãƒ¼ã‚’å–å¾—
+        # InternalCanExecuteChangedƒCƒxƒ“ƒgƒnƒ“ƒhƒ‰[‚ğæ“¾
         $eCanExecuteChanged = $this.psobject.InternalCanExecuteChanged
         if ($eCanExecuteChanged) {
-            # ã‚³ãƒãƒ³ãƒ‰ãŒå®Ÿè¡Œå¯èƒ½ãªçŠ¶æ…‹ã‹ã€ã‚¹ãƒ­ãƒƒãƒˆãƒªãƒ³ã‚°ãŒè¨­å®šã•ã‚Œã¦ã„ã‚‹å ´åˆã«ã‚¤ãƒ™ãƒ³ãƒˆã‚’ç™ºç”Ÿã•ã›ã‚‹
+            # ƒRƒ}ƒ“ƒh‚ªÀs‰Â”\‚Èó‘Ô‚©AƒXƒƒbƒgƒŠƒ“ƒO‚ªİ’è‚³‚ê‚Ä‚¢‚éê‡‚ÉƒCƒxƒ“ƒg‚ğ”­¶‚³‚¹‚é
             if ($this.psobject.CanExecuteAction -or ($this.psobject.Throttle -gt 0)) {
-                # ã‚¤ãƒ™ãƒ³ãƒˆãƒãƒ³ãƒ‰ãƒ©ãƒ¼ã‚’å‘¼ã³å‡ºã—ã€ç©ºã®EventArgsã‚’æ¸¡ã™
+                # ƒCƒxƒ“ƒgƒnƒ“ƒhƒ‰[‚ğŒÄ‚Ño‚µA‹ó‚ÌEventArgs‚ğ“n‚·
                 $eCanExecuteChanged.Invoke($this, [System.EventArgs]::Empty)
             }
         }
     }
 
-    # éåŒæœŸå‡¦ç†å®Œäº†å¾Œã«Workersæ•°ã‚’æ¸›ã‚‰ã—ã€CanExecuteChangedã‚’å‘¼ã³å‡ºã™ãƒ¡ã‚½ãƒƒãƒ‰
-    # ã“ã®ãƒ¡ã‚½ãƒƒãƒ‰ã¯ã€éåŒæœŸå‡¦ç†ãŒå®Œäº†ã—ãŸã¨ãã«UIã‚¹ãƒ¬ãƒƒãƒ‰ã§å®Ÿè¡Œã•ã‚Œã¾ã™
+    # ”ñ“¯Šúˆ—Š®—¹Œã‚ÉWorkers”‚ğŒ¸‚ç‚µACanExecuteChanged‚ğŒÄ‚Ño‚·ƒƒ\ƒbƒh
+    # ‚±‚Ìƒƒ\ƒbƒh‚ÍA”ñ“¯Šúˆ—‚ªŠ®—¹‚µ‚½‚Æ‚«‚ÉUIƒXƒŒƒbƒh‚ÅÀs‚³‚ê‚Ü‚·
     [void]InvokeCanExecuteChanged() {
         $ActionCommand = $this
-        # UIã‚¹ãƒ¬ãƒƒãƒ‰ã§Workersæ•°ã‚’æ¸›ã‚‰ã—ã€CanExecuteChangedã‚¤ãƒ™ãƒ³ãƒˆã‚’ç™ºç”Ÿã•ã›ã‚‹
+        # UIƒXƒŒƒbƒh‚ÅWorkers”‚ğŒ¸‚ç‚µACanExecuteChangedƒCƒxƒ“ƒg‚ğ”­¶‚³‚¹‚é
         $this.psobject.Dispatcher.Invoke(9,[Action[object]]{
             param($ActionCommand)
-            # Workersæ•°ã‚’1æ¸›ã‚‰ã™
+            # Workers”‚ğ1Œ¸‚ç‚·
             $ActionCommand.Workers--
-            # æ³¨æ„: ã“ã“ã§CanExecuteChangedã‚¤ãƒ™ãƒ³ãƒˆã‚’æ˜ç¤ºçš„ã«ç™ºç”Ÿã•ã›ã¦ã„ãªã„ãŒã€
-            # Workersãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã®å¤‰æ›´ã«ã‚ˆã£ã¦é–“æ¥çš„ã«ç™ºç”Ÿã™ã‚‹å¯èƒ½æ€§ãŒã‚ã‚‹
+            # ’ˆÓ: ‚±‚±‚ÅCanExecuteChangedƒCƒxƒ“ƒg‚ğ–¾¦“I‚É”­¶‚³‚¹‚Ä‚¢‚È‚¢‚ªA
+            # WorkersƒvƒƒpƒeƒB‚Ì•ÏX‚É‚æ‚Á‚ÄŠÔÚ“I‚É”­¶‚·‚é‰Â”\«‚ª‚ ‚é
         }, $ActionCommand)
     }
 
-    # ã‚¯ãƒ©ã‚¹ã®ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ã¨ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã®å®šç¾©
+    # ƒNƒ‰ƒX‚ÌƒvƒƒpƒeƒB‚ÆƒtƒB[ƒ‹ƒh‚Ì’è‹`
 
-    $Action                  # å¼•æ•°ã‚’å–ã‚‰ãªã„ã‚¢ã‚¯ã‚·ãƒ§ãƒ³ã‚’æ ¼ç´
-    $ActionObject            # ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å¼•æ•°ã«å–ã‚‹ã‚¢ã‚¯ã‚·ãƒ§ãƒ³ã‚’æ ¼ç´
-    $CanExecuteAction        # ã‚³ãƒãƒ³ãƒ‰ãŒå®Ÿè¡Œå¯èƒ½ã‹ã©ã†ã‹ã‚’åˆ¤æ–­ã™ã‚‹ãŸã‚ã®æ¡ä»¶ã‚’æ ¼ç´
-    $ThreadManager           # ã‚¹ãƒ¬ãƒƒãƒ‰ç®¡ç†ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’æ ¼ç´
-    $Workers = 0             # ç¾åœ¨å®Ÿè¡Œä¸­ã®ãƒ¯ãƒ¼ã‚«ãƒ¼æ•°ã‚’è¿½è·¡ï¼ˆåˆæœŸå€¤ã¯0ï¼‰
-    $Throttle = 0            # ã‚³ãƒãƒ³ãƒ‰å®Ÿè¡Œã®åˆ¶é™å€¤ï¼ˆåˆæœŸå€¤ã¯0ã€åˆ¶é™ãªã—ï¼‰
-    $InvokeCanExecuteChangedDelegate  # CanExecuteChangedã‚¤ãƒ™ãƒ³ãƒˆã‚’å‘¼ã³å‡ºã™ãŸã‚ã®ãƒ‡ãƒªã‚²ãƒ¼ãƒˆ
-    $Dispatcher = [System.Windows.Threading.Dispatcher]::CurrentDispatcher  # ç¾åœ¨ã®UIã‚¹ãƒ¬ãƒƒãƒ‰ã®Dispatcherã‚’å–å¾—
+    $Action                  # ˆø”‚ğæ‚ç‚È‚¢ƒAƒNƒVƒ‡ƒ“‚ğŠi”[
+    $ActionObject            # ƒIƒuƒWƒFƒNƒg‚ğˆø”‚Éæ‚éƒAƒNƒVƒ‡ƒ“‚ğŠi”[
+    $CanExecuteAction        # ƒRƒ}ƒ“ƒh‚ªÀs‰Â”\‚©‚Ç‚¤‚©‚ğ”»’f‚·‚é‚½‚ß‚ÌğŒ‚ğŠi”[
+    $ThreadManager           # ƒXƒŒƒbƒhŠÇ—ƒIƒuƒWƒFƒNƒg‚ğŠi”[
+    $Workers = 0             # Œ»İÀs’†‚Ìƒ[ƒJ[”‚ğ’ÇÕi‰Šú’l‚Í0j
+    $Throttle = 0            # ƒRƒ}ƒ“ƒhÀs‚Ì§ŒÀ’li‰Šú’l‚Í0A§ŒÀ‚È‚µj
+    $InvokeCanExecuteChangedDelegate  # CanExecuteChangedƒCƒxƒ“ƒg‚ğŒÄ‚Ño‚·‚½‚ß‚ÌƒfƒŠƒQ[ƒg
+    $Dispatcher = [System.Windows.Threading.Dispatcher]::CurrentDispatcher  # Œ»İ‚ÌUIƒXƒŒƒbƒh‚ÌDispatcher‚ğæ“¾
 
-    # ãƒ‡ãƒªã‚²ãƒ¼ãƒˆã‚’ä½œæˆã™ã‚‹ãƒ¡ã‚½ãƒƒãƒ‰
-    # ã“ã®ãƒ¡ã‚½ãƒƒãƒ‰ã¯ã€PowerShellã®ãƒ¡ã‚½ãƒƒãƒ‰ã‚’.NETã®ãƒ‡ãƒªã‚²ãƒ¼ãƒˆã«å¤‰æ›ã—ã¾ã™
+    # ƒfƒŠƒQ[ƒg‚ğì¬‚·‚éƒƒ\ƒbƒh
+    # ‚±‚Ìƒƒ\ƒbƒh‚ÍAPowerShell‚Ìƒƒ\ƒbƒh‚ğ.NET‚ÌƒfƒŠƒQ[ƒg‚É•ÏŠ·‚µ‚Ü‚·
     [Delegate]CreateDelegate([System.Management.Automation.PSMethod]$Method) {
-        # ãƒ¡ã‚½ãƒƒãƒ‰ã®æƒ…å ±ã‚’å–å¾—
+        # ƒƒ\ƒbƒh‚Ìî•ñ‚ğæ“¾
         $ReflectionMethod = $this.psobject.GetType().GetMethod($Method.Name)
         
-        # ãƒ¡ã‚½ãƒƒãƒ‰ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å‹ã‚’å–å¾—
+        # ƒƒ\ƒbƒh‚Ìƒpƒ‰ƒ[ƒ^Œ^‚ğæ“¾
         $ParameterTypes = [System.Linq.Enumerable]::Select($ReflectionMethod.GetParameters(), [func[object,object]]{$args[0].parametertype})
         
-        # ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å‹ã¨æˆ»ã‚Šå€¤ã®å‹ã‚’çµåˆ
+        # ƒpƒ‰ƒ[ƒ^Œ^‚Æ–ß‚è’l‚ÌŒ^‚ğŒ‹‡
         $ConcatMethodTypes = $ParameterTypes + $ReflectionMethod.ReturnType
         
-        # é©åˆ‡ãªãƒ‡ãƒªã‚²ãƒ¼ãƒˆå‹ã‚’å–å¾—
+        # “KØ‚ÈƒfƒŠƒQ[ƒgŒ^‚ğæ“¾
         $DelegateType = [System.Linq.Expressions.Expression]::GetDelegateType($ConcatMethodTypes)
         
-        # ãƒ‡ãƒªã‚²ãƒ¼ãƒˆã‚’ä½œæˆ
+        # ƒfƒŠƒQ[ƒg‚ğì¬
         $Delegate = [delegate]::CreateDelegate($DelegateType, $this, $ReflectionMethod.Name)
         
-        # ä½œæˆã—ãŸãƒ‡ãƒªã‚²ãƒ¼ãƒˆã‚’è¿”ã™
+        # ì¬‚µ‚½ƒfƒŠƒQ[ƒg‚ğ•Ô‚·
         return $Delegate
     }
 }
@@ -463,110 +462,110 @@ class ActionCommand : ViewModelBase, System.Windows.Input.ICommand {
 
 <#
 .SYNOPSIS
-è¤‡æ•°ã®éåŒæœŸå‡¦ç†ã‚’ç®¡ç†ã™ã‚‹ãŸã‚ã®ã‚¯ãƒ©ã‚¹ã§ã™ã€‚
+•¡”‚Ì”ñ“¯Šúˆ—‚ğŠÇ—‚·‚é‚½‚ß‚ÌƒNƒ‰ƒX‚Å‚·B
 
 .DESCRIPTION
-ThreadManagerã‚¯ãƒ©ã‚¹ã¯ã€è¤‡æ•°ã®éåŒæœŸå‡¦ç†ï¼ˆãƒãƒƒã‚¯ã‚°ãƒ©ã‚¦ãƒ³ãƒ‰ã‚¿ã‚¹ã‚¯ï¼‰ã‚’
-åŠ¹ç‡çš„ã«ç®¡ç†ã™ã‚‹ãŸã‚ã«ä½¿ç”¨ã•ã‚Œã¾ã™ã€‚ã“ã®ã‚¯ãƒ©ã‚¹ã®ä¸»ãªæ©Ÿèƒ½ã¯ï¼š
-1. è¤‡æ•°ã®éåŒæœŸå‡¦ç†ã‚’åŒæ™‚ã«å®Ÿè¡Œã™ã‚‹
-2. å‡¦ç†ã®å®Œäº†ã‚’å¾…ã¤
-3. å‡¦ç†ã®çµæœã‚’å–å¾—ã™ã‚‹
-4. ä½¿ç”¨ã—ã¦ã„ãªã„ãƒªã‚½ãƒ¼ã‚¹ã‚’é©åˆ‡ã«è§£æ”¾ã™ã‚‹
+ThreadManagerƒNƒ‰ƒX‚ÍA•¡”‚Ì”ñ“¯Šúˆ—iƒoƒbƒNƒOƒ‰ƒEƒ“ƒhƒ^ƒXƒNj‚ğ
+Œø—¦“I‚ÉŠÇ—‚·‚é‚½‚ß‚Ég—p‚³‚ê‚Ü‚·B‚±‚ÌƒNƒ‰ƒX‚Ìå‚È‹@”\‚ÍF
+1. •¡”‚Ì”ñ“¯Šúˆ—‚ğ“¯‚ÉÀs‚·‚é
+2. ˆ—‚ÌŠ®—¹‚ğ‘Ò‚Â
+3. ˆ—‚ÌŒ‹‰Ê‚ğæ“¾‚·‚é
+4. g—p‚µ‚Ä‚¢‚È‚¢ƒŠƒ\[ƒX‚ğ“KØ‚É‰ğ•ú‚·‚é
 
 .NOTES
-ã“ã®ã‚¯ãƒ©ã‚¹ã¯ã€UIã®å¿œç­”æ€§ã‚’ç¶­æŒã—ãªãŒã‚‰é•·æ™‚é–“ã®å‡¦ç†ã‚’è¡Œã†å¿…è¦ãŒã‚ã‚‹
-WPFã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã§ç‰¹ã«æœ‰ç”¨ã§ã™ã€‚
+‚±‚ÌƒNƒ‰ƒX‚ÍAUI‚Ì‰“š«‚ğˆÛ‚µ‚È‚ª‚ç’·ŠÔ‚Ìˆ—‚ğs‚¤•K—v‚ª‚ ‚é
+WPFƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚Å“Á‚É—L—p‚Å‚·B
 
 .EXAMPLE
-# ThreadManagerã®ä½œæˆ
+# ThreadManager‚Ìì¬
 $threadManager = [ThreadManager]::new()
 
-# éåŒæœŸå‡¦ç†ã®å®Ÿè¡Œ
+# ”ñ“¯Šúˆ—‚ÌÀs
 $task = $threadManager.Async({ 
-    # ã“ã“ã«é•·æ™‚é–“ã®å‡¦ç†ã‚’æ›¸ãã¾ã™
+    # ‚±‚±‚É’·ŠÔ‚Ìˆ—‚ğ‘‚«‚Ü‚·
     Start-Sleep -Seconds 5
-    return "å‡¦ç†ãŒå®Œäº†ã—ã¾ã—ãŸ"
+    return "ˆ—‚ªŠ®—¹‚µ‚Ü‚µ‚½"
 })
 
-# å‡¦ç†ã®å®Œäº†ã‚’å¾…ã¡ã€çµæœã‚’å–å¾—
+# ˆ—‚ÌŠ®—¹‚ğ‘Ò‚¿AŒ‹‰Ê‚ğæ“¾
 $result = $task.Result
 Write-Host $result
 
-# ä½¿ç”¨çµ‚äº†å¾Œã«ãƒªã‚½ãƒ¼ã‚¹ã‚’è§£æ”¾
+# g—pI—¹Œã‚ÉƒŠƒ\[ƒX‚ğ‰ğ•ú
 $threadManager.Dispose()
 
 .LINK
 https://docs.microsoft.com/ja-jp/dotnet/api/system.threading.tasks.task?view=net-5.0
 #>
 class ThreadManager : System.IDisposable {
-    # IDisposableã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹ã®å®Ÿè£…
-    # ãƒªã‚½ãƒ¼ã‚¹ã‚’è§£æ”¾ã™ã‚‹ãƒ¡ã‚½ãƒƒãƒ‰
+    # IDisposableƒCƒ“ƒ^[ƒtƒF[ƒX‚ÌÀ‘•
+    # ƒŠƒ\[ƒX‚ğ‰ğ•ú‚·‚éƒƒ\ƒbƒh
     Dispose() {
         $this.RunspacePool.Dispose()
     }
 
-    # å…±æœ‰å¤‰æ•°ã‚’æ ¼ç´ã™ã‚‹ãŸã‚ã®è¾æ›¸
+    # ‹¤—L•Ï”‚ğŠi”[‚·‚é‚½‚ß‚Ì«‘
     $SharedPoolVars = [System.Collections.Concurrent.ConcurrentDictionary[string,object]]::new()
     
-    # ã‚¿ã‚¹ã‚¯å®Œäº†æ™‚ã«å‘¼ã³å‡ºã•ã‚Œã‚‹ãƒ‡ãƒªã‚²ãƒ¼ãƒˆ
+    # ƒ^ƒXƒNŠ®—¹‚ÉŒÄ‚Ño‚³‚ê‚éƒfƒŠƒQ[ƒg
     $DisposeTaskDelegate = $this.CreateDelegate($this.DisposeTask)
 
-    # PowerShellã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’å®Ÿè¡Œã™ã‚‹ãŸã‚ã®RunspacePool
+    # PowerShellƒCƒ“ƒXƒ^ƒ“ƒX‚ğÀs‚·‚é‚½‚ß‚ÌRunspacePool
     $RunspacePool
 
-    # é–¢æ•°åã®ãƒªã‚¹ãƒˆã‚’å—ã‘å–ã‚‹ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+    # ŠÖ”–¼‚ÌƒŠƒXƒg‚ğó‚¯æ‚éƒRƒ“ƒXƒgƒ‰ƒNƒ^
     ThreadManager($FunctionNames) {
-        $this.Init($FunctionNames)  # åˆæœŸåŒ–ãƒ¡ã‚½ãƒƒãƒ‰ã‚’å‘¼ã³å‡ºã™
+        $this.Init($FunctionNames)  # ‰Šú‰»ƒƒ\ƒbƒh‚ğŒÄ‚Ño‚·
     }
 
-    # ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+    # ƒfƒtƒHƒ‹ƒgƒRƒ“ƒXƒgƒ‰ƒNƒ^
     ThreadManager() {
-        $this.Init($null)  # é–¢æ•°åãªã—ã§åˆæœŸåŒ–ãƒ¡ã‚½ãƒƒãƒ‰ã‚’å‘¼ã³å‡ºã™
+        $this.Init($null)  # ŠÖ”–¼‚È‚µ‚Å‰Šú‰»ƒƒ\ƒbƒh‚ğŒÄ‚Ño‚·
     }
 
-    # åˆæœŸåŒ–ãƒ¡ã‚½ãƒƒãƒ‰ï¼ˆéå…¬é–‹ï¼‰
+    # ‰Šú‰»ƒƒ\ƒbƒhi”ñŒöŠJj
     hidden Init($FunctionNames) {
-        # ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®åˆæœŸã‚»ãƒƒã‚·ãƒ§ãƒ³çŠ¶æ…‹ã‚’ä½œæˆ
+        # ƒfƒtƒHƒ‹ƒg‚Ì‰ŠúƒZƒbƒVƒ‡ƒ“ó‘Ô‚ğì¬
         $State = [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
         
-        # å…±æœ‰å¤‰æ•°ã‚’ã‚»ãƒƒã‚·ãƒ§ãƒ³çŠ¶æ…‹ã«è¿½åŠ 
+        # ‹¤—L•Ï”‚ğƒZƒbƒVƒ‡ƒ“ó‘Ô‚É’Ç‰Á
         $RunspaceVariable = New-Object System.Management.Automation.Runspaces.SessionStateVariableEntry -ArgumentList 'SharedPoolVars', $this.SharedPoolVars, $null
         $State.Variables.Add($RunspaceVariable)
 
-        # æŒ‡å®šã•ã‚ŒãŸé–¢æ•°ã‚’ã‚»ãƒƒã‚·ãƒ§ãƒ³çŠ¶æ…‹ã«è¿½åŠ 
+        # w’è‚³‚ê‚½ŠÖ”‚ğƒZƒbƒVƒ‡ƒ“ó‘Ô‚É’Ç‰Á
         foreach ($FunctionName in $FunctionNames) {
-            # é–¢æ•°å®šç¾©ã‚’å–å¾—
+            # ŠÖ”’è‹`‚ğæ“¾
             $FunctionDefinition = Get-Content Function:\$FunctionName -ErrorAction 'Stop'
-            # ã‚»ãƒƒã‚·ãƒ§ãƒ³çŠ¶æ…‹ã«é–¢æ•°ã‚’è¿½åŠ 
+            # ƒZƒbƒVƒ‡ƒ“ó‘Ô‚ÉŠÖ”‚ğ’Ç‰Á
             $SessionStateFunction = New-Object System.Management.Automation.Runspaces.SessionStateFunctionEntry -ArgumentList $FunctionName, $FunctionDefinition
             $State.Commands.Add($SessionStateFunction)
         }
 
-        # RunspacePoolã‚’ä½œæˆ
-        # æœ€å°1ã€æœ€å¤§ã¯ãƒ—ãƒ­ã‚»ãƒƒã‚µæ•°+1ã®ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’ä½¿ç”¨
+        # RunspacePool‚ğì¬
+        # Å¬1AÅ‘å‚ÍƒvƒƒZƒbƒT”+1‚ÌƒXƒŒƒbƒh‚ğg—p
         $this.RunspacePool = [RunspaceFactory]::CreateRunspacePool(1, $([int]$env:NUMBER_OF_PROCESSORS + 1), $State, (Get-Host))
         
-        # RunspacePoolã®è¨­å®š
-        $this.RunspacePool.ApartmentState = 'STA'  # ã‚·ãƒ³ã‚°ãƒ«ã‚¹ãƒ¬ãƒƒãƒ‰ã‚¢ãƒ‘ãƒ¼ãƒˆãƒ¡ãƒ³ãƒˆãƒ¢ãƒ¼ãƒ‰ã‚’è¨­å®š
-        $this.RunspacePool.ThreadOptions = 'ReuseThread'  # ã‚¹ãƒ¬ãƒƒãƒ‰ã®å†åˆ©ç”¨ã‚’è¨­å®š
-        $this.RunspacePool.CleanupInterval = [timespan]::FromMinutes(2)  # ã‚¯ãƒªãƒ¼ãƒ³ã‚¢ãƒƒãƒ—é–“éš”ã‚’2åˆ†ã«è¨­å®š
+        # RunspacePool‚Ìİ’è
+        $this.RunspacePool.ApartmentState = 'STA'  # ƒVƒ“ƒOƒ‹ƒXƒŒƒbƒhƒAƒp[ƒgƒƒ“ƒgƒ‚[ƒh‚ğİ’è
+        $this.RunspacePool.ThreadOptions = 'ReuseThread'  # ƒXƒŒƒbƒh‚ÌÄ—˜—p‚ğİ’è
+        $this.RunspacePool.CleanupInterval = [timespan]::FromMinutes(2)  # ƒNƒŠ[ƒ“ƒAƒbƒvŠÔŠu‚ğ2•ª‚Éİ’è
         
-        # RunspacePoolã‚’é–‹ã
-        $this.RunspacePool.Open()  # TODO: åˆæœŸåŒ–ãƒ¡ã‚½ãƒƒãƒ‰ã«ç§»å‹•ã™ã‚‹ã‹ã€RunspacePoolã‚’ã‚¯ãƒ©ã‚¹å¤–ã®å¤‰æ•°ã«ã™ã‚‹
+        # RunspacePool‚ğŠJ‚­
+        $this.RunspacePool.Open()  # TODO: ‰Šú‰»ƒƒ\ƒbƒh‚ÉˆÚ“®‚·‚é‚©ARunspacePool‚ğƒNƒ‰ƒXŠO‚Ì•Ï”‚É‚·‚é
     }
 
-    # éåŒæœŸå‡¦ç†ã‚’é–‹å§‹ã™ã‚‹ãƒ¡ã‚½ãƒƒãƒ‰
+    # ”ñ“¯Šúˆ—‚ğŠJn‚·‚éƒƒ\ƒbƒh
     [object]Async([scriptblock]$scriptblock) {
-        # PowerShellã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®ä½œæˆ
+        # PowerShellƒCƒ“ƒXƒ^ƒ“ƒX‚Ìì¬
         $Powershell = [powershell]::Create()
         $EndInvokeDelegate = $this.CreateDelegate($Powershell.EndInvoke, $Powershell)
         $Powershell.RunspacePool = $this.RunspacePool
 
-        # ã‚¹ã‚¯ãƒªãƒ—ãƒˆãƒ–ãƒ­ãƒƒã‚¯ã®è¿½åŠ ã¨å®Ÿè¡Œé–‹å§‹
+        # ƒXƒNƒŠƒvƒgƒuƒƒbƒN‚Ì’Ç‰Á‚ÆÀsŠJn
         $null = $Powershell.AddScript($scriptblock)
         $Handle = $Powershell.BeginInvoke()
 
-        # ã‚¿ã‚¹ã‚¯ã®ä½œæˆ
+        # ƒ^ƒXƒN‚Ìì¬
         $TaskFactory = [System.Threading.Tasks.TaskFactory]::new([System.Threading.Tasks.TaskScheduler]::Default)
         $Task = $TaskFactory.FromAsync($Handle, $EndInvokeDelegate)
         $null = $Task.ContinueWith($this.DisposeTaskDelegate, $Powershell)
@@ -574,19 +573,19 @@ class ThreadManager : System.IDisposable {
         return $Task
     }
 
-    # ãƒ‡ãƒªã‚²ãƒ¼ãƒˆã‚’éåŒæœŸã§å®Ÿè¡Œã™ã‚‹ãƒ¡ã‚½ãƒƒãƒ‰ï¼ˆã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰ï¼‰
+    # ƒfƒŠƒQ[ƒg‚ğ”ñ“¯Šú‚ÅÀs‚·‚éƒƒ\ƒbƒhiƒI[ƒo[ƒ[ƒhj
     [object]Async([Delegate]$MethodToRunAsync) {
         return $this.Async($MethodToRunAsync, $null)
     }
 
-    # ãƒ‡ãƒªã‚²ãƒ¼ãƒˆã¨ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã‚’éåŒæœŸã§å®Ÿè¡Œã™ã‚‹ãƒ¡ã‚½ãƒƒãƒ‰
+    # ƒfƒŠƒQ[ƒg‚ÆƒR[ƒ‹ƒoƒbƒN‚ğ”ñ“¯Šú‚ÅÀs‚·‚éƒƒ\ƒbƒh
     [object]Async([Delegate]$MethodToRunAsync, [Delegate]$Callback) {
-        # PowerShellã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®ä½œæˆ
+        # PowerShellƒCƒ“ƒXƒ^ƒ“ƒX‚Ìì¬
         $Powershell = [powershell]::Create()
         $EndInvokeDelegate = $this.CreateDelegate($Powershell.EndInvoke, $Powershell)
         $Powershell.RunspacePool = $this.RunspacePool
 
-        # å®Ÿè¡Œã™ã‚‹ã‚¢ã‚¯ã‚·ãƒ§ãƒ³ã®å®šç¾©
+        # Às‚·‚éƒAƒNƒVƒ‡ƒ“‚Ì’è‹`
         if ($Callback) {
             $Action = {
                 param($MethodToRunAsync, $Callback)
@@ -601,56 +600,56 @@ class ThreadManager : System.IDisposable {
         }
         $NoContext = [scriptblock]::create($Action.ToString())
 
-        # PowerShellã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã«ã‚¹ã‚¯ãƒªãƒ—ãƒˆã¨ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’è¿½åŠ 
+        # PowerShellƒCƒ“ƒXƒ^ƒ“ƒX‚ÉƒXƒNƒŠƒvƒg‚Æƒpƒ‰ƒ[ƒ^‚ğ’Ç‰Á
         $null = $Powershell.AddScript($NoContext)
         $null = $Powershell.AddParameter('MethodToRunAsync', $MethodToRunAsync)
         if ($Callback) { $null = $Powershell.AddParameter('Callback', $Callback) }
         $Handle = $Powershell.BeginInvoke()
 
-        # ã‚¿ã‚¹ã‚¯ã®ä½œæˆ
+        # ƒ^ƒXƒN‚Ìì¬
         $TaskFactory = [System.Threading.Tasks.TaskFactory]::new([System.Threading.Tasks.TaskScheduler]::Default)
-        # å®Œäº†æ™‚ã«è‡ªå‹•çš„ã« EndInvoke ã‚’éåŒæœŸã§å‘¼ã³å‡ºã—ã¾ã™ã€‚
-        # ãã—ã¦ã‚¿ã‚¹ã‚¯ã‚’è¿”ã—ã¾ã™ã€‚
-        # å°‚ç”¨ã®ãƒ©ãƒ³ã‚¹ãƒšãƒ¼ã‚¹ã‚’ç«‹ã¡ä¸Šã’ã¦ã‚¯ãƒªãƒ¼ãƒ³ã‚¢ãƒƒãƒ—ã™ã‚‹å¿…è¦ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚
+        # Š®—¹‚É©“®“I‚É EndInvoke ‚ğ”ñ“¯Šú‚ÅŒÄ‚Ño‚µ‚Ü‚·B
+        # ‚»‚µ‚Äƒ^ƒXƒN‚ğ•Ô‚µ‚Ü‚·B
+        # ê—p‚Ìƒ‰ƒ“ƒXƒy[ƒX‚ğ—§‚¿ã‚°‚ÄƒNƒŠ[ƒ“ƒAƒbƒv‚·‚é•K—v‚Í‚ ‚è‚Ü‚¹‚ñB
         $Task = $TaskFactory.FromAsync($Handle, $EndInvokeDelegate)
         $null = $Task.ContinueWith($this.DisposeTaskDelegate, $Powershell)
 
         return $Task
     }
 
-    # ã‚¿ã‚¹ã‚¯å®Œäº†æ™‚ã«PowerShellã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ç ´æ£„ã™ã‚‹ãƒ¡ã‚½ãƒƒãƒ‰
+    # ƒ^ƒXƒNŠ®—¹‚ÉPowerShellƒCƒ“ƒXƒ^ƒ“ƒX‚ğ”jŠü‚·‚éƒƒ\ƒbƒh
     DisposeTask([System.Threading.Tasks.Task]$Task, [object]$Powershell) {
         # $Task.Result
         $Powershell.Dispose()
     }
 
-    # CreateDelegateãƒ¡ã‚½ãƒƒãƒ‰ã®ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰ï¼ˆå¼•æ•°ãŒ1ã¤ã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³ï¼‰
+    # CreateDelegateƒƒ\ƒbƒh‚ÌƒI[ƒo[ƒ[ƒhiˆø”‚ª1‚Â‚Ìƒo[ƒWƒ‡ƒ“j
     [Delegate]CreateDelegate([System.Management.Automation.PSMethod]$Method) {
-        # è‡ªèº«ï¼ˆ$thisï¼‰ã‚’ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¨ã—ã¦ã€2ã¤ã®å¼•æ•°ã‚’å–ã‚‹ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã®CreateDelegateã‚’å‘¼ã³å‡ºã™
+        # ©gi$thisj‚ğƒ^[ƒQƒbƒg‚Æ‚µ‚ÄA2‚Â‚Ìˆø”‚ğæ‚éƒo[ƒWƒ‡ƒ“‚ÌCreateDelegate‚ğŒÄ‚Ño‚·
         return $this.CreateDelegate($Method, $this)
     }
 
-    # CreateDelegateãƒ¡ã‚½ãƒƒãƒ‰ã®ã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰ï¼ˆå¼•æ•°ãŒ2ã¤ã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³ï¼‰
+    # CreateDelegateƒƒ\ƒbƒh‚ÌƒI[ƒo[ƒ[ƒhiˆø”‚ª2‚Â‚Ìƒo[ƒWƒ‡ƒ“j
     [Delegate]CreateDelegate([System.Management.Automation.PSMethod]$Method, $Target) {
-        # ãƒªãƒ•ãƒ¬ã‚¯ã‚·ãƒ§ãƒ³ã‚’ä½¿ç”¨ã—ã¦ãƒ¡ã‚½ãƒƒãƒ‰æƒ…å ±ã‚’å–å¾—
+        # ƒŠƒtƒŒƒNƒVƒ‡ƒ“‚ğg—p‚µ‚Äƒƒ\ƒbƒhî•ñ‚ğæ“¾
         $ReflectionMethod = $Target.GetType().GetMethod($Method.Name)
         
-        # ãƒ¡ã‚½ãƒƒãƒ‰ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å‹ã‚’å–å¾—
-        # LINQã®Selectãƒ¡ã‚½ãƒƒãƒ‰ã‚’ä½¿ç”¨ã—ã¦ã€å„ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å‹ã‚’æŠ½å‡º
+        # ƒƒ\ƒbƒh‚Ìƒpƒ‰ƒ[ƒ^Œ^‚ğæ“¾
+        # LINQ‚ÌSelectƒƒ\ƒbƒh‚ğg—p‚µ‚ÄAŠeƒpƒ‰ƒ[ƒ^‚ÌŒ^‚ğ’Šo
         $ParameterTypes = [System.Linq.Enumerable]::Select($ReflectionMethod.GetParameters(), [func[object,object]]{$args[0].parametertype})
         
-        # ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿å‹ã¨æˆ»ã‚Šå€¤ã®å‹ã‚’çµåˆ
+        # ƒpƒ‰ƒ[ƒ^Œ^‚Æ–ß‚è’l‚ÌŒ^‚ğŒ‹‡
         $ConcatMethodTypes = $ParameterTypes + $ReflectionMethod.ReturnType
         
-        # é©åˆ‡ãªãƒ‡ãƒªã‚²ãƒ¼ãƒˆå‹ã‚’å–å¾—
-        # çµåˆã—ãŸãƒ¡ã‚½ãƒƒãƒ‰å‹æƒ…å ±ã‚’ä½¿ç”¨ã—ã¦ã€é©åˆ‡ãªãƒ‡ãƒªã‚²ãƒ¼ãƒˆå‹ã‚’ç”Ÿæˆ
+        # “KØ‚ÈƒfƒŠƒQ[ƒgŒ^‚ğæ“¾
+        # Œ‹‡‚µ‚½ƒƒ\ƒbƒhŒ^î•ñ‚ğg—p‚µ‚ÄA“KØ‚ÈƒfƒŠƒQ[ƒgŒ^‚ğ¶¬
         $DelegateType = [System.Linq.Expressions.Expression]::GetDelegateType($ConcatMethodTypes)
         
-        # ãƒ‡ãƒªã‚²ãƒ¼ãƒˆã‚’ä½œæˆ
-        # æŒ‡å®šã•ã‚ŒãŸã‚¿ãƒ¼ã‚²ãƒƒãƒˆã€ãƒ¡ã‚½ãƒƒãƒ‰åã€ãƒ‡ãƒªã‚²ãƒ¼ãƒˆå‹ã‚’ä½¿ç”¨ã—ã¦ãƒ‡ãƒªã‚²ãƒ¼ãƒˆã‚’ç”Ÿæˆ
+        # ƒfƒŠƒQ[ƒg‚ğì¬
+        # w’è‚³‚ê‚½ƒ^[ƒQƒbƒgAƒƒ\ƒbƒh–¼AƒfƒŠƒQ[ƒgŒ^‚ğg—p‚µ‚ÄƒfƒŠƒQ[ƒg‚ğ¶¬
         $Delegate = [delegate]::CreateDelegate($DelegateType, $Target, $ReflectionMethod.Name)
         
-        # ä½œæˆã—ãŸãƒ‡ãƒªã‚²ãƒ¼ãƒˆã‚’è¿”ã™
+        # ì¬‚µ‚½ƒfƒŠƒQ[ƒg‚ğ•Ô‚·
         return $Delegate
     }
 }

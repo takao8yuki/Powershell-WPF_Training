@@ -1,4 +1,5 @@
-<!-- ã‚«ã‚¹ã‚¿ãƒ ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ï¼ˆPartialWindowï¼‰ã‚’ä½¿ç”¨ã—ãŸãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®å®šç¾© -->
+<?xml version="1.0" encoding="Shift_JIS"?>
+<!-- ƒJƒXƒ^ƒ€ƒEƒBƒ“ƒhƒEƒNƒ‰ƒXiPartialWindowj‚ðŽg—p‚µ‚½ƒƒCƒ“ƒEƒBƒ“ƒhƒE‚Ì’è‹` -->
 <local:PartialWindow
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -9,27 +10,27 @@
     Width="640"
     Height="720">
 
-    <!-- ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ãƒªã‚½ãƒ¼ã‚¹å®šç¾©ï¼šã‚¹ã‚¿ã‚¤ãƒ«ã‚„ä»–ã®ãƒªã‚½ãƒ¼ã‚¹ã‚’å®šç¾©ã—ã¾ã™ -->
+    <!-- ƒEƒBƒ“ƒhƒE‚ÌƒŠƒ\[ƒX’è‹`FƒXƒ^ƒCƒ‹‚â‘¼‚ÌƒŠƒ\[ƒX‚ð’è‹`‚µ‚Ü‚· -->
     <Window.Resources>
         <ResourceDictionary>
-            <!-- å¤–éƒ¨ã®ãƒªã‚½ãƒ¼ã‚¹ãƒ‡ã‚£ã‚¯ã‚·ãƒ§ãƒŠãƒªã‚’èª­ã¿è¾¼ã¿ï¼šå…±é€šã®ã‚¹ã‚¿ã‚¤ãƒ«ãªã©ã‚’åˆ¥ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰å–ã‚Šè¾¼ã¿ã¾ã™ -->
+            <!-- ŠO•”‚ÌƒŠƒ\[ƒXƒfƒBƒNƒVƒ‡ƒiƒŠ‚ð“Ç‚Ýž‚ÝF‹¤’Ê‚ÌƒXƒ^ƒCƒ‹‚È‚Ç‚ð•Êƒtƒ@ƒCƒ‹‚©‚çŽæ‚èž‚Ý‚Ü‚· -->
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Views\Common.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
 
-    <!-- WindowChromeã®è¨­å®šï¼šã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®å¤–è¦³ã‚’ã‚«ã‚¹ã‚¿ãƒžã‚¤ã‚ºã—ã¾ã™ -->
+    <!-- WindowChrome‚ÌÝ’èFƒEƒBƒ“ƒhƒE‚ÌŠOŠÏ‚ðƒJƒXƒ^ƒ}ƒCƒY‚µ‚Ü‚· -->
     <WindowChrome.WindowChrome>
         <WindowChrome GlassFrameThickness="0" ResizeBorderThickness="4" CaptionHeight="35"/>
     </WindowChrome.WindowChrome>
 
-    <!-- ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆï¼šã‚¦ã‚£ãƒ³ãƒ‰ã‚¦å…¨ä½“ã®å¤–è¦³ã¨æ§‹é€ ã‚’å®šç¾©ã—ã¾ã™ -->
+    <!-- ƒEƒBƒ“ƒhƒE‚Ìƒeƒ“ƒvƒŒ[ƒgFƒEƒBƒ“ƒhƒE‘S‘Ì‚ÌŠOŠÏ‚Æ\‘¢‚ð’è‹`‚µ‚Ü‚· -->
     <Window.Template>
         <ControlTemplate>
-            <!-- ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®èƒŒæ™¯ã¨æž ã‚’è¨­å®š -->
+            <!-- ƒEƒBƒ“ƒhƒE‚Ì”wŒi‚Æ˜g‚ðÝ’è -->
             <Border Background="LightBlue" SnapsToDevicePixels="True">
-                <!-- ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®çŠ¶æ…‹ï¼ˆæœ€å¤§åŒ–/é€šå¸¸ï¼‰ã«å¿œã˜ã¦æž ã®å¤ªã•ã‚’èª¿æ•´ -->
+                <!-- ƒEƒBƒ“ƒhƒE‚Ìó‘ÔiÅ‘å‰»/’Êíj‚É‰ž‚¶‚Ä˜g‚Ì‘¾‚³‚ð’²® -->
                 <Border.Style>
                     <Style TargetType="{x:Type Border}">
                         <Style.Triggers>
@@ -44,13 +45,13 @@
                         </Style.Triggers>
                     </Style>
                 </Border.Style>
-                <!-- ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ä¸»è¦ãªæ§‹é€ ã‚’å®šç¾©ã™ã‚‹ã‚°ãƒªãƒƒãƒ‰ -->
+                <!-- ƒEƒBƒ“ƒhƒE‚ÌŽå—v‚È\‘¢‚ð’è‹`‚·‚éƒOƒŠƒbƒh -->
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="35" Name="TitleBarHeight" />
                         <RowDefinition />
                     </Grid.RowDefinitions>
-                        <!-- ã‚¿ã‚¤ãƒˆãƒ«ãƒãƒ¼ã®å†…å®¹ -->
+                        <!-- ƒ^ƒCƒgƒ‹ƒo[‚Ì“à—e -->
                         <Grid Grid.Row="0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -58,9 +59,9 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <!-- ã‚·ã‚¹ãƒ†ãƒ ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã¨ãƒ•ã‚¡ã‚¤ãƒ«ãƒ¡ãƒ‹ãƒ¥ãƒ¼ -->
+                            <!-- ƒVƒXƒeƒ€ƒƒjƒ…[‚Æƒtƒ@ƒCƒ‹ƒƒjƒ…[ -->
                             <StackPanel Grid.Column="0" WindowChrome.IsHitTestVisibleInChrome="True" Orientation="Horizontal" Margin="2,1,0,0" Name="TitleBarMenu">
-                                <!-- ã‚·ã‚¹ãƒ†ãƒ ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒœã‚¿ãƒ³ -->
+                                <!-- ƒVƒXƒeƒ€ƒƒjƒ…[ƒ{ƒ^ƒ“ -->
                                 <Button
                                     Command="{x:Static SystemCommands.ShowSystemMenuCommand}"
                                     CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"
@@ -73,7 +74,7 @@
                                         </Path.RenderTransform>
                                     </Path>
                                 </Button>
-                                <!-- ãƒ•ã‚¡ã‚¤ãƒ«ãƒ¡ãƒ‹ãƒ¥ãƒ¼ -->
+                                <!-- ƒtƒ@ƒCƒ‹ƒƒjƒ…[ -->
                                 <Menu Background="Transparent" WindowChrome.IsHitTestVisibleInChrome="True">
                                     <MenuItem Header="File" Height="25" Margin="3,4,3,0">
                                         <MenuItem Header="E_xit" Command="{x:Static SystemCommands.CloseWindowCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" />
@@ -81,7 +82,7 @@
                                 </Menu>
                             </StackPanel>
 
-                            <!-- ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¿ã‚¤ãƒˆãƒ«ï¼ˆä¸­å¤®æƒãˆï¼‰ -->
+                            <!-- ƒEƒBƒ“ƒhƒEƒ^ƒCƒgƒ‹i’†‰›‘µ‚¦j -->
                             <TextBlock
                                 Grid.Column="1"
                                 Grid.ColumnSpan="2"
@@ -91,9 +92,9 @@
                                 Text="{Binding Title, RelativeSource={RelativeSource TemplatedParent}}"
                                 Margin="{Binding Path=ActualWidth, ElementName=TitleBarMenu, Converter={StaticResource RightMarginConverter}}" />
 
-                            <!-- ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒœã‚¿ãƒ³ï¼ˆæœ€å°åŒ–ã€æœ€å¤§åŒ–/å¾©å…ƒã€é–‰ã˜ã‚‹ï¼‰ -->
+                            <!-- ƒEƒBƒ“ƒhƒEƒRƒ“ƒgƒ[ƒ‹ƒ{ƒ^ƒ“iÅ¬‰»AÅ‘å‰»/•œŒ³A•Â‚¶‚éj -->
                             <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="0,1,2,0">
-                                <!-- æœ€å°åŒ–ãƒœã‚¿ãƒ³ -->
+                                <!-- Å¬‰»ƒ{ƒ^ƒ“ -->
                                 <Button Command="{x:Static SystemCommands.MinimizeWindowCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" Style="{StaticResource TitleBarButton}">
                                     <Path Fill="Black" Stroke="Black" StrokeThickness="1" Stretch="Uniform" Data="{StaticResource ChromeMinimize}" RenderTransformOrigin="0.5, 0.5">
                                         <Path.RenderTransform>
@@ -101,7 +102,7 @@
                                         </Path.RenderTransform>
                                     </Path>
                                 </Button>
-                                <!-- å¾©å…ƒãƒœã‚¿ãƒ³ -->
+                                <!-- •œŒ³ƒ{ƒ^ƒ“ -->
                                 <Button Command="{x:Static SystemCommands.RestoreWindowCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" Style="{StaticResource TitleBarButtonRestore}">
                                     <Path Fill="Black" Stroke="Black" StrokeThickness="0.33" Stretch="Uniform" Data="{StaticResource ChromeRestore}" RenderTransformOrigin="0.5, 0.5">
                                         <Path.RenderTransform>
@@ -109,7 +110,7 @@
                                         </Path.RenderTransform>
                                     </Path>
                                 </Button>
-                                <!-- æœ€å¤§åŒ–ãƒœã‚¿ãƒ³ -->
+                                <!-- Å‘å‰»ƒ{ƒ^ƒ“ -->
                                 <Button Command="{x:Static SystemCommands.MaximizeWindowCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" Style="{StaticResource TitleBarButtonMaximize}">
                                     <Path Fill="Black" Stroke="Black" StrokeThickness="0.33" Stretch="Uniform" Data="{StaticResource ChromeMaximize}" RenderTransformOrigin="0.5, 0.5">
                                         <Path.RenderTransform>
@@ -117,7 +118,7 @@
                                         </Path.RenderTransform>
                                     </Path>
                                 </Button>
-                                <!-- é–‰ã˜ã‚‹ãƒœã‚¿ãƒ³ -->
+                                <!-- •Â‚¶‚éƒ{ƒ^ƒ“ -->
                                 <Button Command="{x:Static SystemCommands.CloseWindowCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}" Style="{StaticResource TitleBarButton}">
                                     <Path Fill="Black" Stroke="Black" StrokeThickness="0.33" Stretch="Uniform" Data="{StaticResource ChromeClose}" RenderTransformOrigin="0.5, 0.5">
                                         <Path.RenderTransform>
@@ -128,7 +129,7 @@
                             </StackPanel>
                         </Grid>
 
-                    <!-- ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ãƒ¡ã‚¤ãƒ³ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã‚¨ãƒªã‚¢ -->
+                    <!-- ƒEƒBƒ“ƒhƒE‚ÌƒƒCƒ“ƒRƒ“ƒeƒ“ƒcƒGƒŠƒA -->
                     <Border Grid.Row="1" Grid.ColumnSpan="2" Background="#f8f8f8">
                         <ContentPresenter Content="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}"/>
                     </Border>
@@ -137,14 +138,14 @@
         </ControlTemplate>
     </Window.Template>
 
-    <!-- ãƒ¡ã‚¤ãƒ³ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã®ã‚°ãƒªãƒƒãƒ‰ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆ -->
+    <!-- ƒƒCƒ“ƒRƒ“ƒeƒ“ƒc‚ÌƒOƒŠƒbƒhƒŒƒCƒAƒEƒg -->
     <Grid Name="MainGrid" >
-        <!-- 2åˆ—ã®ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã‚’å®šç¾© -->
+        <!-- 2—ñ‚ÌƒŒƒCƒAƒEƒg‚ð’è‹` -->
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <!-- 5è¡Œã®ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã‚’å®šç¾© -->
+        <!-- 5s‚ÌƒŒƒCƒAƒEƒg‚ð’è‹` -->
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="20" Name="ShowCaseHeaderRow" />
@@ -153,11 +154,11 @@
             <RowDefinition Height="*" Name="DataGridRow" />
         </Grid.RowDefinitions>
 
-        <!-- SharedResourceã®è¡¨ç¤º -->
+        <!-- SharedResource‚Ì•\Ž¦ -->
         <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="SharedResource" Style="{StaticResource TextBlockShowCase}" />
         <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding SharedResource, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBlockShowCase}" />
 
-        <!-- ViewModelãƒ¡ã‚½ãƒƒãƒ‰ã®ã‚°ãƒ«ãƒ¼ãƒ—ãƒœãƒƒã‚¯ã‚¹ï¼ˆå·¦å´ï¼‰ -->
+        <!-- ViewModelƒƒ\ƒbƒh‚ÌƒOƒ‹[ƒvƒ{ƒbƒNƒXi¶‘¤j -->
         <GroupBox Grid.Row="3" Grid.Column="0" Header="ViewModel Method" Padding="5">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -169,18 +170,18 @@
                     <RowDefinition />
                     <RowDefinition />
                 </Grid.RowDefinitions>
-                <!-- Throttleï¼ˆã‚¹ãƒ­ãƒƒãƒˆãƒ«ï¼‰ã®è¡¨ç¤º -->
+                <!-- ThrottleiƒXƒƒbƒgƒ‹j‚Ì•\Ž¦ -->
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Throttle" Style="{StaticResource TextBlockLabel}" />
                 <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding AddTenSlowlyCommand.Throttle, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBlockData}" />
-                <!-- Workersï¼ˆãƒ¯ãƒ¼ã‚«ãƒ¼ï¼‰ã®è¡¨ç¤º -->
+                <!-- Workersiƒ[ƒJ[j‚Ì•\Ž¦ -->
                 <TextBlock Grid.Row="1" Grid.Column="0" Text="Workers" Style="{StaticResource TextBlockLabel}" />
                 <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding AddTenSlowlyCommand.Workers, UpdateSourceTrigger=PropertyChanged}"  Style="{StaticResource TextBlockData}" />
-                <!-- AddTenSlowlyãƒœã‚¿ãƒ³ -->
+                <!-- AddTenSlowlyƒ{ƒ^ƒ“ -->
                 <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Command="{Binding AddTenSlowlyCommand}" Content="_AddTenSlowly" Height="25" />
             </Grid>
         </GroupBox>
 
-        <!-- å¤–éƒ¨ãƒ¡ã‚½ãƒƒãƒ‰å‘¼ã³å‡ºã—ã®ã‚°ãƒ«ãƒ¼ãƒ—ãƒœãƒƒã‚¯ã‚¹ï¼ˆå³å´ï¼‰ -->
+        <!-- ŠO•”ƒƒ\ƒbƒhŒÄ‚Ño‚µ‚ÌƒOƒ‹[ƒvƒ{ƒbƒNƒXi‰E‘¤j -->
         <GroupBox Grid.Row="3" Grid.Column="1" Header="ViewModel Method Calling Another Class's Method" Padding="5">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -192,37 +193,37 @@
                     <RowDefinition />
                     <RowDefinition />
                 </Grid.RowDefinitions>
-                <!-- Throttleï¼ˆã‚¹ãƒ­ãƒƒãƒˆãƒ«ï¼‰ã®è¡¨ç¤º -->
+                <!-- ThrottleiƒXƒƒbƒgƒ‹j‚Ì•\Ž¦ -->
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Throttle" Style="{StaticResource TextBlockLabel}" />
                 <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding ExternalMethodCommand.Throttle, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBlockData}" />
-                <!-- Workersï¼ˆãƒ¯ãƒ¼ã‚«ãƒ¼ï¼‰ã®è¡¨ç¤º -->
+                <!-- Workersiƒ[ƒJ[j‚Ì•\Ž¦ -->
                 <TextBlock Grid.Row="1" Grid.Column="0" Text="Workers" Style="{StaticResource TextBlockLabel}" />
                 <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding ExternalMethodCommand.Workers, UpdateSourceTrigger=PropertyChanged}"  Style="{StaticResource TextBlockData}" />
-                <!-- ExternalMethodãƒœã‚¿ãƒ³ -->
+                <!-- ExternalMethodƒ{ƒ^ƒ“ -->
                 <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Command="{Binding ExternalMethodCommand}" Content="_ExternalMethod" Height="25" />
             </Grid>
         </GroupBox>
 
-        <!-- ã‚¸ãƒ§ãƒ–æƒ…å ±ã‚’è¡¨ç¤ºã™ã‚‹DataGrid -->
+        <!-- ƒWƒ‡ƒuî•ñ‚ð•\Ž¦‚·‚éDataGrid -->
         <DataGrid Margin="1,1,1,5" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Name="JobGrid" ItemsSource="{Binding Jobs}" IsReadOnly="True" AutoGenerateColumns="False" CellStyle="{StaticResource DefaultDataGridCellStyle}">
             <DataGrid.Columns>
-                <!-- ã‚¸ãƒ§ãƒ–IDã®åˆ— -->
+                <!-- ƒWƒ‡ƒuID‚Ì—ñ -->
                 <DataGridTextColumn Header="Id"
                                     Width="25"
                                     Binding="{Binding Path=Id}" />
-                <!-- ã‚¸ãƒ§ãƒ–ã‚¿ã‚¤ãƒ—ã®åˆ— -->
+                <!-- ƒWƒ‡ƒuƒ^ƒCƒv‚Ì—ñ -->
                 <DataGridTextColumn Header="Type"
                                     Width="50"
                                     Binding="{Binding Path=Type}" />
-                <!-- å®Ÿè¡Œæ™‚é–“ã®åˆ— -->
+                <!-- ŽÀsŽžŠÔ‚Ì—ñ -->
                 <DataGridTextColumn Header="Time"
                                     Width="*"
                                     Binding="{Binding Path=Time}" />
-                <!-- ã‚¹ãƒŠãƒƒãƒ—ã‚·ãƒ§ãƒƒãƒˆã®åˆ— -->
+                <!-- ƒXƒiƒbƒvƒVƒ‡ƒbƒg‚Ì—ñ -->
                 <DataGridTextColumn Header="Snapshot"
                                     Width="*"
                                     Binding="{Binding Path=Snapshot}" />
-                <!-- ãƒ¡ã‚½ãƒƒãƒ‰åã®åˆ— -->
+                <!-- ƒƒ\ƒbƒh–¼‚Ì—ñ -->
                 <DataGridTextColumn Header="Method"
                                     Width="*"
                                     Binding="{Binding Path=Method}" />

@@ -6,39 +6,39 @@ $Script:body = @'
 '@
 
 function Initialize {
-    ## ランスペースが作成され、その中にPowerShellクラスは定義されません
+    ## �����X�y�[�X���쐬����A���̒���PowerShell�N���X�͒�`����܂���
     $Script:powershell = [powershell]::Create()
-    ## 与えられた型と引数を使用してインスタンスを作成する関数をそのランスペースで定義します
+    ## �^����ꂽ�^�ƈ������g�p���ăC���X�^���X���쐬����֐������̃����X�y�[�X�Œ�`���܂�
     $Script:powershell.AddScript($Script:body).Invoke()
     $Script:powershell.Commands.Clear()
 }
 
 <#
 .SYNOPSIS
-指定されたPowerShellクラスの新しいインスタンスを、現在のランスペースに束縛されていない状態で作成します。
+�w�肳�ꂽPowerShell�N���X�̐V�����C���X�^���X���A���݂̃����X�y�[�X�ɑ�������Ă��Ȃ���Ԃō쐬���܂��B
 
 .DESCRIPTION
-この関数は、指定されたPowerShellクラスの新しいインスタンスを作成します。作成されたインスタンスは
-現在のランスペースに束縛されていないため、複数のスレッドから安全にアクセスできます。
-これは特に、非同期処理や並列処理を行う際に有用です。
+���̊֐��́A�w�肳�ꂽPowerShell�N���X�̐V�����C���X�^���X���쐬���܂��B�쐬���ꂽ�C���X�^���X��
+���݂̃����X�y�[�X�ɑ�������Ă��Ȃ����߁A�����̃X���b�h������S�ɃA�N�Z�X�ł��܂��B
+����͓��ɁA�񓯊���������񏈗����s���ۂɗL�p�ł��B
 
 .PARAMETER type
-インスタンスを作成するPowerShellクラスの型。
+�C���X�^���X���쐬����PowerShell�N���X�̌^�B
 
 .PARAMETER arguments
-クラスのコンストラクタに渡す引数の配列。省略可能です。
+�N���X�̃R���X�g���N�^�ɓn�������̔z��B�ȗ��\�ł��B
 
 .EXAMPLE
 $myInstance = New-UnboundClassInstance -type ([MyClass])
-このコマンドは、MyClassの新しいインスタンスを作成し、それを$myInstanceに格納します。
+���̃R�}���h�́AMyClass�̐V�����C���X�^���X���쐬���A�����$myInstance�Ɋi�[���܂��B
 
 .EXAMPLE
 $myInstance = New-UnboundClassInstance -type ([MyClass]) -arguments @("arg1", 42)
-このコマンドは、MyClassの新しいインスタンスを作成し、コンストラクタに"arg1"と42を引数として渡します。
+���̃R�}���h�́AMyClass�̐V�����C���X�^���X���쐬���A�R���X�g���N�^��"arg1"��42�������Ƃ��ēn���܂��B
 
 .NOTES
-この関数は、PowerShell 5.1で[NoRunspaceAffinity()]属性の代替として使用できます。
-PowerShell 7以降では、代わりに[NoRunspaceAffinity()]属性を使用することをお勧めします。
+���̊֐��́APowerShell 5.1��[NoRunspaceAffinity()]�����̑�ւƂ��Ďg�p�ł��܂��B
+PowerShell 7�ȍ~�ł́A�����[NoRunspaceAffinity()]�������g�p���邱�Ƃ������߂��܂��B
 
 .LINK
 https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_classes
@@ -49,7 +49,7 @@ function New-UnboundClassInstance ([Type] $type, [object[]] $arguments = $null)
     if ($null -eq $Script:powershell) { Initialize }
 
     try {
-        ## PowerShellクラスの型とコンストラクタの引数を渡し、他のランスペースでヘルパー関数を実行します
+        ## PowerShell�N���X�̌^�ƃR���X�g���N�^�̈�����n���A���̃����X�y�[�X�Ńw���p�[�֐������s���܂�
         if ($null -eq $arguments) { $arguments = @() }
         $result = $Script:powershell.AddCommand("New-UnboundClassInstance").
                                      AddParameter("type", $type).

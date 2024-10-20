@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="Shift_JIS"?>
 <Window
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -7,24 +8,24 @@
     Width="640"
     Height="720">
 
-    <!-- ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ãƒªã‚½ãƒ¼ã‚¹å®šç¾© -->
+    <!-- ƒEƒBƒ“ƒhƒE‚ÌƒŠƒ\[ƒX’è‹` -->
     <Window.Resources>
         <ResourceDictionary>
-            <!-- å¤–éƒ¨ã®ãƒªã‚½ãƒ¼ã‚¹ãƒ‡ã‚£ã‚¯ã‚·ãƒ§ãƒŠãƒªã‚’èª­ã¿è¾¼ã‚€ -->
+            <!-- ŠO•”‚ÌƒŠƒ\[ƒXƒfƒBƒNƒVƒ‡ƒiƒŠ‚ð“Ç‚Ýž‚Þ -->
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Views\Common.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
 
-    <!-- ãƒ¡ã‚¤ãƒ³ã®ã‚°ãƒªãƒƒãƒ‰ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆ -->
+    <!-- ƒƒCƒ“‚ÌƒOƒŠƒbƒhƒŒƒCƒAƒEƒg -->
     <Grid Name="MainGrid">
-        <!-- 2åˆ—ã®ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã‚’å®šç¾© -->
+        <!-- 2—ñ‚ÌƒŒƒCƒAƒEƒg‚ð’è‹` -->
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <!-- 5è¡Œã®ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã‚’å®šç¾© -->
+        <!-- 5s‚ÌƒŒƒCƒAƒEƒg‚ð’è‹` -->
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="20" Name="ShowCaseHeaderRow" />
@@ -33,21 +34,21 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!-- ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼ -->
+        <!-- ƒƒjƒ…[ƒo[ -->
         <!-- <DockPanel Grid.Row="0" Grid.ColumnSpan="4"> -->
             <Menu Grid.Row="0" Grid.ColumnSpan="4">
                 <MenuItem Header="_Async">
-                    <!-- ã“ã“ã«ãƒ¡ãƒ‹ãƒ¥ãƒ¼é …ç›®ã‚’è¿½åŠ ã§ãã¾ã™ -->
+                    <!-- ‚±‚±‚Éƒƒjƒ…[€–Ú‚ð’Ç‰Á‚Å‚«‚Ü‚· -->
                     <!-- <MenuItem Header="A_ddTen" Command="{Binding AddTenSlowlyCommand}" /> -->
                 </MenuItem>
             </Menu>
         <!-- </DockPanel> -->
 
-        <!-- SharedResourceã®è¡¨ç¤º -->
+        <!-- SharedResource‚Ì•\Ž¦ -->
         <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="SharedResource" Style="{StaticResource TextBlockShowCase}" />
         <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding SharedResource, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBlockShowCase}" />
 
-        <!-- ViewModelãƒ¡ã‚½ãƒƒãƒ‰ã®ã‚°ãƒ«ãƒ¼ãƒ—ãƒœãƒƒã‚¯ã‚¹ -->
+        <!-- ViewModelƒƒ\ƒbƒh‚ÌƒOƒ‹[ƒvƒ{ƒbƒNƒX -->
         <GroupBox Grid.Row="3" Grid.Column="0" Header="ViewModel Method" Padding="5">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -59,18 +60,18 @@
                     <RowDefinition />
                     <RowDefinition />
                 </Grid.RowDefinitions>
-                <!-- Throttleã®è¡¨ç¤º -->
+                <!-- Throttle‚Ì•\Ž¦ -->
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Throttle" Style="{StaticResource TextBlockLabel}" />
                 <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding AddTenSlowlyCommand.Throttle, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBlockData}" />
-                <!-- Workersã®è¡¨ç¤º -->
+                <!-- Workers‚Ì•\Ž¦ -->
                 <TextBlock Grid.Row="1" Grid.Column="0" Text="Workers" Style="{StaticResource TextBlockLabel}" />
                 <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding AddTenSlowlyCommand.Workers, UpdateSourceTrigger=PropertyChanged}"  Style="{StaticResource TextBlockData}" />
-                <!-- AddTenSlowlyãƒœã‚¿ãƒ³ -->
+                <!-- AddTenSlowlyƒ{ƒ^ƒ“ -->
                 <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Command="{Binding AddTenSlowlyCommand}" Content="_AddTenSlowly" Height="25" />
             </Grid>
         </GroupBox>
 
-        <!-- å¤–éƒ¨ãƒ¡ã‚½ãƒƒãƒ‰å‘¼ã³å‡ºã—ã®ã‚°ãƒ«ãƒ¼ãƒ—ãƒœãƒƒã‚¯ã‚¹ -->
+        <!-- ŠO•”ƒƒ\ƒbƒhŒÄ‚Ño‚µ‚ÌƒOƒ‹[ƒvƒ{ƒbƒNƒX -->
         <GroupBox Grid.Row="3" Grid.Column="1" Header="ViewModel Method Calling Another Class's Method" Padding="5">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -82,37 +83,37 @@
                     <RowDefinition />
                     <RowDefinition />
                 </Grid.RowDefinitions>
-                <!-- Throttleã®è¡¨ç¤º -->
+                <!-- Throttle‚Ì•\Ž¦ -->
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Throttle" Style="{StaticResource TextBlockLabel}" />
                 <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding ExternalMethodCommand.Throttle, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBlockData}" />
-                <!-- Workersã®è¡¨ç¤º -->
+                <!-- Workers‚Ì•\Ž¦ -->
                 <TextBlock Grid.Row="1" Grid.Column="0" Text="Workers" Style="{StaticResource TextBlockLabel}" />
                 <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding ExternalMethodCommand.Workers, UpdateSourceTrigger=PropertyChanged}"  Style="{StaticResource TextBlockData}" />
-                <!-- ExternalMethodãƒœã‚¿ãƒ³ -->
+                <!-- ExternalMethodƒ{ƒ^ƒ“ -->
                 <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Command="{Binding ExternalMethodCommand}" Content="_ExternalMethod" Height="25" />
             </Grid>
         </GroupBox>
 
-        <!-- ã‚¸ãƒ§ãƒ–æƒ…å ±ã‚’è¡¨ç¤ºã™ã‚‹DataGrid -->
+        <!-- ƒWƒ‡ƒuî•ñ‚ð•\Ž¦‚·‚éDataGrid -->
         <DataGrid Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Name="JobGrid" ItemsSource="{Binding Jobs}" ColumnWidth="*" IsReadOnly="True" AutoGenerateColumns="False" CellStyle="{StaticResource DefaultDataGridCellStyle}">
             <DataGrid.Columns>
-                <!-- ã‚¸ãƒ§ãƒ–IDã®åˆ— -->
+                <!-- ƒWƒ‡ƒuID‚Ì—ñ -->
                 <DataGridTextColumn Header="Id"
                                     Width="25"
                                     Binding="{Binding Path=Id}" />
-                <!-- ã‚¸ãƒ§ãƒ–ã‚¿ã‚¤ãƒ—ã®åˆ— -->
+                <!-- ƒWƒ‡ƒuƒ^ƒCƒv‚Ì—ñ -->
                 <DataGridTextColumn Header="Type"
                                     Width="50"
                                     Binding="{Binding Path=Type}" />
-                <!-- å®Ÿè¡Œæ™‚é–“ã®åˆ— -->
+                <!-- ŽÀsŽžŠÔ‚Ì—ñ -->
                 <DataGridTextColumn Header="Time"
                                     Width="*"
                                     Binding="{Binding Path=Time}" />
-                <!-- ã‚¹ãƒŠãƒƒãƒ—ã‚·ãƒ§ãƒƒãƒˆã®åˆ— -->
+                <!-- ƒXƒiƒbƒvƒVƒ‡ƒbƒg‚Ì—ñ -->
                 <DataGridTextColumn Header="Snapshot"
                                     Width="*"
                                     Binding="{Binding Path=Snapshot}" />
-                <!-- ãƒ¡ã‚½ãƒƒãƒ‰åã®åˆ— -->
+                <!-- ƒƒ\ƒbƒh–¼‚Ì—ñ -->
                 <DataGridTextColumn Header="Method"
                                     Width="*"
                                     Binding="{Binding Path=Method}" />
