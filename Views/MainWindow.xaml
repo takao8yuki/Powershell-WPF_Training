@@ -3,7 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Name="MainWindow"
-    Title="Powershell Async and Concurrent WPF GUI"
+    Title="PowerShell 非同期および並行処理 WPF GUI"
     WindowStartupLocation="CenterScreen"
     Width="640"
     Height="720">
@@ -45,11 +45,11 @@
         <!-- </DockPanel> -->
 
         <!-- SharedResourceの表示 -->
-        <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="SharedResource" Style="{StaticResource TextBlockShowCase}" />
+        <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="共有リソース" Style="{StaticResource TextBlockShowCase}" />
         <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding SharedResource, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBlockShowCase}" />
 
         <!-- ViewModelメソッドのグループボックス -->
-        <GroupBox Grid.Row="3" Grid.Column="0" Header="ViewModel Method" Padding="5">
+        <GroupBox Grid.Row="3" Grid.Column="0" Header="ViewModel メソッド" Padding="5">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
@@ -61,18 +61,18 @@
                     <RowDefinition />
                 </Grid.RowDefinitions>
                 <!-- Throttleの表示 -->
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="Throttle" Style="{StaticResource TextBlockLabel}" />
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="スロットル" Style="{StaticResource TextBlockLabel}" />
                 <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding AddTenSlowlyCommand.Throttle, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource TextBlockData}" />
                 <!-- Workersの表示 -->
-                <TextBlock Grid.Row="1" Grid.Column="0" Text="Workers" Style="{StaticResource TextBlockLabel}" />
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="ワーカー" Style="{StaticResource TextBlockLabel}" />
                 <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding AddTenSlowlyCommand.Workers, UpdateSourceTrigger=PropertyChanged}"  Style="{StaticResource TextBlockData}" />
                 <!-- AddTenSlowlyボタン -->
-                <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Command="{Binding AddTenSlowlyCommand}" Content="_AddTenSlowly" Height="25" />
+                <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Command="{Binding AddTenSlowlyCommand}" Content="_10を遅く追加" Height="25" />
             </Grid>
         </GroupBox>
 
         <!-- 外部メソッド呼び出しのグループボックス -->
-        <GroupBox Grid.Row="3" Grid.Column="1" Header="ViewModel Method Calling Another Class's Method" Padding="5">
+        <GroupBox Grid.Row="3" Grid.Column="1" Header="別クラスのメソッドを呼び出すViewModel メソッド" Padding="5">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
@@ -90,7 +90,7 @@
                 <TextBlock Grid.Row="1" Grid.Column="0" Text="Workers" Style="{StaticResource TextBlockLabel}" />
                 <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding ExternalMethodCommand.Workers, UpdateSourceTrigger=PropertyChanged}"  Style="{StaticResource TextBlockData}" />
                 <!-- ExternalMethodボタン -->
-                <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Command="{Binding ExternalMethodCommand}" Content="_ExternalMethod" Height="25" />
+                <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Command="{Binding ExternalMethodCommand}" Content="_外部メソッド" Height="25" />
             </Grid>
         </GroupBox>
 
@@ -98,25 +98,15 @@
         <DataGrid Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Name="JobGrid" ItemsSource="{Binding Jobs}" ColumnWidth="*" IsReadOnly="True" AutoGenerateColumns="False" CellStyle="{StaticResource DefaultDataGridCellStyle}">
             <DataGrid.Columns>
                 <!-- ジョブIDの列 -->
-                <DataGridTextColumn Header="Id"
-                                    Width="25"
-                                    Binding="{Binding Path=Id}" />
+                <DataGridTextColumn Header="ID" Width="25" Binding="{Binding Path=Id}" />
                 <!-- ジョブタイプの列 -->
-                <DataGridTextColumn Header="Type"
-                                    Width="50"
-                                    Binding="{Binding Path=Type}" />
+                <DataGridTextColumn Header="タイプ" Width="50" Binding="{Binding Path=Type}" />
                 <!-- 実行時間の列 -->
-                <DataGridTextColumn Header="Time"
-                                    Width="*"
-                                    Binding="{Binding Path=Time}" />
+                <DataGridTextColumn Header="時間" Width="*" Binding="{Binding Path=Time}" />
                 <!-- スナップショットの列 -->
-                <DataGridTextColumn Header="Snapshot"
-                                    Width="*"
-                                    Binding="{Binding Path=Snapshot}" />
+                <DataGridTextColumn Header="スナップショット" Width="*" Binding="{Binding Path=Snapshot}" />
                 <!-- メソッド名の列 -->
-                <DataGridTextColumn Header="Method"
-                                    Width="*"
-                                    Binding="{Binding Path=Method}" />
+                <DataGridTextColumn Header="メソッド" Width="*" Binding="{Binding Path=Method}" />
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
