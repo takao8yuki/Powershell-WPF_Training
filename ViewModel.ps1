@@ -1,7 +1,9 @@
 using module .\WPFClassHelpers.psm1
-using Assembly PresentationFramework
-using Assembly PresentationCore
-using Assembly WindowsBase
+
+# アセンブリの動的読み込み
+Add-Type -AssemblyName PresentationCore
+Add-Type -AssemblyName PresentationFramework
+Add-Type -AssemblyName WindowsBase
 
 <#
 .SYNOPSIS
